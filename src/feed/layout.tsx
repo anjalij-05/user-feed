@@ -1,7 +1,7 @@
 import { Link, Outlet } from "react-router-dom";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { AvatarImage } from "@radix-ui/react-avatar";
 import { Bell, Home, MessageCircle, PlusSquare } from "lucide-react";
+import { AvatarImage } from "@radix-ui/react-avatar";
 
 // const SIDEBAR_WIDTH = "244px";
 
