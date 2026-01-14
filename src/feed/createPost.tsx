@@ -25,6 +25,10 @@ const CreatePost = () => {
   const [activeTab, setActiveTab] = useState<"upload" | "background">("upload");
   const imageInputRef = useRef<HTMLInputElement>(null);
   const videoInputRef = useRef<HTMLInputElement>(null);
+  const [showPermission, setShowPermission] = useState(false);
+  const [pendingMediaType, setPendingMediaType] = useState<
+    "image" | "video" | null
+  >(null);
 
   const backgroundImages = [
     "https://images.unsplash.com/photo-1557683316-973673baf926?w=800&h=600&fit=crop",
@@ -175,7 +179,7 @@ const CreatePost = () => {
                         <img
                           src={uploadedMediaPreview}
                           alt="Preview"
-                          className="w-full h-80 sm:h-96 object-cover"
+                          className="w-full h-80 sm:h-96 object-contain"
                         />
                       ) : (
                         <video
@@ -200,7 +204,10 @@ const CreatePost = () => {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       {/* Image Upload */}
                       <button
-                        onClick={() => imageInputRef.current?.click()}
+                        onClick={() => {
+                          setPendingMediaType("image");
+                          setShowPermission(true);
+                        }}
                         className="group relative border-2 border-dashed border-slate-300 rounded-xl p-8 hover:border-blue-500 hover:bg-blue-50/50 transition-all"
                       >
                         <div className="flex flex-col items-center cursor-pointer gap-3 text-center">
@@ -220,7 +227,10 @@ const CreatePost = () => {
 
                       {/* Video Upload */}
                       <button
-                        onClick={() => videoInputRef.current?.click()}
+                        onClick={() => {
+                          setPendingMediaType("video");
+                          setShowPermission(true);
+                        }}
                         className="group relative border-2 border-dashed border-slate-300 rounded-xl p-8 hover:border-purple-500 hover:bg-purple-50/50 transition-all"
                       >
                         <div className="flex flex-col items-center cursor-pointer gap-3 text-center">
@@ -341,19 +351,19 @@ const CreatePost = () => {
                     <img
                       src={uploadedMediaPreview}
                       alt="Preview"
-                      className="w-full h-48 object-cover"
+                      className="w-full h-48 object-contain"
                     />
                   ) : (
                     <video
                       src={uploadedMediaPreview}
-                      className="w-full h-48 object-cover bg-black"
+                      className="w-full h-48 object-contain bg-black"
                     />
                   )
                 ) : selectedBackgroundImage ? (
                   <img
                     src={selectedBackgroundImage}
                     alt="Preview"
-                    className="w-full h-48 object-cover"
+                    className="w-full h-48 object-contain"
                   />
                 ) : null}
                 <div className="p-4">
@@ -367,6 +377,50 @@ const CreatePost = () => {
           )}
         </div>
       </main>
+      {/* Permission Modal */}
+      {showPermission && (
+        <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-sm text-center space-y-4">
+            <h2 className="text-lg font-bold">Allow access to media</h2>
+
+            <p className="text-sm text-slate-600">
+              This allows you to upload{" "}
+              {pendingMediaType === "image" ? "photos" : "videos"} from your
+              device.
+            </p>
+
+            <div className="flex gap-3 pt-2">
+              <Button
+                variant="outline"
+                className="flex-1 cursor-pointer"
+                onClick={() => {
+                  setShowPermission(false);
+                  setPendingMediaType(null);
+                }}
+              >
+                Cancel
+              </Button>
+
+              <Button
+                className="flex-1 bg-gradient-to-r cursor-pointer from-blue-600 to-purple-600 text-white"
+                onClick={() => {
+                  setShowPermission(false);
+
+                  if (pendingMediaType === "image") {
+                    imageInputRef.current?.click();
+                  } else if (pendingMediaType === "video") {
+                    videoInputRef.current?.click();
+                  }
+
+                  setPendingMediaType(null);
+                }}
+              >
+                Allow
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
