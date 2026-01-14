@@ -11,8 +11,8 @@ const UserFeedLayout = () => {
 
   const navItems = [
     { to: "/", icon: Home, label: "Home" },
-    { to: "/messages", icon: MessageCircle, label: "Messages" },
-    { to: "/notifications", icon: Bell, label: "Notifications" },
+    { to: "#", icon: MessageCircle, label: "Messages" },
+    { to: "#", icon: Bell, label: "Notifications" },
     { to: "/user-feed/create-post", icon: PlusSquare, label: "Create" },
   ];
 
