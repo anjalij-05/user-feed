@@ -12,8 +12,26 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { useNavigate } from "react-router-dom";
 
-const CreatePost = () => {
+interface CreatePostProps {
+  onPostCreated: (post: {
+    id: number;
+    name: string;
+    role: string;
+    timestamp: string;
+    avatar: string;
+    image?: string;
+    title: string;
+    content: string;
+    likes: number;
+    comments: number;
+    shares?: number;
+  }) => void;
+}
+
+const CreatePost = ({ onPostCreated }: CreatePostProps) => {
+  const navigate = useNavigate();
   const [uploadedMedia, setUploadedMedia] = useState<File | null>(null);
   const [uploadedMediaPreview, setUploadedMediaPreview] = useState<string>("");
   const [mediaType, setMediaType] = useState<"image" | "video" | null>(null);
@@ -41,7 +59,7 @@ const CreatePost = () => {
 
   const handleMediaUpload = (
     e: React.ChangeEvent<HTMLInputElement>,
-    type: "image" | "video"
+    type: "image" | "video",
   ) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -69,9 +87,33 @@ const CreatePost = () => {
   const handlePostSubmit = async () => {
     setIsUploading(true);
     await new Promise((resolve) => setTimeout(resolve, 1500));
+
+    const newPost = {
+      id: Date.now(),
+      name: "You",
+      role: "Content Creator",
+      timestamp: "Just now",
+      avatar:
+        "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop",
+      image: uploadedMediaPreview || selectedBackgroundImage,
+      mediaType: mediaType || "image", 
+      title: postTitle,
+      content: postDescription,
+      likes: 0,
+      comments: 0,
+      shares: 0,
+    };
+
+    onPostCreated(newPost);
     setIsUploading(false);
-    // Navigate back to feed after successful post
-    // navigate("/user-feed");
+
+    // Reset form
+    setPostTitle("");
+    setPostDescription("");
+    clearMedia();
+
+    // Navigate back to feed
+    navigate("/");
   };
 
   const canPost =
@@ -82,7 +124,6 @@ const CreatePost = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-50/20">
-      {/* Header with gradient */}
       <div className="sticky top-0 z-10 bg-white/80 backdrop-blur-xl border-b border-slate-200/60 shadow-sm">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4">
           <div className="flex items-center justify-between">
@@ -90,6 +131,7 @@ const CreatePost = () => {
               variant="ghost"
               size="sm"
               className="hover:bg-slate-100 -ml-2"
+              onClick={() => navigate("/")}
             >
               <ArrowLeft className="w-5 h-5 mr-2" />
               <span className="hidden sm:inline">Back</span>
@@ -103,7 +145,7 @@ const CreatePost = () => {
             <Button
               onClick={handlePostSubmit}
               disabled={isUploading || !canPost}
-              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg shadow-blue-500/30 transition-all disabled:opacity-50 disabled:shadow-none"
+              className="bg-gradient-to-r cursor-pointer from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg shadow-blue-500/30 transition-all disabled:opacity-50 disabled:shadow-none"
             >
               {isUploading ? (
                 <>
@@ -119,17 +161,14 @@ const CreatePost = () => {
         </div>
       </div>
 
-      {/* Content */}
       <main className="max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
         <div className="space-y-6">
-          {/* Media Upload Section */}
           <div className="bg-white rounded-2xl shadow-lg border border-slate-200/60 overflow-hidden">
             <div className="p-6">
               <label className="text-sm font-semibold mb-4 block text-slate-700">
                 Media <span className="text-red-500">*</span>
               </label>
 
-              {/* Tab Selection */}
               <div className="flex gap-2 mb-4">
                 <button
                   onClick={() => setActiveTab("upload")}
@@ -155,7 +194,6 @@ const CreatePost = () => {
                 </button>
               </div>
 
-              {/* Upload Tab */}
               {activeTab === "upload" && (
                 <>
                   <input
@@ -179,7 +217,7 @@ const CreatePost = () => {
                         <img
                           src={uploadedMediaPreview}
                           alt="Preview"
-                          className="w-full h-80 sm:h-96 object-contain"
+                          className="w-full h-80 sm:h-96 object-contain bg-slate-100"
                         />
                       ) : (
                         <video
@@ -196,13 +234,9 @@ const CreatePost = () => {
                       >
                         <X className="w-4 h-4" />
                       </Button>
-                      <div className="absolute bottom-3 left-3 bg-black/60 backdrop-blur-sm text-white px-3 py-1 rounded-full text-xs font-medium">
-                        {mediaType === "image" ? "Image" : "Video"}
-                      </div>
                     </div>
                   ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      {/* Image Upload */}
                       <button
                         onClick={() => {
                           setPendingMediaType("image");
@@ -225,7 +259,6 @@ const CreatePost = () => {
                         </div>
                       </button>
 
-                      {/* Video Upload */}
                       <button
                         onClick={() => {
                           setPendingMediaType("video");
@@ -252,7 +285,6 @@ const CreatePost = () => {
                 </>
               )}
 
-              {/* Background Tab */}
               {activeTab === "background" && (
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
                   {backgroundImages.map((img, idx) => (
@@ -277,7 +309,6 @@ const CreatePost = () => {
                           </div>
                         </div>
                       )}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                     </button>
                   ))}
                 </div>
@@ -285,7 +316,6 @@ const CreatePost = () => {
             </div>
           </div>
 
-          {/* Title Section */}
           <div className="bg-white rounded-2xl shadow-lg border border-slate-200/60 p-6">
             <label className="text-sm font-semibold mb-3 block text-slate-700">
               Title <span className="text-red-500">*</span>
@@ -302,16 +332,13 @@ const CreatePost = () => {
                 Make it catchy and descriptive
               </p>
               <p
-                className={`text-xs font-medium ${
-                  postTitle.length > 90 ? "text-red-500" : "text-slate-500"
-                }`}
+                className={`text-xs font-medium ${postTitle.length > 90 ? "text-red-500" : "text-slate-500"}`}
               >
                 {postTitle.length}/100
               </p>
             </div>
           </div>
 
-          {/* Description Section */}
           <div className="bg-white rounded-2xl shadow-lg border border-slate-200/60 p-6">
             <label className="text-sm font-semibold mb-3 block text-slate-700">
               Description
@@ -327,18 +354,13 @@ const CreatePost = () => {
             <div className="flex justify-between items-center mt-2">
               <p className="text-xs text-slate-500">Express yourself freely</p>
               <p
-                className={`text-xs font-medium ${
-                  postDescription.length > 450
-                    ? "text-red-500"
-                    : "text-slate-500"
-                }`}
+                className={`text-xs font-medium ${postDescription.length > 450 ? "text-red-500" : "text-slate-500"}`}
               >
                 {postDescription.length}/500
               </p>
             </div>
           </div>
 
-          {/* Post Preview Card */}
           {hasMedia && postTitle && (
             <div className="bg-white rounded-2xl shadow-lg border border-slate-200/60 p-6">
               <h3 className="text-sm font-semibold mb-3 text-slate-700 flex items-center gap-2">
@@ -351,7 +373,7 @@ const CreatePost = () => {
                     <img
                       src={uploadedMediaPreview}
                       alt="Preview"
-                      className="w-full h-48 object-contain"
+                      className="w-full h-48 object-contain bg-slate-100"
                     />
                   ) : (
                     <video
@@ -363,7 +385,7 @@ const CreatePost = () => {
                   <img
                     src={selectedBackgroundImage}
                     alt="Preview"
-                    className="w-full h-48 object-contain"
+                    className="w-full h-48 object-contain bg-slate-100"
                   />
                 ) : null}
                 <div className="p-4">
@@ -377,22 +399,20 @@ const CreatePost = () => {
           )}
         </div>
       </main>
-      {/* Permission Modal */}
+
       {showPermission && (
-        <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center">
+        <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl p-6 w-full max-w-sm text-center space-y-4">
             <h2 className="text-lg font-bold">Allow access to media</h2>
-
             <p className="text-sm text-slate-600">
               This allows you to upload{" "}
               {pendingMediaType === "image" ? "photos" : "videos"} from your
               device.
             </p>
-
             <div className="flex gap-3 pt-2">
               <Button
                 variant="outline"
-                className="flex-1 cursor-pointer"
+                className="flex-1"
                 onClick={() => {
                   setShowPermission(false);
                   setPendingMediaType(null);
@@ -400,18 +420,15 @@ const CreatePost = () => {
               >
                 Cancel
               </Button>
-
               <Button
-                className="flex-1 bg-gradient-to-r cursor-pointer from-blue-600 to-purple-600 text-white"
+                className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 text-white"
                 onClick={() => {
                   setShowPermission(false);
-
                   if (pendingMediaType === "image") {
                     imageInputRef.current?.click();
                   } else if (pendingMediaType === "video") {
                     videoInputRef.current?.click();
                   }
-
                   setPendingMediaType(null);
                 }}
               >

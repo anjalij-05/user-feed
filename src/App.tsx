@@ -1,10 +1,12 @@
 import { Route, Routes } from "react-router";
 import "./App.css";
-import Feed from "./feed";
+// import Feed from "./feed/feed";
 import UserFeedLayout from "./feed/layout";
 import UserPostProfile from "./feed/usersProfile";
 import UserProfile from "./feed/createUserProfile";
-import CreatePost from "./feed/createPost";
+// import CreatePost from "./feed/createPost";
+import CreatePostWrapper from "./feed/createWrapper";
+import FeedWrapper from "./feed/feedWrapper";
 
 function App() {
   return (
@@ -18,8 +20,8 @@ function App() {
           path="/user-feed/create-user-profile"
           element={<UserProfile />}
         />
-        <Route path="/" element={<Feed />} />
-        <Route path="/user-feed/create-post" element={<CreatePost />} />
+        <Route index element={<FeedWrapper />} />
+          <Route path="user-feed/create-post" element={<CreatePostWrapper />} />
       </Route>
     </Routes>
   );

@@ -31,9 +31,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Link } from "react-router-dom";
 
-// Types
 interface Comment {
   id: number;
   userId: number;
@@ -51,6 +49,7 @@ interface Post {
   timestamp: string;
   avatar: string;
   image?: string;
+  mediaType?: "image" | "video";
   title: string;
   content: string;
   images?: string[];
@@ -68,28 +67,7 @@ const FeedCard = ({ post }: FeedCardProps) => {
   const [likeCount, setLikeCount] = useState(post.likes);
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [showComments, setShowComments] = useState(false);
-  const [commentsList, setCommentsList] = useState<Comment[]>([
-    {
-      id: 1,
-      userId: 1,
-      userName: "alex_johnson",
-      userAvatar:
-        "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop",
-      content: "Great insights! Thanks for sharing. 🔥",
-      timestamp: "1h",
-      likes: 12,
-    },
-    {
-      id: 2,
-      userId: 2,
-      userName: "maria.garcia",
-      userAvatar:
-        "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop",
-      content: "Looking forward to connecting at the event!",
-      timestamp: "30m",
-      likes: 5,
-    },
-  ]);
+  const [commentsList, setCommentsList] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState("");
   const [shareCount, setShareCount] = useState(post.shares || 0);
   const [showShareDialog, setShowShareDialog] = useState(false);
@@ -125,7 +103,7 @@ const FeedCard = ({ post }: FeedCardProps) => {
   ];
 
   const filteredPeople = connectedPeople.filter((person) =>
-    person.name.toLowerCase().includes(searchQuery.toLowerCase())
+    person.name.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   const allImages = post.image
@@ -146,10 +124,6 @@ const FeedCard = ({ post }: FeedCardProps) => {
     if (!isLiked) {
       handleLike();
     }
-  };
-
-  const handleBookmark = () => {
-    setIsBookmarked(!isBookmarked);
   };
 
   const handleCommentSubmit = (e: React.FormEvent) => {
@@ -178,15 +152,11 @@ const FeedCard = ({ post }: FeedCardProps) => {
     }
   };
 
-  const handleShare = () => {
-    setShowShareDialog(true);
-  };
-
   const togglePersonSelection = (personId: number) => {
     setSelectedPeople((prev) =>
       prev.includes(personId)
         ? prev.filter((id) => id !== personId)
-        : [...prev, personId]
+        : [...prev, personId],
     );
   };
 
@@ -202,7 +172,6 @@ const FeedCard = ({ post }: FeedCardProps) => {
   return (
     <>
       <div className="bg-white border border-slate-200 rounded-2xl mb-6 shadow-sm hover:shadow-md transition-shadow overflow-hidden">
-        {/* Header */}
         <div className="flex items-center justify-between px-4 py-4">
           <div className="flex items-center gap-3">
             <Avatar className="w-11 h-11 ring-2 ring-white shadow-md cursor-pointer hover:ring-primary transition-all">
@@ -211,6 +180,7 @@ const FeedCard = ({ post }: FeedCardProps) => {
                 alt={post.name}
                 className="object-cover"
               />
+
               <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white font-semibold">
                 {post.name
                   .split(" ")
@@ -218,12 +188,11 @@ const FeedCard = ({ post }: FeedCardProps) => {
                   .join("")}
               </AvatarFallback>
             </Avatar>
+
             <div className="flex flex-col">
-              <Link to="/user-post-profile">
-                <h3 className="font-bold text-sm hover:text-primary cursor-pointer transition-colors">
-                  {post.name.toLowerCase().replace(/\s+/g, "_")}
-                </h3>
-              </Link>
+              <h3 className="font-bold text-sm hover:text-primary cursor-pointer transition-colors">
+                {post.name.toLowerCase().replace(/\s+/g, "_")}
+              </h3>
               <p className="text-xs text-slate-500">{post.timestamp}</p>
             </div>
           </div>
@@ -251,18 +220,26 @@ const FeedCard = ({ post }: FeedCardProps) => {
           </DropdownMenu>
         </div>
 
-        {/* Image Gallery */}
         <div
           className="relative bg-gradient-to-br from-slate-100 to-slate-50"
           onDoubleClick={handleImageDoubleTap}
         >
           {allImages.length > 0 && (
             <>
-              <img
-                src={allImages[currentImageIndex]}
-                alt="Post content"
-                className="w-full max-h-[600px] object-contain select-none"
-              />
+              {/* Render video or image based on mediaType */}
+              {post.mediaType === "video" && currentImageIndex === 0 ? (
+                <video
+                  src={allImages[currentImageIndex]}
+                  controls
+                  className="w-full max-h-[600px] object-contain bg-black select-none"
+                />
+              ) : (
+                <img
+                  src={allImages[currentImageIndex]}
+                  alt="Post content"
+                  className="w-full max-h-[600px] object-contain select-none"
+                />
+              )}
 
               {showLikeAnimation && (
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none animate-in zoom-in-50 fade-in duration-300">
@@ -336,7 +313,6 @@ const FeedCard = ({ post }: FeedCardProps) => {
           )}
         </div>
 
-        {/* Actions */}
         <div className="flex items-center justify-between px-4 py-3">
           <div className="flex items-center gap-5">
             <button
@@ -354,14 +330,14 @@ const FeedCard = ({ post }: FeedCardProps) => {
               <MessageCircle className="w-7 h-7" />
             </button>
             <button
-              onClick={handleShare}
+              onClick={() => setShowShareDialog(true)}
               className="text-slate-700 hover:text-green-500 transition-all duration-200 hover:scale-110 active:scale-95"
             >
               <Send className="w-7 h-7" />
             </button>
           </div>
           <button
-            onClick={handleBookmark}
+            onClick={() => setIsBookmarked(!isBookmarked)}
             className={`transition-all duration-200 hover:scale-110 active:scale-95 ${
               isBookmarked
                 ? "text-amber-500"
@@ -374,25 +350,19 @@ const FeedCard = ({ post }: FeedCardProps) => {
           </button>
         </div>
 
-        {/* Likes */}
         <div className="px-4 pb-2">
           <button className="font-bold text-sm hover:text-slate-600 transition-colors">
             {likeCount.toLocaleString()} likes
           </button>
         </div>
 
-        {/* Content */}
         <div className="px-4 pb-3">
           <div className="text-sm">
             <span className="font-bold mr-2 text-slate-900">
               {post.name.toLowerCase().replace(/\s+/g, "_")}
             </span>
             <span
-              className={`text-slate-700 ${
-                !showFullContent && post.content.length > 100
-                  ? "line-clamp-2"
-                  : ""
-              }`}
+              className={`text-slate-700 ${!showFullContent && post.content.length > 100 ? "line-clamp-2" : ""}`}
             >
               {post.content}
             </span>
@@ -407,7 +377,6 @@ const FeedCard = ({ post }: FeedCardProps) => {
           </div>
         </div>
 
-        {/* View Comments */}
         {commentsList.length > 0 && !showComments && (
           <button
             onClick={() => setShowComments(true)}
@@ -417,8 +386,7 @@ const FeedCard = ({ post }: FeedCardProps) => {
           </button>
         )}
 
-        {/* Comments List */}
-        {showComments && (
+        {showComments && commentsList.length > 0 && (
           <div className="px-4 pb-3 space-y-4 max-h-96 overflow-y-auto">
             {commentsList.map((comment) => (
               <div key={comment.id} className="flex gap-3 group">
@@ -470,7 +438,6 @@ const FeedCard = ({ post }: FeedCardProps) => {
           </div>
         )}
 
-        {/* Add Comment */}
         <div className="px-4 py-4 border-t border-slate-100">
           <form
             onSubmit={handleCommentSubmit}
@@ -494,7 +461,7 @@ const FeedCard = ({ post }: FeedCardProps) => {
                 type="submit"
                 variant="ghost"
                 size="sm"
-                className="text-primary hover:text-primary font-bold px-3 h-auto hover:bg-blue-50 rounded-full"
+                className="text-primary cursor-pointer hover:text-primary font-bold px-3 h-auto hover:bg-blue-50 rounded-full"
               >
                 Post
               </Button>
@@ -503,7 +470,6 @@ const FeedCard = ({ post }: FeedCardProps) => {
         </div>
       </div>
 
-      {/* Share Dialog */}
       <Dialog open={showShareDialog} onOpenChange={setShowShareDialog}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
@@ -589,8 +555,12 @@ const FeedCard = ({ post }: FeedCardProps) => {
   );
 };
 
-const Feed = () => {
-  const posts: Post[] = [
+interface FeedProps {
+  userPosts: Post[];
+}
+
+const Feed = ({ userPosts }: FeedProps) => {
+  const defaultPosts: Post[] = [
     {
       id: 1,
       name: "Sarah Chen",
@@ -600,9 +570,10 @@ const Feed = () => {
         "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop",
       image:
         "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=600&fit=crop",
+      mediaType: "image",
       title: "TechConnect Summit",
       content:
-        "Excited to be at TechConnect Summit 2025! Meeting so many amazing people in the tech industry. The keynote on AI and future of work was mind-blowing 🚀 #TechSummit2025",
+        "Excited to be at TechConnect Summit 2025! Meeting so many amazing people in the tech industry. 🚀",
       images: [
         "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=800&h=600&fit=crop",
         "https://images.unsplash.com/photo-1591115765373-5207764f72e7?w=800&h=600&fit=crop",
@@ -620,9 +591,11 @@ const Feed = () => {
         "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop",
       image:
         "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=800&h=600&fit=crop",
+      mediaType: "image",
+
       title: "Conference Memories",
       content:
-        "Looking back at some incredible moments from conferences I attended this year. The networking and learning opportunities were amazing! 💡",
+        "Looking back at some incredible moments from conferences I attended this year. 💡",
       likes: 892,
       comments: 45,
       shares: 23,
@@ -636,14 +609,18 @@ const Feed = () => {
         "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&h=100&fit=crop",
       image:
         "https://images.unsplash.com/photo-1591115765373-5207764f72e7?w=800&h=600&fit=crop",
+      mediaType: "image",
+
       title: "Design Workshop",
       content:
-        "Amazing workshop on user experience design patterns. Learned so much about creating intuitive interfaces! 🎨",
+        "Amazing workshop on user experience design patterns. Learned so much! 🎨",
       likes: 567,
       comments: 28,
       shares: 15,
     },
   ];
+
+  const allPosts = [...userPosts, ...defaultPosts];
 
   const suggestedUsers = [
     {
@@ -689,7 +666,7 @@ const Feed = () => {
     setFollowedUsers((prev) =>
       prev.includes(userId)
         ? prev.filter((id) => id !== userId)
-        : [...prev, userId]
+        : [...prev, userId],
     );
   };
 
@@ -697,10 +674,9 @@ const Feed = () => {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30">
       <div className="max-w-[1400px] mx-auto pt-6 sm:pt-8 px-3 sm:px-6">
         <div className="flex gap-8 justify-center">
-          {/* Main Feed */}
           <main className="w-full max-w-[620px]">
             <div className="space-y-0">
-              {posts.map((post) => (
+              {allPosts.map((post) => (
                 <FeedCard key={post.id} post={post} />
               ))}
             </div>
@@ -715,10 +691,8 @@ const Feed = () => {
             </div>
           </main>
 
-          {/* Right Sidebar */}
           <aside className="hidden xl:block w-[320px] shrink-0 sticky top-6 self-start">
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-5">
-              {/* Current User */}
               <div className="flex items-center justify-between pb-5 border-b border-slate-100">
                 <div className="flex items-center gap-3">
                   <Avatar className="w-12 h-12 cursor-pointer ring-2 ring-white shadow-md hover:ring-primary transition-all">
@@ -742,7 +716,6 @@ const Feed = () => {
                 </button>
               </div>
 
-              {/* Suggestions Header */}
               <div className="flex items-center justify-between py-5">
                 <div className="flex items-center gap-2">
                   <TrendingUp className="w-4 h-4 text-primary" />
@@ -755,7 +728,6 @@ const Feed = () => {
                 </button>
               </div>
 
-              {/* Suggested Users */}
               <div className="space-y-4">
                 {suggestedUsers.map((user) => (
                   <div
