@@ -31,6 +31,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Link } from "react-router-dom";
 
 interface Comment {
   id: number;
@@ -190,9 +191,13 @@ const FeedCard = ({ post }: FeedCardProps) => {
             </Avatar>
 
             <div className="flex flex-col">
-              <h3 className="font-bold text-sm hover:text-primary cursor-pointer transition-colors">
-                {post.name.toLowerCase().replace(/\s+/g, "_")}
-              </h3>
+              <Link
+                to={`/user-post-profile/${post.id}`}
+              >
+                <h3 className="font-bold text-sm hover:text-primary cursor-pointer transition-colors">
+                  {post.name.toLowerCase().replace(/\s+/g, "_")}
+                </h3>
+              </Link>
               <p className="text-xs text-slate-500">{post.timestamp}</p>
             </div>
           </div>

@@ -13,7 +13,7 @@ function App() {
     <Routes>
       <Route path="/" element={<UserFeedLayout />}>
         <Route
-          path="/user-post-profile"
+          path="/user-post-profile/:id"
           element={<UserPostProfile />}
         />
         <Route

@@ -253,7 +253,7 @@ export default function UserProfile() {
       </div>
 
       {/* Story Highlights */}
-      <div className="px-4 pb-4 flex gap-6 overflow-x-auto">
+      {/* <div className="px-4 pb-4 flex gap-6 overflow-x-auto">
         {["Travel", "Food", "Beach", "Sunset"].map((highlight, i) => (
           <div key={i} className="flex flex-col items-center gap-1">
             <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 p-0.5">
@@ -264,7 +264,7 @@ export default function UserProfile() {
             <span className="text-xs">{highlight}</span>
           </div>
         ))}
-      </div>
+      </div> */}
 
       {/* Tabs */}
       <div className="border-t flex">
