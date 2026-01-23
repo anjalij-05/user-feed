@@ -191,9 +191,7 @@ const FeedCard = ({ post }: FeedCardProps) => {
             </Avatar>
 
             <div className="flex flex-col">
-              <Link
-                to={`/user-post-profile/${post.id}`}
-              >
+              <Link to={`/user-post-profile/${post.id}`}>
                 <h3 className="font-bold text-sm hover:text-primary cursor-pointer transition-colors">
                   {post.name.toLowerCase().replace(/\s+/g, "_")}
                 </h3>
@@ -549,7 +547,7 @@ const FeedCard = ({ post }: FeedCardProps) => {
             <Button
               onClick={handleSendShare}
               disabled={selectedPeople.length === 0}
-              className="flex-1 bg-gradient-to-r from-blue-600 to-primary hover:from-blue-700 hover:to-primary rounded-xl shadow-md"
+              className="flex-1 bg-gradient-to-r from-primary to-primary hover:from-primary hover:to-primary rounded-xl shadow-md"
             >
               Send ({selectedPeople.length})
             </Button>
@@ -751,9 +749,12 @@ const Feed = ({ userPosts }: FeedProps) => {
                         </AvatarFallback>
                       </Avatar>
                       <div className="flex flex-col">
-                        <p className="font-bold text-sm cursor-pointer hover:text-primary transition-colors">
-                          {user.name}
-                        </p>
+                        <Link to={`/user-post-profile/${user.id}`}>
+                          <p className="font-bold text-sm cursor-pointer hover:text-primary transition-colors">
+                            {user.name}
+                          </p>
+                        </Link>
+
                         <p className="text-xs text-slate-500">
                           {user.subtitle}
                         </p>

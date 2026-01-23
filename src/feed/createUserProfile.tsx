@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import {
-  Heart,
-  MessageCircle,
+  // Heart,
+  // MessageCircle,
   Grid,
   Film,
   User,
@@ -13,20 +13,28 @@ import {
   Check,
 } from "lucide-react";
 
-export default function UserProfile() {
+interface UserProfileProps {
+  posts: {
+    id: number;
+    image: string;
+    likes: number;
+    comments: number;
+  }[];
+}
+
+export default function UserProfile({ posts }: UserProfileProps) {
   const [activeTab, setActiveTab] = useState("posts");
   const [showEditModal, setShowEditModal] = useState(false);
   const [profileData, setProfileData] = useState({
     firstName: "Sarah",
     lastName: "Johnson",
     username: "sarah.johnson",
-    bio: "📸 Travel & Lifestyle\n🌍 Currently in Bali\n✨ Living my best life",
+    bio: "📸 Travel & Lifestyle",
     gender: "female",
-    posts: 147,
+    posts: posts.length,
     followers: 12500,
     following: 890,
-    profilePic:
-      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop",
+    profilePic: "...",
     isVerified: true,
   });
 
@@ -41,71 +49,50 @@ export default function UserProfile() {
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const posts = [
-    {
-      id: 1,
-      image:
-        "https://images.unsplash.com/photo-1682687220742-aba13b6e50ba?w=400&h=400&fit=crop",
-      likes: 1234,
-      comments: 89,
-    },
-    {
-      id: 2,
-      image:
-        "https://images.unsplash.com/photo-1682687221038-404cb8830901?w=400&h=400&fit=crop",
-      likes: 2341,
-      comments: 145,
-    },
-    {
-      id: 3,
-      image:
-        "https://images.unsplash.com/photo-1682687221080-5cb261c645cb?w=400&h=400&fit=crop",
-      likes: 3456,
-      comments: 234,
-    },
-    {
-      id: 4,
-      image:
-        "https://images.unsplash.com/photo-1682687220063-4742bd7fd538?w=400&h=400&fit=crop",
-      likes: 987,
-      comments: 67,
-    },
-    {
-      id: 5,
-      image:
-        "https://images.unsplash.com/photo-1682687220199-d0124f48f95b?w=400&h=400&fit=crop",
-      likes: 2109,
-      comments: 156,
-    },
-    {
-      id: 6,
-      image:
-        "https://images.unsplash.com/photo-1682687220067-dced9a881b56?w=400&h=400&fit=crop",
-      likes: 1567,
-      comments: 98,
-    },
-    {
-      id: 7,
-      image:
-        "https://images.unsplash.com/photo-1682687221175-fd40bbafe6ca?w=400&h=400&fit=crop",
-      likes: 3210,
-      comments: 201,
-    },
-    {
-      id: 8,
-      image:
-        "https://images.unsplash.com/photo-1682687220777-2c60708d6889?w=400&h=400&fit=crop",
-      likes: 1890,
-      comments: 134,
-    },
-    {
-      id: 9,
-      image:
-        "https://images.unsplash.com/photo-1682687220923-c58b9a4592ae?w=400&h=400&fit=crop",
-      likes: 2567,
-      comments: 178,
-    },
-  ];
+  // const posts = [
+  //   {
+  //     id: 1,
+  //     image:
+  //       "https://images.unsplash.com/photo-1682687220742-aba13b6e50ba?w=400&h=400&fit=crop",
+  //     likes: 1234,
+  //     comments: 89,
+  //   },
+  //   {
+  //     id: 2,
+  //     image:
+  //       "https://images.unsplash.com/photo-1682687221038-404cb8830901?w=400&h=400&fit=crop",
+  //     likes: 2341,
+  //     comments: 145,
+  //   },
+  //   {
+  //     id: 3,
+  //     image:
+  //       "https://images.unsplash.com/photo-1682687221080-5cb261c645cb?w=400&h=400&fit=crop",
+  //     likes: 3456,
+  //     comments: 234,
+  //   },
+  //   {
+  //     id: 4,
+  //     image:
+  //       "https://images.unsplash.com/photo-1682687220063-4742bd7fd538?w=400&h=400&fit=crop",
+  //     likes: 987,
+  //     comments: 67,
+  //   },
+  //   {
+  //     id: 5,
+  //     image:
+  //       "https://images.unsplash.com/photo-1682687220199-d0124f48f95b?w=400&h=400&fit=crop",
+  //     likes: 2109,
+  //     comments: 156,
+  //   },
+  //   {
+  //     id: 6,
+  //     image:
+  //       "https://images.unsplash.com/photo-1682687220067-dced9a881b56?w=400&h=400&fit=crop",
+  //     likes: 1567,
+  //     comments: 98,
+  //   },
+  // ];
 
   const handleEditProfile = () => {
     setEditForm({
@@ -143,7 +130,7 @@ export default function UserProfile() {
   const handleInputChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
+    >,
   ) => {
     const { name, value } = e.target;
     setEditForm((prev) => ({
@@ -296,18 +283,14 @@ export default function UserProfile() {
             >
               <img
                 src={post.image}
-                alt={`Post ${post.id}`}
+                alt="Post"
                 className="w-full h-full object-cover"
               />
-              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100">
+              <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
                 <div className="flex gap-6 text-white font-semibold">
+                  <div className="flex items-center gap-2">❤️ {post.likes}</div>
                   <div className="flex items-center gap-2">
-                    <Heart className="w-6 h-6 fill-white" />
-                    <span>{post.likes.toLocaleString()}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <MessageCircle className="w-6 h-6 fill-white" />
-                    <span>{post.comments}</span>
+                    💬 {post.comments}
                   </div>
                 </div>
               </div>

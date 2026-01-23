@@ -22,6 +22,7 @@ interface CreatePostProps {
     timestamp: string;
     avatar: string;
     image?: string;
+    mediaType?: "image" | "video";
     title: string;
     content: string;
     likes: number;
@@ -74,7 +75,7 @@ const CreatePost = ({ onPostCreated }: CreatePostProps) => {
     setSelectedBackgroundImage(imageUrl);
     setUploadedMedia(null);
     setUploadedMediaPreview("");
-    setMediaType(null);
+    setMediaType("image");
   };
 
   const clearMedia = () => {
@@ -90,18 +91,12 @@ const CreatePost = ({ onPostCreated }: CreatePostProps) => {
 
     const newPost = {
       id: Date.now(),
-      name: "You",
-      role: "Content Creator",
-      timestamp: "Just now",
-      avatar:
-        "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop",
       image: uploadedMediaPreview || selectedBackgroundImage,
-      mediaType: mediaType || "image", 
+      mediaType: (mediaType || "image") as "image" | "video",
       title: postTitle,
       content: postDescription,
       likes: 0,
       comments: 0,
-      shares: 0,
     };
 
     onPostCreated(newPost);
@@ -212,18 +207,18 @@ const CreatePost = ({ onPostCreated }: CreatePostProps) => {
                   />
 
                   {uploadedMediaPreview ? (
-                    <div className="relative rounded-xl overflow-hidden group">
+                    <div className="relative rounded-xl overflow-hidden group bg-gradient-to-br from-slate-100 to-slate-50">
                       {mediaType === "image" ? (
                         <img
                           src={uploadedMediaPreview}
                           alt="Preview"
-                          className="w-full h-80 sm:h-96 object-contain bg-slate-100"
+                          className="w-full max-h-[600px] object-contain"
                         />
                       ) : (
                         <video
                           src={uploadedMediaPreview}
                           controls
-                          className="w-full h-80 sm:h-96 object-cover bg-black"
+                          className="w-full max-h-[600px] object-contain bg-black"
                         />
                       )}
                       <Button
@@ -341,7 +336,7 @@ const CreatePost = ({ onPostCreated }: CreatePostProps) => {
 
           <div className="bg-white rounded-2xl shadow-lg border border-slate-200/60 p-6">
             <label className="text-sm font-semibold mb-3 block text-slate-700">
-              Description
+              Description <span className="text-red-500">*</span>
             </label>
             <Textarea
               placeholder="Share your thoughts, story, or message..."
@@ -368,26 +363,28 @@ const CreatePost = ({ onPostCreated }: CreatePostProps) => {
                 Preview
               </h3>
               <div className="border border-slate-200 rounded-xl overflow-hidden">
-                {uploadedMediaPreview ? (
-                  mediaType === "image" ? (
+                <div className="bg-gradient-to-br from-slate-100 to-slate-50">
+                  {uploadedMediaPreview ? (
+                    mediaType === "image" ? (
+                      <img
+                        src={uploadedMediaPreview}
+                        alt="Preview"
+                        className="w-full max-h-[600px] object-contain"
+                      />
+                    ) : (
+                      <video
+                        src={uploadedMediaPreview}
+                        className="w-full max-h-[600px] object-contain bg-black"
+                      />
+                    )
+                  ) : selectedBackgroundImage ? (
                     <img
-                      src={uploadedMediaPreview}
+                      src={selectedBackgroundImage}
                       alt="Preview"
-                      className="w-full h-48 object-contain bg-slate-100"
+                      className="w-full max-h-[600px] object-contain"
                     />
-                  ) : (
-                    <video
-                      src={uploadedMediaPreview}
-                      className="w-full h-48 object-contain bg-black"
-                    />
-                  )
-                ) : selectedBackgroundImage ? (
-                  <img
-                    src={selectedBackgroundImage}
-                    alt="Preview"
-                    className="w-full h-48 object-contain bg-slate-100"
-                  />
-                ) : null}
+                  ) : null}
+                </div>
                 <div className="p-4">
                   <h4 className="font-bold text-slate-900 mb-1">{postTitle}</h4>
                   <p className="text-sm text-slate-600 line-clamp-2">

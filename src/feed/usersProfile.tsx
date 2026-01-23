@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import {
   Heart,
   MessageCircle,
@@ -7,108 +8,194 @@ import {
   User,
   Settings,
   MoreHorizontal,
+  ArrowLeft,
 } from "lucide-react";
 
-export default function UserPostProfile() {
-  const [activeTab, setActiveTab] = useState("posts");
-
-  const profile = {
-    username: "sarah.johnson",
-    name: "Sarah Johnson",
-    bio: "📸 Travel & Lifestyle\n🌍 Currently in Bali\n✨ Living my best life",
-    posts: 147,
-    followers: 12500,
-    following: 890,
-    profilePic:
-      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop",
-    isVerified: true,
+// User data lookup function - matches the IDs from your Feed component
+const getUserData = (userId: string) => {
+  const users: Record<string, any> = {
+    "1": {
+      username: "sarah_chen",
+      name: "Sarah Chen",
+      bio: "📸 Product Manager at TechCorp\n🌍 Building the future\n✨ Tech enthusiast",
+      posts: 147,
+      followers: 12500,
+      following: 890,
+      profilePic:
+        "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop",
+      isVerified: true,
+      userPosts: [
+        {
+          id: 1,
+          image:
+            "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400&h=400&fit=crop",
+          likes: 1247,
+          comments: 89,
+        },
+        {
+          id: 2,
+          image:
+            "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=400&h=400&fit=crop",
+          likes: 2341,
+          comments: 145,
+        },
+        {
+          id: 3,
+          image:
+            "https://images.unsplash.com/photo-1591115765373-5207764f72e7?w=400&h=400&fit=crop",
+          likes: 3456,
+          comments: 234,
+        },
+        {
+          id: 4,
+          image:
+            "https://images.unsplash.com/photo-1682687220742-aba13b6e50ba?w=400&h=400&fit=crop",
+          likes: 987,
+          comments: 67,
+        },
+        {
+          id: 5,
+          image:
+            "https://images.unsplash.com/photo-1682687221038-404cb8830901?w=400&h=400&fit=crop",
+          likes: 2109,
+          comments: 156,
+        },
+        {
+          id: 6,
+          image:
+            "https://images.unsplash.com/photo-1682687221080-5cb261c645cb?w=400&h=400&fit=crop",
+          likes: 1567,
+          comments: 98,
+        },
+      ],
+    },
+    "2": {
+      username: "marcus_rodriguez",
+      name: "Marcus Rodriguez",
+      bio: "💻 Senior Developer\n🚀 Code & Coffee\n📱 Building cool stuff",
+      posts: 89,
+      followers: 8900,
+      following: 654,
+      profilePic:
+        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop",
+      isVerified: false,
+      userPosts: [
+        {
+          id: 1,
+          image:
+            "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=400&h=400&fit=crop",
+          likes: 892,
+          comments: 45,
+        },
+        {
+          id: 2,
+          image:
+            "https://images.unsplash.com/photo-1682687220063-4742bd7fd538?w=400&h=400&fit=crop",
+          likes: 1234,
+          comments: 67,
+        },
+        {
+          id: 3,
+          image:
+            "https://images.unsplash.com/photo-1682687220199-d0124f48f95b?w=400&h=400&fit=crop",
+          likes: 2109,
+          comments: 89,
+        },
+      ],
+    },
+    "3": {
+      username: "amit_patel",
+      name: "Amit Patel",
+      bio: "🎨 UX Director\n✨ Design thinking\n🌟 Creating experiences",
+      posts: 203,
+      followers: 15200,
+      following: 1200,
+      profilePic:
+        "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&h=400&fit=crop",
+      isVerified: true,
+      userPosts: [
+        {
+          id: 1,
+          image:
+            "https://images.unsplash.com/photo-1591115765373-5207764f72e7?w=400&h=400&fit=crop",
+          likes: 567,
+          comments: 28,
+        },
+        {
+          id: 2,
+          image:
+            "https://images.unsplash.com/photo-1682687221175-fd40bbafe6ca?w=400&h=400&fit=crop",
+          likes: 3210,
+          comments: 201,
+        },
+        {
+          id: 3,
+          image:
+            "https://images.unsplash.com/photo-1682687220777-2c60708d6889?w=400&h=400&fit=crop",
+          likes: 1890,
+          comments: 134,
+        },
+      ],
+    },
   };
 
-  const posts = [
-    {
-      id: 1,
-      image:
-        "https://images.unsplash.com/photo-1682687220742-aba13b6e50ba?w=400&h=400&fit=crop",
-      likes: 1234,
-      comments: 89,
-    },
-    {
-      id: 2,
-      image:
-        "https://images.unsplash.com/photo-1682687221038-404cb8830901?w=400&h=400&fit=crop",
-      likes: 2341,
-      comments: 145,
-    },
-    {
-      id: 3,
-      image:
-        "https://images.unsplash.com/photo-1682687221080-5cb261c645cb?w=400&h=400&fit=crop",
-      likes: 3456,
-      comments: 234,
-    },
-    {
-      id: 4,
-      image:
-        "https://images.unsplash.com/photo-1682687220063-4742bd7fd538?w=400&h=400&fit=crop",
-      likes: 987,
-      comments: 67,
-    },
-    {
-      id: 5,
-      image:
-        "https://images.unsplash.com/photo-1682687220199-d0124f48f95b?w=400&h=400&fit=crop",
-      likes: 2109,
-      comments: 156,
-    },
-    {
-      id: 6,
-      image:
-        "https://images.unsplash.com/photo-1682687220067-dced9a881b56?w=400&h=400&fit=crop",
-      likes: 1567,
-      comments: 98,
-    },
-    {
-      id: 7,
-      image:
-        "https://images.unsplash.com/photo-1682687221175-fd40bbafe6ca?w=400&h=400&fit=crop",
-      likes: 3210,
-      comments: 201,
-    },
-    {
-      id: 8,
-      image:
-        "https://images.unsplash.com/photo-1682687220777-2c60708d6889?w=400&h=400&fit=crop",
-      likes: 1890,
-      comments: 134,
-    },
-    {
-      id: 9,
-      image:
-        "https://images.unsplash.com/photo-1682687220923-c58b9a4592ae?w=400&h=400&fit=crop",
-      likes: 2567,
-      comments: 178,
-    },
-  ];
+  return users[userId] || null;
+};
+
+export default function UserPostProfile() {
+  // Get the user ID from the URL
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState("posts");
+  const [isFollowing, setIsFollowing] = useState(false);
+
+  // Get the profile data based on the ID from URL
+  const profile = id ? getUserData(id) : null;
+
+  if (!profile) {
+    return (
+      <div className="max-w-4xl mx-auto bg-white min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold mb-2">User not found</h2>
+          <p className="text-gray-600 mb-4">This profile doesn't exist</p>
+          <button
+            onClick={() => navigate("/")}
+            className="bg-primary text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            Go back to feed
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-4xl mx-auto bg-white min-h-screen">
       {/* Header */}
       <div className="border-b p-4 flex justify-between items-center">
-        <div className="flex items-center gap-2">
-          <h1 className="text-xl font-semibold">{profile.username}</h1>
-          {profile.isVerified && (
-            <svg
-              className="w-5 h-5 text-primary"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-            >
-              <path d="M12 2L9.19 8.63L2 9.24L7.46 14.03L5.82 21L12 17.27L18.18 21L16.54 14.03L22 9.24L14.81 8.63L12 2Z" />
-            </svg>
-          )}
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => navigate("/")}
+            className="hover:bg-gray-100 p-2 rounded-full transition-colors"
+          >
+            <ArrowLeft className="w-6 h-6" />
+          </button>
+          <div className="flex items-center gap-2">
+            <h1 className="text-xl font-semibold">{profile.username}</h1>
+            {profile.isVerified && (
+              <svg
+                className="w-5 h-5 text-primary"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+              >
+                <path d="M12 2L9.19 8.63L2 9.24L7.46 14.03L5.82 21L12 17.27L18.18 21L16.54 14.03L22 9.24L14.81 8.63L12 2Z" />
+              </svg>
+            )}
+          </div>
         </div>
         <div className="flex gap-4">
-          <Settings className="w-6 h-6 cursor-pointer" />
-          <MoreHorizontal className="w-6 h-6 cursor-pointer" />
+          <Settings className="w-6 h-6 cursor-pointer hover:text-gray-600 transition-colors" />
+          <MoreHorizontal className="w-6 h-6 cursor-pointer hover:text-gray-600 transition-colors" />
         </div>
       </div>
 
@@ -118,7 +205,7 @@ export default function UserPostProfile() {
           <img
             src={profile.profilePic}
             alt={profile.name}
-            className="w-20 h-20 rounded-full object-cover"
+            className="w-20 h-20 rounded-full object-cover ring-2 ring-white shadow-lg"
           />
 
           <div className="flex-1">
@@ -127,13 +214,13 @@ export default function UserPostProfile() {
                 <div className="font-semibold text-lg">{profile.posts}</div>
                 <div className="text-gray-600 text-sm">posts</div>
               </div>
-              <div className="text-center cursor-pointer">
+              <div className="text-center cursor-pointer hover:text-gray-600 transition-colors">
                 <div className="font-semibold text-lg">
                   {profile.followers.toLocaleString()}
                 </div>
                 <div className="text-gray-600 text-sm">followers</div>
               </div>
-              <div className="text-center cursor-pointer">
+              <div className="text-center cursor-pointer hover:text-gray-600 transition-colors">
                 <div className="font-semibold text-lg">
                   {profile.following.toLocaleString()}
                 </div>
@@ -145,68 +232,59 @@ export default function UserPostProfile() {
 
         <div className="mb-4">
           <div className="font-semibold mb-1">{profile.name}</div>
-          <div className="text-sm whitespace-pre-line">{profile.bio}</div>
+          <div className="text-sm whitespace-pre-line text-gray-700">
+            {profile.bio}
+          </div>
         </div>
 
         <div className="flex gap-2">
-          <button className="flex-1 bg-primary cursor-pointer text-white font-semibold py-1.5 rounded-lg hover:bg-primary-dark">
-            Follow
+          <button
+            onClick={() => setIsFollowing(!isFollowing)}
+            className={`flex-1 font-semibold py-2 rounded-lg transition-colors ${
+              isFollowing
+                ? "bg-gray-200 hover:bg-gray-300 text-gray-800"
+                : "bg-primary text-white hover:bg-blue-700"
+            }`}
+          >
+            {isFollowing ? "Following" : "Follow"}
           </button>
-          <button className="flex-1 bg-gray-200 cursor-pointer font-semibold py-1.5 rounded-lg hover:bg-gray-300">
+          <button className="flex-1 bg-gray-200 cursor-pointer font-semibold py-2 rounded-lg hover:bg-gray-300 transition-colors">
             Message
           </button>
-          <button className="bg-gray-200 px-3 py-1.5 rounded-lg hover:bg-gray-300">
+          <button className="bg-gray-200 px-3 py-2 rounded-lg hover:bg-gray-300 transition-colors">
             <User className="w-5 h-5" />
           </button>
         </div>
-      </div>
-
-      {/* Story Highlights - Optional */}
-      <div className="px-4 pb-4 flex gap-6 overflow-x-auto">
-        {["Travel", "Food", "Beach", "Sunset"].map((highlight, i) => (
-          <div key={i} className="flex flex-col items-center gap-1">
-            <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 p-0.5">
-              <div className="w-full h-full rounded-full bg-white p-0.5">
-                <div className="w-full h-full rounded-full bg-gray-200"></div>
-              </div>
-            </div>
-            <span className="text-xs">{highlight}</span>
-          </div>
-        ))}
       </div>
 
       {/* Tabs */}
       <div className="border-t flex">
         <button
           onClick={() => setActiveTab("posts")}
-          className={`flex-1 py-3 cursor-pointer flex justify-center ${
-            activeTab === "posts" ? "border-t-2 border-black" : "text-gray-400"
+          className={`flex-1 py-3 cursor-pointer flex justify-center transition-colors ${
+            activeTab === "posts"
+              ? "border-t-2 border-black"
+              : "text-gray-400 hover:text-gray-600"
           }`}
         >
           <Grid className="w-6 h-6" />
         </button>
         <button
           onClick={() => setActiveTab("reels")}
-          className={`flex-1 py-3 flex cursor-pointer justify-center ${
-            activeTab === "reels" ? "border-t-2 border-black" : "text-gray-400"
+          className={`flex-1 py-3 flex cursor-pointer justify-center transition-colors ${
+            activeTab === "reels"
+              ? "border-t-2 border-black"
+              : "text-gray-400 hover:text-gray-600"
           }`}
         >
           <Film className="w-6 h-6" />
         </button>
-        {/* <button
-          onClick={() => setActiveTab("tagged")}
-          className={`flex-1 py-3 flex justify-center ${
-            activeTab === "tagged" ? "border-t-2 border-black" : "text-gray-400"
-          }`}
-        >
-          <User className="w-6 h-6" />
-        </button> */}
       </div>
 
       {/* Posts Grid */}
       {activeTab === "posts" && (
         <div className="grid grid-cols-3 gap-1">
-          {posts.map((post) => (
+          {profile.userPosts.map((post: any) => (
             <div
               key={post.id}
               className="relative aspect-square group cursor-pointer"
@@ -239,13 +317,6 @@ export default function UserPostProfile() {
           <p>No reels yet</p>
         </div>
       )}
-
-      {/* {activeTab === "tagged" && (
-        <div className="p-8 text-center text-gray-500">
-          <User className="w-12 h-12 mx-auto mb-2 text-gray-400" />
-          <p>No tagged posts yet</p>
-        </div>
-      )} */}
     </div>
   );
 }
