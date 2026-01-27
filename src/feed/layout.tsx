@@ -1,7 +1,6 @@
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Bell, Home, MessageCircle, PlusSquare } from "lucide-react";
-import { useState } from "react";
 
 interface Post {
   id: number;
@@ -10,6 +9,7 @@ interface Post {
   timestamp: string;
   avatar: string;
   image?: string;
+  mediaType?: "image" | "video";
   title: string;
   content: string;
   images?: string[];
@@ -18,9 +18,13 @@ interface Post {
   shares?: number;
 }
 
-const UserFeedLayout = () => {
+interface UserFeedLayoutProps {
+  userPosts: Post[];
+  onPostCreated: (post: Post) => void;
+}
+
+const UserFeedLayout = ({ userPosts, onPostCreated }: UserFeedLayoutProps) => {
   const location = useLocation();
-  const [userPosts, setUserPosts] = useState<Post[]>([]);
 
   const isActive = (path: string) => {
     return location.pathname === path;
@@ -32,10 +36,6 @@ const UserFeedLayout = () => {
     { to: "#", icon: Bell, label: "Notifications" },
     { to: "/user-feed/create-post", icon: PlusSquare, label: "Create" },
   ];
-
-  const handlePostCreated = (newPost: Post) => {
-    setUserPosts([newPost, ...userPosts]);
-  };
 
   return (
     <div className="min-h-screen pb-16 lg:pb-0">
@@ -121,7 +121,7 @@ const UserFeedLayout = () => {
 
       {/* Main Content */}
       <main className="lg:ml-[244px] min-h-screen">
-        <Outlet context={{ userPosts, onPostCreated: handlePostCreated }} />
+        <Outlet context={{ userPosts, onPostCreated }} />
       </main>
     </div>
   );

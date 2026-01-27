@@ -1,7 +1,5 @@
 import { useState, useRef } from "react";
 import {
-  // Heart,
-  // MessageCircle,
   Grid,
   Film,
   User,
@@ -13,28 +11,40 @@ import {
   Check,
 } from "lucide-react";
 
+interface Post {
+  id: number;
+  name: string;
+  role: string;
+  timestamp: string;
+  avatar: string;
+  image?: string;
+  mediaType?: "image" | "video";
+  title: string;
+  content: string;
+  images?: string[];
+  likes: number;
+  comments: number;
+  shares?: number;
+}
+
 interface UserProfileProps {
-  posts: {
-    id: number;
-    image: string;
-    likes: number;
-    comments: number;
-  }[];
+  posts: Post[];
 }
 
 export default function UserProfile({ posts }: UserProfileProps) {
   const [activeTab, setActiveTab] = useState("posts");
   const [showEditModal, setShowEditModal] = useState(false);
   const [profileData, setProfileData] = useState({
-    firstName: "Sarah",
-    lastName: "Johnson",
-    username: "sarah.johnson",
-    bio: "📸 Travel & Lifestyle",
-    gender: "female",
+    firstName: "Azwedo",
+    lastName: "Drdr",
+    username: "azwedo_drdr",
+    bio: "📸 Content Creator",
+    gender: "male",
     posts: posts.length,
     followers: 12500,
     following: 890,
-    profilePic: "...",
+    profilePic:
+      "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop",
     isVerified: true,
   });
 
@@ -49,50 +59,13 @@ export default function UserProfile({ posts }: UserProfileProps) {
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // const posts = [
-  //   {
-  //     id: 1,
-  //     image:
-  //       "https://images.unsplash.com/photo-1682687220742-aba13b6e50ba?w=400&h=400&fit=crop",
-  //     likes: 1234,
-  //     comments: 89,
-  //   },
-  //   {
-  //     id: 2,
-  //     image:
-  //       "https://images.unsplash.com/photo-1682687221038-404cb8830901?w=400&h=400&fit=crop",
-  //     likes: 2341,
-  //     comments: 145,
-  //   },
-  //   {
-  //     id: 3,
-  //     image:
-  //       "https://images.unsplash.com/photo-1682687221080-5cb261c645cb?w=400&h=400&fit=crop",
-  //     likes: 3456,
-  //     comments: 234,
-  //   },
-  //   {
-  //     id: 4,
-  //     image:
-  //       "https://images.unsplash.com/photo-1682687220063-4742bd7fd538?w=400&h=400&fit=crop",
-  //     likes: 987,
-  //     comments: 67,
-  //   },
-  //   {
-  //     id: 5,
-  //     image:
-  //       "https://images.unsplash.com/photo-1682687220199-d0124f48f95b?w=400&h=400&fit=crop",
-  //     likes: 2109,
-  //     comments: 156,
-  //   },
-  //   {
-  //     id: 6,
-  //     image:
-  //       "https://images.unsplash.com/photo-1682687220067-dced9a881b56?w=400&h=400&fit=crop",
-  //     likes: 1567,
-  //     comments: 98,
-  //   },
-  // ];
+  // Transform posts to display format
+  const displayPosts = posts.map((post) => ({
+    id: post.id,
+    image: post.image || "",
+    likes: post.likes,
+    comments: post.comments,
+  }));
 
   const handleEditProfile = () => {
     setEditForm({
@@ -194,7 +167,7 @@ export default function UserProfile({ posts }: UserProfileProps) {
           <div className="flex-1">
             <div className="flex gap-8 mb-4">
               <div className="text-center">
-                <div className="font-semibold text-lg">{profileData.posts}</div>
+                <div className="font-semibold text-lg">{posts.length}</div>
                 <div className="text-gray-600 text-sm">posts</div>
               </div>
               <div className="text-center cursor-pointer">
@@ -239,20 +212,6 @@ export default function UserProfile({ posts }: UserProfileProps) {
         </div>
       </div>
 
-      {/* Story Highlights */}
-      {/* <div className="px-4 pb-4 flex gap-6 overflow-x-auto">
-        {["Travel", "Food", "Beach", "Sunset"].map((highlight, i) => (
-          <div key={i} className="flex flex-col items-center gap-1">
-            <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 p-0.5">
-              <div className="w-full h-full rounded-full bg-white p-0.5">
-                <div className="w-full h-full rounded-full bg-gray-200"></div>
-              </div>
-            </div>
-            <span className="text-xs">{highlight}</span>
-          </div>
-        ))}
-      </div> */}
-
       {/* Tabs */}
       <div className="border-t flex">
         <button
@@ -275,27 +234,39 @@ export default function UserProfile({ posts }: UserProfileProps) {
 
       {/* Posts Grid */}
       {activeTab === "posts" && (
-        <div className="grid grid-cols-3 gap-1">
-          {posts.map((post) => (
-            <div
-              key={post.id}
-              className="relative aspect-square group cursor-pointer"
-            >
-              <img
-                src={post.image}
-                alt="Post"
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
-                <div className="flex gap-6 text-white font-semibold">
-                  <div className="flex items-center gap-2">❤️ {post.likes}</div>
-                  <div className="flex items-center gap-2">
-                    💬 {post.comments}
+        <div>
+          {displayPosts.length === 0 ? (
+            <div className="p-8 text-center text-gray-500">
+              <Grid className="w-12 h-12 mx-auto mb-2 text-gray-400" />
+              <p>No posts yet</p>
+              <p className="text-sm mt-1">Share your first photo or video</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-3 gap-1">
+              {displayPosts.map((post) => (
+                <div
+                  key={post.id}
+                  className="relative aspect-square group cursor-pointer"
+                >
+                  <img
+                    src={post.image}
+                    alt="Post"
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
+                    <div className="flex gap-6 text-white font-semibold">
+                      <div className="flex items-center gap-2">
+                        ❤️ {post.likes}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        💬 {post.comments}
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
+              ))}
             </div>
-          ))}
+          )}
         </div>
       )}
 
@@ -321,6 +292,7 @@ export default function UserProfile({ posts }: UserProfileProps) {
               <h2 className="font-bold text-xl bg-gradient-to-r cursor-pointer from-indigo-600 to-primary bg-clip-text text-transparent">
                 Edit Profile
               </h2>
+              <div className="w-9"></div>
             </div>
 
             {/* Modal Content */}

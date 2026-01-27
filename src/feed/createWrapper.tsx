@@ -8,6 +8,7 @@ interface Post {
   timestamp: string;
   avatar: string;
   image?: string;
+  mediaType?: "image" | "video";
   title: string;
   content: string;
   images?: string[];
@@ -23,6 +24,8 @@ interface OutletContext {
 
 const CreatePostWrapper = () => {
   const { onPostCreated } = useOutletContext<OutletContext>();
+
+  console.log("CreatePostWrapper - onPostCreated function:", onPostCreated);
 
   return <CreatePost onPostCreated={onPostCreated} />;
 };

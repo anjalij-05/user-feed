@@ -91,12 +91,18 @@ const CreatePost = ({ onPostCreated }: CreatePostProps) => {
 
     const newPost = {
       id: Date.now(),
+      name: "Azwedo Drdr", // Current user's name
+      role: "Content Creator", // Current user's role
+      timestamp: "Just now",
+      avatar:
+        "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop", // Current user's avatar
       image: uploadedMediaPreview || selectedBackgroundImage,
       mediaType: (mediaType || "image") as "image" | "video",
       title: postTitle,
       content: postDescription,
       likes: 0,
       comments: 0,
+      shares: 0,
     };
 
     onPostCreated(newPost);

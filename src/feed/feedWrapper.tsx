@@ -8,6 +8,7 @@ interface Post {
   timestamp: string;
   avatar: string;
   image?: string;
+  mediaType?: "image" | "video";
   title: string;
   content: string;
   images?: string[];
@@ -23,7 +24,9 @@ interface OutletContext {
 
 const FeedWrapper = () => {
   const { userPosts } = useOutletContext<OutletContext>();
-  
+
+  console.log("FeedWrapper - userPosts:", userPosts);
+
   return <Feed userPosts={userPosts} />;
 };
 
