@@ -62,10 +62,13 @@ export default function UserProfile({ posts }: UserProfileProps) {
   // Transform posts to display format
   const displayPosts = posts.map((post) => ({
     id: post.id,
-    image: post.image || "",
+    media: post.image || "", // image OR video url
+    mediaType: post.mediaType ?? "image",
     likes: post.likes,
     comments: post.comments,
   }));
+
+  const reelPosts = displayPosts.filter((post) => post.mediaType === "video");
 
   const handleEditProfile = () => {
     setEditForm({
@@ -248,19 +251,32 @@ export default function UserProfile({ posts }: UserProfileProps) {
                   key={post.id}
                   className="relative aspect-square group cursor-pointer"
                 >
-                  <img
-                    src={post.image}
-                    alt="Post"
-                    className="w-full h-full object-cover"
-                  />
+                  {post.mediaType === "video" ? (
+                    <video
+                      src={post.media}
+                      className="w-full h-full object-cover"
+                      muted
+                      loop
+                      playsInline
+                    />
+                  ) : (
+                    <img
+                      src={post.media}
+                      alt="Post"
+                      className="w-full h-full object-cover"
+                    />
+                  )}
+
+                  {post.mediaType === "video" && (
+                    <div className="absolute top-2 right-2 bg-black/60 rounded-full p-1">
+                      <Film className="w-4 h-4 text-white" />
+                    </div>
+                  )}
+
                   <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
                     <div className="flex gap-6 text-white font-semibold">
-                      <div className="flex items-center gap-2">
-                        ❤️ {post.likes}
-                      </div>
-                      <div className="flex items-center gap-2">
-                        💬 {post.comments}
-                      </div>
+                      ❤️ {post.likes}
+                      💬 {post.comments}
                     </div>
                   </div>
                 </div>
@@ -271,9 +287,43 @@ export default function UserProfile({ posts }: UserProfileProps) {
       )}
 
       {activeTab === "reels" && (
-        <div className="p-8 text-center text-gray-500">
-          <Film className="w-12 h-12 mx-auto mb-2 text-gray-400" />
-          <p>No reels yet</p>
+        <div>
+          {reelPosts.length === 0 ? (
+            <div className="p-8 text-center text-gray-500">
+              <Film className="w-12 h-12 mx-auto mb-2 text-gray-400" />
+              <p>No reels yet</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-3 gap-1">
+              {reelPosts.map((post) => (
+                <div
+                  key={post.id}
+                  className="relative aspect-square cursor-pointer"
+                >
+                  <video
+                    src={post.media}
+                    className="w-full h-full object-cover"
+                    muted
+                    loop
+                    playsInline
+                  />
+
+                  {post.mediaType === "video" && (
+                    <div className="absolute top-2 right-2 bg-black/60 rounded-full p-1">
+                      <Film className="w-4 h-4 text-white" />
+                    </div>
+                  )}
+                  
+                  <div className="absolute inset-0 bg-black/30 opacity-0 hover:opacity-100 transition flex items-center justify-center">
+                    <div className="flex gap-6 text-white font-semibold">
+                      ❤️ {post.likes}
+                      💬 {post.comments}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
 
