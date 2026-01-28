@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import {
   Heart,
   MessageCircle,
@@ -11,153 +12,49 @@ import {
   ArrowLeft,
 } from "lucide-react";
 
-// User data lookup function - matches the IDs from your Feed component
-const getUserData = (userId: string) => {
-  const users: Record<string, any> = {
-    "1": {
-      username: "sarah_chen",
-      name: "Sarah Chen",
-      bio: "📸 Product Manager at TechCorp\n🌍 Building the future\n✨ Tech enthusiast",
-      posts: 147,
-      followers: 12500,
-      following: 890,
-      profilePic:
-        "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop",
-      isVerified: true,
-      userPosts: [
-        {
-          id: 1,
-          image:
-            "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400&h=400&fit=crop",
-          likes: 1247,
-          comments: 89,
-        },
-        {
-          id: 2,
-          image:
-            "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=400&h=400&fit=crop",
-          likes: 2341,
-          comments: 145,
-        },
-        {
-          id: 3,
-          image:
-            "https://images.unsplash.com/photo-1591115765373-5207764f72e7?w=400&h=400&fit=crop",
-          likes: 3456,
-          comments: 234,
-        },
-        {
-          id: 4,
-          image:
-            "https://images.unsplash.com/photo-1682687220742-aba13b6e50ba?w=400&h=400&fit=crop",
-          likes: 987,
-          comments: 67,
-        },
-        {
-          id: 5,
-          image:
-            "https://images.unsplash.com/photo-1682687221038-404cb8830901?w=400&h=400&fit=crop",
-          likes: 2109,
-          comments: 156,
-        },
-        {
-          id: 6,
-          image:
-            "https://images.unsplash.com/photo-1682687221080-5cb261c645cb?w=400&h=400&fit=crop",
-          likes: 1567,
-          comments: 98,
-        },
-      ],
-    },
-    "2": {
-      username: "marcus_rodriguez",
-      name: "Marcus Rodriguez",
-      bio: "💻 Senior Developer\n🚀 Code & Coffee\n📱 Building cool stuff",
-      posts: 89,
-      followers: 8900,
-      following: 654,
-      profilePic:
-        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop",
-      isVerified: false,
-      userPosts: [
-        {
-          id: 1,
-          image:
-            "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=400&h=400&fit=crop",
-          likes: 892,
-          comments: 45,
-        },
-        {
-          id: 2,
-          image:
-            "https://images.unsplash.com/photo-1682687220063-4742bd7fd538?w=400&h=400&fit=crop",
-          likes: 1234,
-          comments: 67,
-        },
-        {
-          id: 3,
-          image:
-            "https://images.unsplash.com/photo-1682687220199-d0124f48f95b?w=400&h=400&fit=crop",
-          likes: 2109,
-          comments: 89,
-        },
-      ],
-    },
-    "3": {
-      username: "amit_patel",
-      name: "Amit Patel",
-      bio: "🎨 UX Director\n✨ Design thinking\n🌟 Creating experiences",
-      posts: 203,
-      followers: 15200,
-      following: 1200,
-      profilePic:
-        "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&h=400&fit=crop",
-      isVerified: true,
-      userPosts: [
-        {
-          id: 1,
-          image:
-            "https://images.unsplash.com/photo-1591115765373-5207764f72e7?w=400&h=400&fit=crop",
-          likes: 567,
-          comments: 28,
-        },
-        {
-          id: 2,
-          image:
-            "https://images.unsplash.com/photo-1682687221175-fd40bbafe6ca?w=400&h=400&fit=crop",
-          likes: 3210,
-          comments: 201,
-        },
-        {
-          id: 3,
-          image:
-            "https://images.unsplash.com/photo-1682687220777-2c60708d6889?w=400&h=400&fit=crop",
-          likes: 1890,
-          comments: 134,
-        },
-      ],
-    },
-  };
+interface Post {
+  id: number;
+  name: string;
+  role: string;
+  timestamp: string;
+  avatar: string;
+  image?: string;
+  mediaType?: "image" | "video";
+  title: string;
+  content: string;
+  images?: string[];
+  likes: number;
+  comments: number;
+  shares?: number;
+}
 
-  return users[userId] || null;
-};
+interface UserPostProfileProps {
+  allPosts: Post[];
+}
 
-export default function UserPostProfile() {
-  // Get the user ID from the URL
-  const { id } = useParams<{ id: string }>();
+export default function UserPostProfile({ allPosts }: UserPostProfileProps) {
+  const { userId } = useParams<{ userId: string }>();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("posts");
   const [isFollowing, setIsFollowing] = useState(false);
 
-  // Get the profile data based on the ID from URL
-  const profile = id ? getUserData(id) : null;
+  // console.log("UserPostProfile - userId from URL:", userId);
+  // console.log("UserPostProfile - allPosts:", allPosts);
 
-  if (!profile) {
+  // Find the user based on post ID or username
+  // When clicking from feed, userId will be the post.id
+  const clickedPost = allPosts.find((p) => p.id.toString() === userId);
+  
+  // console.log("UserPostProfile - clickedPost:", clickedPost);
+
+  if (!clickedPost) {
     return (
       <div className="max-w-4xl mx-auto bg-white min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl font-bold mb-2">User not found</h2>
-          <p className="text-gray-600 mb-4">This profile doesn't exist</p>
+          <p className="text-gray-600 mb-4">
+            Looking for user ID: {userId}
+          </p>
           <button
             onClick={() => navigate("/")}
             className="bg-primary text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
@@ -169,28 +66,32 @@ export default function UserPostProfile() {
     );
   }
 
+  // Get all posts from this user
+  const userPosts = allPosts.filter((p) => p.name === clickedPost.name);
+  const username = clickedPost.name.toLowerCase().replace(/\s+/g, "_");
+
+  console.log("UserPostProfile - userPosts:", userPosts);
+
   return (
     <div className="max-w-4xl mx-auto bg-white min-h-screen">
       {/* Header */}
       <div className="border-b p-4 flex justify-between items-center">
         <div className="flex items-center gap-3">
           <button
-            onClick={() => navigate("/")}
+            onClick={() => navigate(-1)}
             className="hover:bg-gray-100 p-2 rounded-full transition-colors"
           >
             <ArrowLeft className="w-6 h-6" />
           </button>
           <div className="flex items-center gap-2">
-            <h1 className="text-xl font-semibold">{profile.username}</h1>
-            {profile.isVerified && (
-              <svg
-                className="w-5 h-5 text-primary"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-              >
-                <path d="M12 2L9.19 8.63L2 9.24L7.46 14.03L5.82 21L12 17.27L18.18 21L16.54 14.03L22 9.24L14.81 8.63L12 2Z" />
-              </svg>
-            )}
+            <h1 className="text-xl font-semibold">{username}</h1>
+            <svg
+              className="w-5 h-5 text-primary"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+            >
+              <path d="M12 2L9.19 8.63L2 9.24L7.46 14.03L5.82 21L12 17.27L18.18 21L16.54 14.03L22 9.24L14.81 8.63L12 2Z" />
+            </svg>
           </div>
         </div>
         <div className="flex gap-4">
@@ -203,26 +104,26 @@ export default function UserPostProfile() {
       <div className="p-4">
         <div className="flex items-start gap-6 mb-4">
           <img
-            src={profile.profilePic}
-            alt={profile.name}
+            src={clickedPost.avatar}
+            alt={clickedPost.name}
             className="w-20 h-20 rounded-full object-cover ring-2 ring-white shadow-lg"
           />
 
           <div className="flex-1">
             <div className="flex gap-8 mb-4">
               <div className="text-center">
-                <div className="font-semibold text-lg">{profile.posts}</div>
+                <div className="font-semibold text-lg">{userPosts.length}</div>
                 <div className="text-gray-600 text-sm">posts</div>
               </div>
               <div className="text-center cursor-pointer hover:text-gray-600 transition-colors">
                 <div className="font-semibold text-lg">
-                  {profile.followers.toLocaleString()}
+                  {(clickedPost.likes * 10).toLocaleString()}
                 </div>
                 <div className="text-gray-600 text-sm">followers</div>
               </div>
               <div className="text-center cursor-pointer hover:text-gray-600 transition-colors">
                 <div className="font-semibold text-lg">
-                  {profile.following.toLocaleString()}
+                  {(clickedPost.comments * 8).toLocaleString()}
                 </div>
                 <div className="text-gray-600 text-sm">following</div>
               </div>
@@ -231,9 +132,11 @@ export default function UserPostProfile() {
         </div>
 
         <div className="mb-4">
-          <div className="font-semibold mb-1">{profile.name}</div>
-          <div className="text-sm whitespace-pre-line text-gray-700">
-            {profile.bio}
+          <div className="font-semibold mb-1">{clickedPost.name}</div>
+          <div className="text-sm text-gray-700">{clickedPost.role}</div>
+          <div className="text-sm text-gray-600 mt-2">
+            ✨ {clickedPost.content.substring(0, 100)}
+            {clickedPost.content.length > 100 ? "..." : ""}
           </div>
         </div>
 
@@ -283,38 +186,110 @@ export default function UserPostProfile() {
 
       {/* Posts Grid */}
       {activeTab === "posts" && (
-        <div className="grid grid-cols-3 gap-1">
-          {profile.userPosts.map((post: any) => (
-            <div
-              key={post.id}
-              className="relative aspect-square group cursor-pointer"
-            >
-              <img
-                src={post.image}
-                alt={`Post ${post.id}`}
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100">
-                <div className="flex gap-6 text-white font-semibold">
-                  <div className="flex items-center gap-2">
-                    <Heart className="w-6 h-6 fill-white" />
-                    <span>{post.likes.toLocaleString()}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <MessageCircle className="w-6 h-6 fill-white" />
-                    <span>{post.comments}</span>
-                  </div>
-                </div>
-              </div>
+        <div>
+          {userPosts.length === 0 ? (
+            <div className="p-8 text-center text-gray-500">
+              <Grid className="w-12 h-12 mx-auto mb-2 text-gray-400" />
+              <p>No posts yet</p>
             </div>
-          ))}
+          ) : (
+            <div className="grid grid-cols-3 gap-1">
+              {userPosts.map((post) => {
+                const postImage = post.image || post.images?.[0];
+                return (
+                  <Link
+                    key={post.id}
+                    to={`/post/${post.id}`}
+                    className="relative aspect-square group cursor-pointer"
+                  >
+                    {post.mediaType === "video" ? (
+                      <video
+                        src={postImage}
+                        className="w-full h-full object-cover"
+                        muted
+                        loop
+                        playsInline
+                      />
+                    ) : (
+                      <img
+                        src={postImage}
+                        alt={`Post by ${post.name}`}
+                        className="w-full h-full object-cover"
+                      />
+                    )}
+
+                    {post.mediaType === "video" && (
+                      <div className="absolute top-2 right-2 bg-black/60 rounded-full p-1">
+                        <Film className="w-4 h-4 text-white" />
+                      </div>
+                    )}
+
+                    <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100">
+                      <div className="flex gap-6 text-white font-semibold">
+                        <div className="flex items-center gap-2">
+                          <Heart className="w-6 h-6 fill-white" />
+                          <span>{post.likes.toLocaleString()}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <MessageCircle className="w-6 h-6 fill-white" />
+                          <span>{post.comments}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          )}
         </div>
       )}
 
       {activeTab === "reels" && (
-        <div className="p-8 text-center text-gray-500">
-          <Film className="w-12 h-12 mx-auto mb-2 text-gray-400" />
-          <p>No reels yet</p>
+        <div>
+          {userPosts.filter((p) => p.mediaType === "video").length === 0 ? (
+            <div className="p-8 text-center text-gray-500">
+              <Film className="w-12 h-12 mx-auto mb-2 text-gray-400" />
+              <p>No reels yet</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-3 gap-1">
+              {userPosts
+                .filter((p) => p.mediaType === "video")
+                .map((post) => {
+                  const postImage = post.image || post.images?.[0];
+                  return (
+                    <Link
+                      key={post.id}
+                      to={`/post/${post.id}`}
+                      className="relative aspect-square group cursor-pointer"
+                    >
+                      <video
+                        src={postImage}
+                        className="w-full h-full object-cover"
+                        muted
+                        loop
+                        playsInline
+                      />
+                      <div className="absolute top-2 right-2 bg-black/60 rounded-full p-1">
+                        <Film className="w-4 h-4 text-white" />
+                      </div>
+                      <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100">
+                        <div className="flex gap-6 text-white font-semibold">
+                          <div className="flex items-center gap-2">
+                            <Heart className="w-6 h-6 fill-white" />
+                            <span>{post.likes.toLocaleString()}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <MessageCircle className="w-6 h-6 fill-white" />
+                            <span>{post.comments}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </Link>
+                  );
+                })}
+            </div>
+          )}
         </div>
       )}
     </div>

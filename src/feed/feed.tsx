@@ -3,16 +3,15 @@ import {
   Heart,
   MessageCircle,
   Send,
-  Bookmark,
+  // Bookmark,
   MoreHorizontal,
   Flag,
-  UserMinus,
-  ExternalLink,
   Search,
   Check,
   Smile,
   TrendingUp,
   Sparkles,
+  UserPlus,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -63,10 +62,10 @@ interface FeedCardProps {
   post: Post;
 }
 
-const FeedCard = ({ post }: FeedCardProps) => {
+export const FeedCard = ({ post }: FeedCardProps) => {
   const [isLiked, setIsLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(post.likes);
-  const [isBookmarked, setIsBookmarked] = useState(false);
+  // const [isBookmarked, setIsBookmarked] = useState(false);
   const [showComments, setShowComments] = useState(false);
   const [commentsList, setCommentsList] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState("");
@@ -182,7 +181,7 @@ const FeedCard = ({ post }: FeedCardProps) => {
                 className="object-cover"
               />
 
-              <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white font-semibold">
+              <AvatarFallback className="bg-gradient-to-br from-indigo500 to-purple-600 text-white font-semibold">
                 {post.name
                   .split(" ")
                   .map((n) => n[0])
@@ -210,15 +209,11 @@ const FeedCard = ({ post }: FeedCardProps) => {
                 <Flag className="w-4 h-4 mr-2" />
                 Report
               </DropdownMenuItem>
-              <DropdownMenuItem className="cursor-pointer text-red-600 focus:text-red-600">
-                <UserMinus className="w-4 h-4 mr-2" />
-                Unfollow
+              <DropdownMenuItem className="cursor-pointer text-primary focus:text-primary">
+                <UserPlus className="w-4 h-4 mr-2" />
+                Follow
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="cursor-pointer">
-                <ExternalLink className="w-4 h-4 mr-2" />
-                Go to post
-              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
@@ -339,7 +334,7 @@ const FeedCard = ({ post }: FeedCardProps) => {
               <Send className="w-7 h-7" />
             </button>
           </div>
-          <button
+          {/* <button
             onClick={() => setIsBookmarked(!isBookmarked)}
             className={`transition-all duration-200 hover:scale-110 active:scale-95 ${
               isBookmarked
@@ -350,7 +345,7 @@ const FeedCard = ({ post }: FeedCardProps) => {
             <Bookmark
               className={`w-7 h-7 ${isBookmarked ? "fill-current" : ""}`}
             />
-          </button>
+          </button> */}
         </div>
 
         <div className="px-4 pb-2">
@@ -508,7 +503,7 @@ const FeedCard = ({ post }: FeedCardProps) => {
                     alt={person.name}
                     className="object-cover"
                   />
-                  <AvatarFallback className="bg-gradient-to-br from-blue-500 to-primary text-white font-semibold">
+                  <AvatarFallback className="bg-gradient-to-br from-indigo-500 to-primary text-white font-semibold">
                     {person.name
                       .split(" ")
                       .map((n) => n[0])
@@ -647,20 +642,20 @@ const Feed = ({ userPosts }: FeedProps) => {
       avatar:
         "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop",
     },
-    {
-      id: 4,
-      name: "misika_soniga",
-      subtitle: "Follows you",
-      avatar:
-        "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop",
-    },
-    {
-      id: 5,
-      name: "pierre_thecomet",
-      subtitle: "Followed by misika_soniga + 6 more",
-      avatar:
-        "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&h=100&fit=crop",
-    },
+    // {
+    //   id: 4,
+    //   name: "misika_soniga",
+    //   subtitle: "Follows you",
+    //   avatar:
+    //     "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop",
+    // },
+    // {
+    //   id: 5,
+    //   name: "pierre_thecomet",
+    //   subtitle: "Followed by misika_soniga + 6 more",
+    //   avatar:
+    //     "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&h=100&fit=crop",
+    // },
   ];
 
   const [followedUsers, setFollowedUsers] = useState<number[]>([]);
@@ -684,6 +679,43 @@ const Feed = ({ userPosts }: FeedProps) => {
               ))}
             </div>
 
+            {/* MOBILE ONLY: Suggested Users Carousel */}
+            <div className="xl:hidden mt-6 mb-20">
+              <h3 className="px-3 pb-3 font-bold text-sm text-slate-700">
+                Suggested for you
+              </h3>
+
+              <div className="flex gap-4 overflow-x-auto px-3 pb-4">
+                {suggestedUsers.map((user) => (
+                  <div
+                    key={user.id}
+                    className="min-w-[140px] bg-white border rounded-xl p-4 text-center shadow-sm"
+                  >
+                    <Avatar className="w-14 h-14 mx-auto mb-2">
+                      <AvatarImage src={user.avatar} />
+                      <AvatarFallback>
+                        {user.name[0].toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                    <Link to={`/user-post-profile/${user.id}`}>
+                      {" "}
+                      <p className="text-sm font-bold truncate">{user.name}</p>
+                    </Link>
+                    <p className="text-xs text-slate-500 truncate">
+                      {user.subtitle}
+                    </p>
+
+                    <button
+                      onClick={() => handleFollow(user.id)}
+                      className="mt-2 text-xs font-bold text-primary"
+                    >
+                      {followedUsers.includes(user.id) ? "Following" : "Follow"}
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+
             <div className="mt-12 mb-10 text-center">
               <div className="inline-flex items-center gap-2 bg-white rounded-full px-6 py-3 shadow-sm border border-slate-200">
                 <Sparkles className="w-5 h-5 text-primary" />
@@ -694,6 +726,7 @@ const Feed = ({ userPosts }: FeedProps) => {
             </div>
           </main>
 
+          {/* DESKTOP ONLY: Suggested Users Sidebar */}
           <aside className="hidden xl:block w-[320px] shrink-0 sticky top-6 self-start">
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-5">
               <div className="flex items-center justify-between pb-5 border-b border-slate-100">
@@ -703,14 +736,16 @@ const Feed = ({ userPosts }: FeedProps) => {
                       src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop"
                       className="object-cover"
                     />
-                    <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white font-bold">
+                    <AvatarFallback className="bg-gradient-to-br from-indigo-500 to-primary-600 text-white font-bold">
                       AZ
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex flex-col">
-                    <p className="font-bold text-sm cursor-pointer hover:text-primary transition-colors">
-                      azwedo_drdr
-                    </p>
+                    <Link to={`/user-feed/create-user-profile`}>
+                      <p className="font-bold text-sm cursor-pointer hover:text-primary transition-colors">
+                        azwedo_drdr
+                      </p>
+                    </Link>
                     <p className="text-xs text-slate-500">@azwedo</p>
                   </div>
                 </div>

@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import { Link } from "react-router-dom";
 import {
   Grid,
   Film,
@@ -35,6 +36,7 @@ export default function UserProfile({ posts }: UserProfileProps) {
   const [activeTab, setActiveTab] = useState("posts");
   const [showEditModal, setShowEditModal] = useState(false);
   const [profileData, setProfileData] = useState({
+    id: 21,
     firstName: "Azwedo",
     lastName: "Drdr",
     username: "azwedo_drdr",
@@ -59,13 +61,11 @@ export default function UserProfile({ posts }: UserProfileProps) {
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Transform posts to display format
+  // Transform posts to display format with original post data
   const displayPosts = posts.map((post) => ({
-    id: post.id,
+    ...post, // Keep all original post data
     media: post.image || "", // image OR video url
     mediaType: post.mediaType ?? "image",
-    likes: post.likes,
-    comments: post.comments,
   }));
 
   const reelPosts = displayPosts.filter((post) => post.mediaType === "video");
@@ -247,8 +247,9 @@ export default function UserProfile({ posts }: UserProfileProps) {
           ) : (
             <div className="grid grid-cols-3 gap-1">
               {displayPosts.map((post) => (
-                <div
+                <Link
                   key={post.id}
+                  to={`/post/${post.id}`}
                   className="relative aspect-square group cursor-pointer"
                 >
                   {post.mediaType === "video" ? (
@@ -279,7 +280,7 @@ export default function UserProfile({ posts }: UserProfileProps) {
                       💬 {post.comments}
                     </div>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           )}
@@ -296,8 +297,9 @@ export default function UserProfile({ posts }: UserProfileProps) {
           ) : (
             <div className="grid grid-cols-3 gap-1">
               {reelPosts.map((post) => (
-                <div
+                <Link
                   key={post.id}
+                  to={`/post/${post.id}`}
                   className="relative aspect-square cursor-pointer"
                 >
                   <video
@@ -313,14 +315,14 @@ export default function UserProfile({ posts }: UserProfileProps) {
                       <Film className="w-4 h-4 text-white" />
                     </div>
                   )}
-                  
+
                   <div className="absolute inset-0 bg-black/30 opacity-0 hover:opacity-100 transition flex items-center justify-center">
                     <div className="flex gap-6 text-white font-semibold">
                       ❤️ {post.likes}
                       💬 {post.comments}
                     </div>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           )}
@@ -488,6 +490,7 @@ export default function UserProfile({ posts }: UserProfileProps) {
                 </div>
               </div>
             </div>
+         
 
             {/* Modal Footer */}
             <div className="px-6 py-4 bg-gray-50 border-t border-gray-100">

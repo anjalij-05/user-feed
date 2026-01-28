@@ -25,7 +25,7 @@ interface OutletContext {
 const CreatePostWrapper = () => {
   const { onPostCreated } = useOutletContext<OutletContext>();
 
-  console.log("CreatePostWrapper - onPostCreated function:", onPostCreated);
+  // console.log("CreatePostWrapper - onPostCreated function:", onPostCreated);
 
   return <CreatePost onPostCreated={onPostCreated} />;
 };

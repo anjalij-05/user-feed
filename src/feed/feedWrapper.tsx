@@ -25,7 +25,7 @@ interface OutletContext {
 const FeedWrapper = () => {
   const { userPosts } = useOutletContext<OutletContext>();
 
-  console.log("FeedWrapper - userPosts:", userPosts);
+  // console.log("FeedWrapper - userPosts:", userPosts);
 
   return <Feed userPosts={userPosts} />;
 };

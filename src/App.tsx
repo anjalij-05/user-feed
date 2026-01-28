@@ -1,11 +1,12 @@
 import { Route, Routes } from "react-router-dom";
 import "./App.css";
 import UserFeedLayout from "./feed/layout";
-import UserPostProfile from "./feed/usersProfile";
 import UserProfile from "./feed/createUserProfile";
 import CreatePostWrapper from "./feed/createWrapper";
 import FeedWrapper from "./feed/feedWrapper";
 import { useState } from "react";
+import PostDetailViewWrapper from "./feed/postDetailViewWrapper";
+import UserPostProfileWrapper from "@/feed/userpostProfileWrapper";
 
 interface Post {
   id: number;
@@ -48,13 +49,17 @@ function App() {
           />
         }
       >
-        <Route path="/user-post-profile/:id" element={<UserPostProfile />} />
-        <Route
-          path="/user-feed/create-user-profile"
-          element={<UserProfile posts={userPosts} />}
-        />
         <Route index element={<FeedWrapper />} />
         <Route path="user-feed/create-post" element={<CreatePostWrapper />} />
+        <Route
+          path="user-feed/create-user-profile"
+          element={<UserProfile posts={userPosts} />}
+        />
+        <Route path="post/:postId" element={<PostDetailViewWrapper />} />
+        <Route
+          path="user-post-profile/:userId"
+          element={<UserPostProfileWrapper />}
+        />
       </Route>
     </Routes>
   );
