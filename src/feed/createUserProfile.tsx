@@ -11,6 +11,14 @@ import {
   Upload,
   Check,
 } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
 
 interface Post {
   id: number;
@@ -292,7 +300,7 @@ export default function UserProfile({ posts }: UserProfileProps) {
           {reelPosts.length === 0 ? (
             <div className="p-8 text-center text-gray-500">
               <Film className="w-12 h-12 mx-auto mb-2 text-gray-400" />
-              <p>No reels yet</p>
+              <p>No videos yet</p>
             </div>
           ) : (
             <div className="grid grid-cols-3 gap-1">
@@ -453,44 +461,31 @@ export default function UserProfile({ posts }: UserProfileProps) {
                     </span>
                   </div>
                 </div>
-
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
                     Gender
                   </label>
-                  <div className="relative">
-                    <select
-                      name="gender"
-                      value={editForm.gender}
-                      onChange={handleInputChange}
-                      className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent appearance-none cursor-pointer transition-all pr-10"
-                    >
-                      <option value="">Prefer not to say</option>
-                      <option value="male">Male</option>
-                      <option value="female">Female</option>
-                      <option value="non-binary">Non-binary</option>
-                      <option value="other">Other</option>
-                    </select>
-                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
-                      <svg
-                        className="w-5 h-5 text-gray-400"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M19 9l-7 7-7-7"
-                        />
-                      </svg>
-                    </div>
-                  </div>
+
+                  <Select
+                    value={editForm.gender}
+                    onValueChange={(value) =>
+                      setEditForm((prev) => ({ ...prev, gender: value }))
+                    }
+                  >
+                    <SelectTrigger className="h-12 rounded-xl bg-gray-50 border-gray-200 focus:ring-2 focus:ring-primary">
+                      <SelectValue placeholder="Prefer not to say" />
+                    </SelectTrigger>
+
+                    <SelectContent className="rounded-xl">
+                      <SelectItem value="male">Male</SelectItem>
+                      <SelectItem value="female">Female</SelectItem>
+                      <SelectItem value="non-binary">Non-binary</SelectItem>
+                      <SelectItem value="other">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
             </div>
-         
 
             {/* Modal Footer */}
             <div className="px-6 py-4 bg-gray-50 border-t border-gray-100">

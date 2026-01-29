@@ -4,7 +4,7 @@ import {
   Upload,
   X,
   Loader2,
-  Check,
+  // Check,
   Image,
   Video,
   Sparkles,
@@ -49,14 +49,14 @@ const CreatePost = ({ onPostCreated }: CreatePostProps) => {
     "image" | "video" | null
   >(null);
 
-  const backgroundImages = [
-    "https://images.unsplash.com/photo-1557683316-973673baf926?w=800&h=600&fit=crop",
-    "https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=800&h=600&fit=crop",
-    "https://images.unsplash.com/photo-1557682250-33bd709cbe85?w=800&h=600&fit=crop",
-    "https://images.unsplash.com/photo-1558591710-4b4a1ae0f04d?w=800&h=600&fit=crop",
-    "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=600&fit=crop",
-    "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=800&h=600&fit=crop",
-  ];
+  // const backgroundImages = [
+  //   "https://images.unsplash.com/photo-1557683316-973673baf926?w=800&h=600&fit=crop",
+  //   "https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=800&h=600&fit=crop",
+  //   "https://images.unsplash.com/photo-1557682250-33bd709cbe85?w=800&h=600&fit=crop",
+  //   "https://images.unsplash.com/photo-1558591710-4b4a1ae0f04d?w=800&h=600&fit=crop",
+  //   "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=600&fit=crop",
+  //   "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=800&h=600&fit=crop",
+  // ];
 
   const handleMediaUpload = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -71,12 +71,12 @@ const CreatePost = ({ onPostCreated }: CreatePostProps) => {
     }
   };
 
-  const handleBackgroundSelect = (imageUrl: string) => {
-    setSelectedBackgroundImage(imageUrl);
-    setUploadedMedia(null);
-    setUploadedMediaPreview("");
-    setMediaType("image");
-  };
+  // const handleBackgroundSelect = (imageUrl: string) => {
+  //   setSelectedBackgroundImage(imageUrl);
+  //   setUploadedMedia(null);
+  //   setUploadedMediaPreview("");
+  //   setMediaType("image");
+  // };
 
   const clearMedia = () => {
     setUploadedMedia(null);
@@ -182,7 +182,7 @@ const CreatePost = ({ onPostCreated }: CreatePostProps) => {
                   <Upload className="w-4 h-4 inline mr-2" />
                   Upload
                 </button>
-                <button
+                {/* <button
                   onClick={() => setActiveTab("background")}
                   className={`flex-1 py-2 px-4 rounded-lg cursor-pointer font-medium text-sm transition-all ${
                     activeTab === "background"
@@ -192,7 +192,7 @@ const CreatePost = ({ onPostCreated }: CreatePostProps) => {
                 >
                   <Image className="w-4 h-4 inline mr-2" />
                   Backgrounds
-                </button>
+                </button> */}
               </div>
 
               {activeTab === "upload" && (
@@ -286,7 +286,7 @@ const CreatePost = ({ onPostCreated }: CreatePostProps) => {
                 </>
               )}
 
-              {activeTab === "background" && (
+              {/* {activeTab === "background" && (
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
                   {backgroundImages.map((img, idx) => (
                     <button
@@ -313,7 +313,7 @@ const CreatePost = ({ onPostCreated }: CreatePostProps) => {
                     </button>
                   ))}
                 </div>
-              )}
+              )} */}
             </div>
           </div>
 

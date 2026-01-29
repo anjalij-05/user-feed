@@ -249,7 +249,7 @@ export default function UserPostProfile({ allPosts }: UserPostProfileProps) {
           {userPosts.filter((p) => p.mediaType === "video").length === 0 ? (
             <div className="p-8 text-center text-gray-500">
               <Film className="w-12 h-12 mx-auto mb-2 text-gray-400" />
-              <p>No reels yet</p>
+              <p>No videos yet</p>
             </div>
           ) : (
             <div className="grid grid-cols-3 gap-1">
