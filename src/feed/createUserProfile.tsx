@@ -19,7 +19,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-
 interface Post {
   id: number;
   name: string;
@@ -242,10 +241,9 @@ export default function UserProfile({ posts }: UserProfileProps) {
           <Film className="w-6 h-6" />
         </button>
       </div>
-
       {/* Posts Grid */}
       {activeTab === "posts" && (
-        <div>
+        <div className="w-full">
           {displayPosts.length === 0 ? (
             <div className="p-8 text-center text-gray-500">
               <Grid className="w-12 h-12 mx-auto mb-2 text-gray-400" />
@@ -253,12 +251,13 @@ export default function UserProfile({ posts }: UserProfileProps) {
               <p className="text-sm mt-1">Share your first photo or video</p>
             </div>
           ) : (
-            <div className="grid grid-cols-3 gap-1">
+            <div className="grid grid-cols-3 gap-0.5">
+              {" "}
               {displayPosts.map((post) => (
                 <Link
                   key={post.id}
                   to={`/post/${post.id}`}
-                  className="relative aspect-square group cursor-pointer"
+                  className="relative group cursor-pointer h-[250px] md:h-[200px] w-full"
                 >
                   {post.mediaType === "video" ? (
                     <video
@@ -282,12 +281,7 @@ export default function UserProfile({ posts }: UserProfileProps) {
                     </div>
                   )}
 
-                  <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
-                    <div className="flex gap-6 text-white font-semibold">
-                      ❤️ {post.likes}
-                      💬 {post.comments}
-                    </div>
-                  </div>
+                  <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition flex items-center justify-center"></div>
                 </Link>
               ))}
             </div>
@@ -296,19 +290,20 @@ export default function UserProfile({ posts }: UserProfileProps) {
       )}
 
       {activeTab === "reels" && (
-        <div>
+        <div className="w-full">
           {reelPosts.length === 0 ? (
             <div className="p-8 text-center text-gray-500">
               <Film className="w-12 h-12 mx-auto mb-2 text-gray-400" />
               <p>No videos yet</p>
             </div>
           ) : (
-            <div className="grid grid-cols-3 gap-1">
+            <div className="grid grid-cols-3 gap-0.5">
+              {" "}
               {reelPosts.map((post) => (
                 <Link
                   key={post.id}
                   to={`/post/${post.id}`}
-                  className="relative aspect-square cursor-pointer"
+                  className="relative group cursor-pointer h-[250px] md:h-[200px] w-full"
                 >
                   <video
                     src={post.media}
