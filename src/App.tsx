@@ -7,22 +7,9 @@ import FeedWrapper from "./feed/feedWrapper";
 import { useState } from "react";
 import PostDetailViewWrapper from "./feed/postDetailViewWrapper";
 import UserPostProfileWrapper from "@/feed/userpostProfileWrapper";
+import type { Post } from "@/types/post";
+import Navbar from "./components/navbar";
 
-interface Post {
-  id: number;
-  name: string;
-  role: string;
-  timestamp: string;
-  avatar: string;
-  image?: string;
-  mediaType?: "image" | "video";
-  title: string;
-  content: string;
-  images?: string[];
-  likes: number;
-  comments: number;
-  shares?: number;
-}
 
 function App() {
   const [userPosts, setUserPosts] = useState<Post[]>([]);
@@ -40,6 +27,7 @@ function App() {
 
   return (
     <Routes>
+      <Route path="/" element={<Navbar />} />
       <Route
         path="/"
         element={

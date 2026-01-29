@@ -1,6 +1,7 @@
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Bell, Home, MessageCircle, PlusSquare } from "lucide-react";
+import Navbar from "@/components/navbar";
 
 interface Post {
   id: number;
@@ -41,7 +42,8 @@ const UserFeedLayout = ({ userPosts, onPostCreated }: UserFeedLayoutProps) => {
     <div className="min-h-screen pb-16 lg:pb-0">
       {/* Desktop Sidebar */}
       <aside className="hidden lg:block fixed left-0 top-0 h-screen w-[244px] border-r border-border/40 px-3 py-8 bg-background z-20">
-        <nav className="space-y-1">
+      <Navbar />
+        <nav className="space-y-2 mt-10">
           {navItems.map((item) => (
             <Link
               key={item.to}

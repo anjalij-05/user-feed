@@ -4,7 +4,6 @@ import {
   Upload,
   X,
   Loader2,
-  // Check,
   Image,
   Video,
   Sparkles,
@@ -21,7 +20,7 @@ interface CreatePostProps {
     role: string;
     timestamp: string;
     avatar: string;
-    image?: string;
+    images?: string[];
     mediaType?: "image" | "video";
     title: string;
     content: string;
@@ -33,13 +32,17 @@ interface CreatePostProps {
 
 const CreatePost = ({ onPostCreated }: CreatePostProps) => {
   const navigate = useNavigate();
-  const [uploadedMedia, setUploadedMedia] = useState<File | null>(null);
-  const [uploadedMediaPreview, setUploadedMediaPreview] = useState<string>("");
+
+  // Image state
+  const [uploadedImages, setUploadedImages] = useState<File[]>([]);
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+
+  // Video state
+  const [videoPreview, setVideoPreview] = useState<string>("");
+
   const [mediaType, setMediaType] = useState<"image" | "video" | null>(null);
   const [postTitle, setPostTitle] = useState("");
   const [postDescription, setPostDescription] = useState("");
-  const [selectedBackgroundImage, setSelectedBackgroundImage] =
-    useState<string>("");
   const [isUploading, setIsUploading] = useState(false);
   const [activeTab, setActiveTab] = useState<"upload" | "background">("upload");
   const imageInputRef = useRef<HTMLInputElement>(null);
@@ -49,40 +52,48 @@ const CreatePost = ({ onPostCreated }: CreatePostProps) => {
     "image" | "video" | null
   >(null);
 
-  // const backgroundImages = [
-  //   "https://images.unsplash.com/photo-1557683316-973673baf926?w=800&h=600&fit=crop",
-  //   "https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=800&h=600&fit=crop",
-  //   "https://images.unsplash.com/photo-1557682250-33bd709cbe85?w=800&h=600&fit=crop",
-  //   "https://images.unsplash.com/photo-1558591710-4b4a1ae0f04d?w=800&h=600&fit=crop",
-  //   "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=600&fit=crop",
-  //   "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=800&h=600&fit=crop",
-  // ];
+  const handleImagesUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
 
-  const handleMediaUpload = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    type: "image" | "video",
-  ) => {
+    const previews = files.map((file) => URL.createObjectURL(file));
+
+    setUploadedImages(files);
+    setImagePreviews(previews);
+    setMediaType("image");
+    // Clear video if switching to images
+    setVideoPreview("");
+  };
+
+  const handleVideoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setUploadedMedia(file);
-      setUploadedMediaPreview(URL.createObjectURL(file));
-      setMediaType(type);
-      setSelectedBackgroundImage("");
+      setVideoPreview(URL.createObjectURL(file));
+      setMediaType("video");
+      // Clear images if switching to video
+      setUploadedImages([]);
+      setImagePreviews([]);
     }
   };
 
-  // const handleBackgroundSelect = (imageUrl: string) => {
-  //   setSelectedBackgroundImage(imageUrl);
-  //   setUploadedMedia(null);
-  //   setUploadedMediaPreview("");
-  //   setMediaType("image");
-  // };
-
   const clearMedia = () => {
-    setUploadedMedia(null);
-    setUploadedMediaPreview("");
+    setUploadedImages([]);
+    setImagePreviews([]);
+    setVideoPreview("");
     setMediaType(null);
-    setSelectedBackgroundImage("");
+  };
+
+  const removeImage = (index: number) => {
+    const newImages = uploadedImages.filter((_, i) => i !== index);
+    const newPreviews = imagePreviews.filter((_, i) => i !== index);
+
+    setUploadedImages(newImages);
+    setImagePreviews(newPreviews);
+
+    // If no images left, clear media type
+    if (newImages.length === 0) {
+      setMediaType(null);
+    }
   };
 
   const handlePostSubmit = async () => {
@@ -91,13 +102,13 @@ const CreatePost = ({ onPostCreated }: CreatePostProps) => {
 
     const newPost = {
       id: Date.now(),
-      name: "Azwedo Drdr", // Current user's name
-      role: "Content Creator", // Current user's role
+      name: "Azwedo Drdr",
+      role: "Content Creator",
       timestamp: "Just now",
       avatar:
-        "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop", // Current user's avatar
-      image: uploadedMediaPreview || selectedBackgroundImage,
-      mediaType: (mediaType || "image") as "image" | "video",
+        "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop",
+      images: imagePreviews,
+      mediaType: mediaType as "image" | "video",
       title: postTitle,
       content: postDescription,
       likes: 0,
@@ -120,8 +131,9 @@ const CreatePost = ({ onPostCreated }: CreatePostProps) => {
   const canPost =
     postTitle.trim() &&
     postDescription.trim() &&
-    (uploadedMedia || selectedBackgroundImage);
-  const hasMedia = uploadedMediaPreview || selectedBackgroundImage;
+    (imagePreviews.length > 0 || videoPreview);
+
+  const hasMedia = imagePreviews.length > 0 || videoPreview;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-50/20">
@@ -182,17 +194,6 @@ const CreatePost = ({ onPostCreated }: CreatePostProps) => {
                   <Upload className="w-4 h-4 inline mr-2" />
                   Upload
                 </button>
-                {/* <button
-                  onClick={() => setActiveTab("background")}
-                  className={`flex-1 py-2 px-4 rounded-lg cursor-pointer font-medium text-sm transition-all ${
-                    activeTab === "background"
-                      ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-md"
-                      : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-                  }`}
-                >
-                  <Image className="w-4 h-4 inline mr-2" />
-                  Backgrounds
-                </button> */}
               </div>
 
               {activeTab === "upload" && (
@@ -201,42 +202,67 @@ const CreatePost = ({ onPostCreated }: CreatePostProps) => {
                     ref={imageInputRef}
                     type="file"
                     accept="image/*"
-                    onChange={(e) => handleMediaUpload(e, "image")}
+                    multiple
+                    onChange={handleImagesUpload}
                     className="hidden"
                   />
+
                   <input
                     ref={videoInputRef}
                     type="file"
                     accept="video/*"
-                    onChange={(e) => handleMediaUpload(e, "video")}
+                    onChange={handleVideoUpload}
                     className="hidden"
                   />
 
-                  {uploadedMediaPreview ? (
-                    <div className="relative rounded-xl overflow-hidden group bg-gradient-to-br from-slate-100 to-slate-50">
-                      {mediaType === "image" ? (
-                        <img
-                          src={uploadedMediaPreview}
-                          alt="Preview"
-                          className="w-full max-h-[600px] object-contain"
-                        />
-                      ) : (
-                        <video
-                          src={uploadedMediaPreview}
-                          controls
-                          className="w-full max-h-[600px] object-contain bg-black"
-                        />
+                  {/* UPLOAD PREVIEW SECTION */}
+                  {imagePreviews.length > 0 || videoPreview ? (
+                    <div className="space-y-3">
+                      {/* Image previews */}
+                      {imagePreviews.length > 0 && (
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                          {imagePreviews.map((src, index) => (
+                            <div
+                              key={index}
+                              className="relative rounded-xl overflow-hidden group border"
+                            >
+                              <img
+                                src={src}
+                                className="w-full h-40 object-cover"
+                                alt={`preview-${index}`}
+                              />
+                              <button
+                                onClick={() => removeImage(index)}
+                                className="absolute top-2 right-2 bg-black/60 hover:bg-black/80 text-white p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition"
+                              >
+                                <X size={16} />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
                       )}
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        onClick={clearMedia}
-                        className="absolute top-3 right-3 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity"
-                      >
-                        <X className="w-4 h-4" />
-                      </Button>
+
+                      {/* Video preview */}
+                      {videoPreview && mediaType === "video" && (
+                        <div className="relative rounded-xl overflow-hidden">
+                          <video
+                            src={videoPreview}
+                            controls
+                            className="w-full max-h-[400px] bg-black"
+                          />
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            onClick={clearMedia}
+                            className="absolute top-3 right-3"
+                          >
+                            <X className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      )}
                     </div>
                   ) : (
+                    // Upload buttons
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <button
                         onClick={() => {
@@ -247,14 +273,14 @@ const CreatePost = ({ onPostCreated }: CreatePostProps) => {
                       >
                         <div className="flex flex-col items-center cursor-pointer gap-3 text-center">
                           <div className="p-4 rounded-full bg-blue-100 group-hover:bg-blue-200 transition-colors">
-                            <Image className="w-8 h-8 text-primary" />
+                            <Image className="w-8 h-8 text-blue-600" />
                           </div>
                           <div>
                             <p className="text-sm font-semibold text-slate-700">
-                              Upload Image
+                              Upload Images
                             </p>
                             <p className="text-xs text-slate-500 mt-1">
-                              JPG, PNG, GIF up to 10MB
+                              JPG, PNG, GIF up to 10MB each
                             </p>
                           </div>
                         </div>
@@ -269,7 +295,7 @@ const CreatePost = ({ onPostCreated }: CreatePostProps) => {
                       >
                         <div className="flex flex-col items-center cursor-pointer gap-3 text-center">
                           <div className="p-4 rounded-full bg-purple-100 group-hover:bg-purple-200 transition-colors">
-                            <Video className="w-8 h-8 text-primary" />
+                            <Video className="w-8 h-8 text-purple-600" />
                           </div>
                           <div>
                             <p className="text-sm font-semibold text-slate-700">
@@ -285,35 +311,6 @@ const CreatePost = ({ onPostCreated }: CreatePostProps) => {
                   )}
                 </>
               )}
-
-              {/* {activeTab === "background" && (
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-                  {backgroundImages.map((img, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => handleBackgroundSelect(img)}
-                      className={`relative rounded-xl overflow-hidden border-2 transition-all aspect-video group ${
-                        selectedBackgroundImage === img
-                          ? "border-primary ring-4 ring-primary/20 scale-95"
-                          : "border-slate-200 hover:border-primary hover:scale-95"
-                      }`}
-                    >
-                      <img
-                        src={img}
-                        alt={`Background ${idx + 1}`}
-                        className="w-full h-full object-cover"
-                      />
-                      {selectedBackgroundImage === img && (
-                        <div className="absolute inset-0 bg-primary/30 flex items-center justify-center">
-                          <div className="p-2 bg-white rounded-full shadow-lg">
-                            <Check className="w-5 h-5 text-primary" />
-                          </div>
-                        </div>
-                      )}
-                    </button>
-                  ))}
-                </div>
-              )} */}
             </div>
           </div>
 
@@ -365,29 +362,26 @@ const CreatePost = ({ onPostCreated }: CreatePostProps) => {
           {hasMedia && postTitle && (
             <div className="bg-white rounded-2xl shadow-lg border border-slate-200/60 p-6">
               <h3 className="text-sm font-semibold mb-3 text-slate-700 flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-primary" />
+                <Sparkles className="w-4 h-4 text-purple-600" />
                 Preview
               </h3>
               <div className="border border-slate-200 rounded-xl overflow-hidden">
                 <div className="bg-gradient-to-br from-slate-100 to-slate-50">
-                  {uploadedMediaPreview ? (
-                    mediaType === "image" ? (
-                      <img
-                        src={uploadedMediaPreview}
-                        alt="Preview"
-                        className="w-full max-h-[600px] object-contain"
-                      />
-                    ) : (
-                      <video
-                        src={uploadedMediaPreview}
-                        className="w-full max-h-[600px] object-contain bg-black"
-                      />
-                    )
-                  ) : selectedBackgroundImage ? (
-                    <img
-                      src={selectedBackgroundImage}
-                      alt="Preview"
-                      className="w-full max-h-[600px] object-contain"
+                  {imagePreviews.length > 0 ? (
+                    <div className="grid grid-cols-2 gap-2 p-2">
+                      {imagePreviews.map((src, index) => (
+                        <img
+                          key={index}
+                          src={src}
+                          alt={`Preview ${index + 1}`}
+                          className="w-full h-48 object-cover rounded-lg"
+                        />
+                      ))}
+                    </div>
+                  ) : videoPreview ? (
+                    <video
+                      src={videoPreview}
+                      className="w-full max-h-[600px] object-contain bg-black"
                     />
                   ) : null}
                 </div>
@@ -415,7 +409,7 @@ const CreatePost = ({ onPostCreated }: CreatePostProps) => {
             <div className="flex gap-3 pt-2">
               <Button
                 variant="outline"
-                className="flex-1"
+                className="flex-1 cursor-pointer"
                 onClick={() => {
                   setShowPermission(false);
                   setPendingMediaType(null);
@@ -424,7 +418,7 @@ const CreatePost = ({ onPostCreated }: CreatePostProps) => {
                 Cancel
               </Button>
               <Button
-                className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 text-white"
+                className="flex-1 cursor-pointer bg-gradient-to-r from-blue-600 to-purple-600 text-white"
                 onClick={() => {
                   setShowPermission(false);
                   if (pendingMediaType === "image") {

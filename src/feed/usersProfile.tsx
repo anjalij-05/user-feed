@@ -44,7 +44,7 @@ export default function UserPostProfile({ allPosts }: UserPostProfileProps) {
   // Find the user based on post ID or username
   // When clicking from feed, userId will be the post.id
   const clickedPost = allPosts.find((p) => p.id.toString() === userId);
-  
+
   // console.log("UserPostProfile - clickedPost:", clickedPost);
 
   if (!clickedPost) {
@@ -52,9 +52,7 @@ export default function UserPostProfile({ allPosts }: UserPostProfileProps) {
       <div className="max-w-4xl mx-auto bg-white min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl font-bold mb-2">User not found</h2>
-          <p className="text-gray-600 mb-4">
-            Looking for user ID: {userId}
-          </p>
+          <p className="text-gray-600 mb-4">Looking for user ID: {userId}</p>
           <button
             onClick={() => navigate("/")}
             className="bg-primary text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
@@ -81,17 +79,10 @@ export default function UserPostProfile({ allPosts }: UserPostProfileProps) {
             onClick={() => navigate(-1)}
             className="hover:bg-gray-100 p-2 rounded-full transition-colors"
           >
-            <ArrowLeft className="w-6 h-6" />
+            <ArrowLeft className="w-6 h-6 cursor-pointer" />
           </button>
           <div className="flex items-center gap-2">
             <h1 className="text-xl font-semibold">{username}</h1>
-            <svg
-              className="w-5 h-5 text-primary"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-            >
-              <path d="M12 2L9.19 8.63L2 9.24L7.46 14.03L5.82 21L12 17.27L18.18 21L16.54 14.03L22 9.24L14.81 8.63L12 2Z" />
-            </svg>
           </div>
         </div>
         <div className="flex gap-4">

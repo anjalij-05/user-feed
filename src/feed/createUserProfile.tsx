@@ -11,13 +11,7 @@ import {
   Upload,
   Check,
 } from "lucide-react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+
 
 interface Post {
   id: number;
@@ -48,7 +42,6 @@ export default function UserProfile({ posts }: UserProfileProps) {
     lastName: "Drdr",
     username: "azwedo_drdr",
     bio: "📸 Content Creator",
-    gender: "male",
     posts: posts.length,
     followers: 12500,
     following: 890,
@@ -61,7 +54,6 @@ export default function UserProfile({ posts }: UserProfileProps) {
     firstName: profileData.firstName,
     lastName: profileData.lastName,
     bio: profileData.bio,
-    gender: profileData.gender,
   });
 
   const [tempProfilePic, setTempProfilePic] = useState("");
@@ -82,7 +74,6 @@ export default function UserProfile({ posts }: UserProfileProps) {
       firstName: profileData.firstName,
       lastName: profileData.lastName,
       bio: profileData.bio,
-      gender: profileData.gender,
     });
     setTempProfilePic("");
     setShowEditModal(true);
@@ -94,7 +85,6 @@ export default function UserProfile({ posts }: UserProfileProps) {
       firstName: editForm.firstName,
       lastName: editForm.lastName,
       bio: editForm.bio,
-      gender: editForm.gender,
     };
 
     if (tempProfilePic) {
@@ -147,15 +137,6 @@ export default function UserProfile({ posts }: UserProfileProps) {
       <div className="border-b p-4 flex justify-between items-center">
         <div className="flex items-center gap-2">
           <h1 className="text-xl font-semibold">{profileData.username}</h1>
-          {profileData.isVerified && (
-            <svg
-              className="w-5 h-5 text-primary"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-            >
-              <path d="M12 2L9.19 8.63L2 9.24L7.46 14.03L5.82 21L12 17.27L18.18 21L16.54 14.03L22 9.24L14.81 8.63L12 2Z" />
-            </svg>
-          )}
         </div>
         <div className="flex gap-4">
           <Settings className="w-6 h-6 cursor-pointer hover:text-gray-600 transition-colors" />
@@ -455,29 +436,6 @@ export default function UserProfile({ posts }: UserProfileProps) {
                       {editForm.bio.length} / 150
                     </span>
                   </div>
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Gender
-                  </label>
-
-                  <Select
-                    value={editForm.gender}
-                    onValueChange={(value) =>
-                      setEditForm((prev) => ({ ...prev, gender: value }))
-                    }
-                  >
-                    <SelectTrigger className="h-12 rounded-xl bg-gray-50 border-gray-200 focus:ring-2 focus:ring-primary">
-                      <SelectValue placeholder="Prefer not to say" />
-                    </SelectTrigger>
-
-                    <SelectContent className="rounded-xl">
-                      <SelectItem value="male">Male</SelectItem>
-                      <SelectItem value="female">Female</SelectItem>
-                      <SelectItem value="non-binary">Non-binary</SelectItem>
-                      <SelectItem value="other">Other</SelectItem>
-                    </SelectContent>
-                  </Select>
                 </div>
               </div>
             </div>

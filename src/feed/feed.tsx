@@ -12,6 +12,8 @@ import {
   TrendingUp,
   Sparkles,
   UserPlus,
+  Trash2,
+  Edit,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -31,32 +33,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Link } from "react-router-dom";
-
-interface Comment {
-  id: number;
-  userId: number;
-  userName: string;
-  userAvatar: string;
-  content: string;
-  timestamp: string;
-  likes: number;
-}
-
-interface Post {
-  id: number;
-  name: string;
-  role: string;
-  timestamp: string;
-  avatar: string;
-  image?: string;
-  mediaType?: "image" | "video";
-  title: string;
-  content: string;
-  images?: string[];
-  likes: number;
-  comments: number;
-  shares?: number;
-}
+import type { Post, Comment } from "@/types/post";
+import { defaultPosts } from "@/components/defaultPosts";
 
 interface FeedCardProps {
   post: Post;
@@ -66,8 +44,11 @@ export const FeedCard = ({ post }: FeedCardProps) => {
   const [isLiked, setIsLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(post.likes);
   // const [isBookmarked, setIsBookmarked] = useState(false);
-  const [showComments, setShowComments] = useState(false);
-  const [commentsList, setCommentsList] = useState<Comment[]>([]);
+  const [showComments, setShowComments] = useState(true);
+  const [commentsList, setCommentsList] = useState<Comment[]>(
+    post.defaultComments || [],
+  );
+  const [showAllComments, setShowAllComments] = useState(false);
   const [newComment, setNewComment] = useState("");
   const [shareCount, setShareCount] = useState(post.shares || 0);
   const [showShareDialog, setShowShareDialog] = useState(false);
@@ -77,6 +58,10 @@ export const FeedCard = ({ post }: FeedCardProps) => {
   const [showLikeAnimation, setShowLikeAnimation] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [likedComments, setLikedComments] = useState<number[]>([]);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+
+  // Check if this is the current user's post
+  const isOwnPost = post.name === "Azwedo Drdr";
 
   const connectedPeople = [
     {
@@ -109,6 +94,11 @@ export const FeedCard = ({ post }: FeedCardProps) => {
   const allImages = post.image
     ? [post.image, ...(post.images || [])]
     : post.images || [];
+
+  // Determine which comments to display
+  const displayedComments = showAllComments
+    ? commentsList
+    : commentsList.slice(0, 2);
 
   const handleLike = () => {
     const newLikedState = !isLiked;
@@ -169,6 +159,14 @@ export const FeedCard = ({ post }: FeedCardProps) => {
     }
   };
 
+  const handleImageChange = (newIndex: number) => {
+    setIsTransitioning(true);
+    setTimeout(() => {
+      setCurrentImageIndex(newIndex);
+      setIsTransitioning(false);
+    }, 150);
+  };
+
   return (
     <>
       <div className="bg-white border border-slate-200 rounded-2xl mb-6 shadow-sm hover:shadow-md transition-shadow overflow-hidden">
@@ -200,26 +198,43 @@ export const FeedCard = ({ post }: FeedCardProps) => {
           </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className="text-slate-600 hover:bg-slate-100 rounded-full p-2 transition-colors">
+              <button className="text-slate-600 cursor-pointer hover:bg-slate-100 rounded-full p-2 transition-colors">
                 <MoreHorizontal className="w-5 h-5" />
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-52">
-              <DropdownMenuItem className="cursor-pointer text-red-600 focus:text-red-600">
-                <Flag className="w-4 h-4 mr-2" />
-                Report
-              </DropdownMenuItem>
-              <DropdownMenuItem className="cursor-pointer text-primary focus:text-primary">
-                <UserPlus className="w-4 h-4 mr-2" />
-                Follow
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
+              {isOwnPost ? (
+                <>
+                  {/* Options for own posts */}
+                  <DropdownMenuItem className="cursor-pointer text-primary focus:text-primary">
+                    <Edit className="w-4 h-4 mr-2" />
+                    Edit Post
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="cursor-pointer text-red-600 focus:text-red-600">
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    Delete Post
+                  </DropdownMenuItem>
+                </>
+              ) : (
+                <>
+                  {/* Options for others' posts */}
+                  <DropdownMenuItem className="cursor-pointer text-red-600 focus:text-red-600">
+                    <Flag className="w-4 h-4 mr-2" />
+                    Report
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="cursor-pointer text-primary focus:text-primary">
+                    <UserPlus className="w-4 h-4 mr-2" />
+                    Follow
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                </>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
 
         <div
-          className="relative bg-gradient-to-br from-slate-100 to-slate-50"
+          className="relative bg-gradient-to-br from-slate-100 to-slate-50 overflow-hidden"
           onDoubleClick={handleImageDoubleTap}
         >
           {allImages.length > 0 && (
@@ -227,15 +242,21 @@ export const FeedCard = ({ post }: FeedCardProps) => {
               {/* Render video or image based on mediaType */}
               {post.mediaType === "video" && currentImageIndex === 0 ? (
                 <video
+                  key={currentImageIndex}
                   src={allImages[currentImageIndex]}
                   controls
-                  className="w-full max-h-[600px] object-contain bg-black select-none"
+                  className={`w-full max-h-[600px] object-contain bg-black select-none transition-all duration-500 ease-in-out ${
+                    isTransitioning ? "opacity-0 scale-95" : "opacity-110 scale-100"
+                  }`}
                 />
               ) : (
                 <img
+                  key={currentImageIndex}
                   src={allImages[currentImageIndex]}
                   alt="Post content"
-                  className="w-full max-h-[600px] object-contain select-none"
+                  className={`w-full max-h-[600px] object-contain select-none transition-all duration-500 ease-in-out ${
+                    isTransitioning ? "opacity-0 scale-95" : "opacity-100 scale-100"
+                  }`}
                 />
               )}
 
@@ -247,25 +268,26 @@ export const FeedCard = ({ post }: FeedCardProps) => {
 
               {allImages.length > 1 && (
                 <>
+                  {/* Clickable Dots Navigation */}
                   <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 bg-black/40 backdrop-blur-sm px-3 py-2 rounded-full">
                     {allImages.map((_, idx) => (
-                      <div
+                      <button
                         key={idx}
-                        className={`h-2 rounded-full transition-all duration-300 ${
+                        onClick={() => handleImageChange(idx)}
+                        className={`h-2 rounded-full transition-all duration-300 cursor-pointer hover:bg-white ${
                           idx === currentImageIndex
                             ? "bg-white w-8"
-                            : "bg-white/60 w-2"
+                            : "bg-white/60 w-2 hover:w-4"
                         }`}
+                        aria-label={`Go to image ${idx + 1}`}
                       />
                     ))}
                   </div>
 
                   {currentImageIndex > 0 && (
                     <button
-                      onClick={() =>
-                        setCurrentImageIndex(currentImageIndex - 1)
-                      }
-                      className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 hover:bg-white shadow-lg flex items-center justify-center transition-all hover:scale-110"
+                      onClick={() => handleImageChange(currentImageIndex - 1)}
+                      className="absolute left-3 cursor-pointer top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 hover:bg-white shadow-lg flex items-center justify-center transition-all hover:scale-110"
                     >
                       <svg
                         className="w-5 h-5"
@@ -285,10 +307,8 @@ export const FeedCard = ({ post }: FeedCardProps) => {
 
                   {currentImageIndex < allImages.length - 1 && (
                     <button
-                      onClick={() =>
-                        setCurrentImageIndex(currentImageIndex + 1)
-                      }
-                      className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 hover:bg-white shadow-lg flex items-center justify-center transition-all hover:scale-110"
+                      onClick={() => handleImageChange(currentImageIndex + 1)}
+                      className="absolute right-3 cursor-pointer top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 hover:bg-white shadow-lg flex items-center justify-center transition-all hover:scale-110"
                     >
                       <svg
                         className="w-5 h-5"
@@ -315,7 +335,7 @@ export const FeedCard = ({ post }: FeedCardProps) => {
           <div className="flex items-center gap-5">
             <button
               onClick={handleLike}
-              className={`transition-all duration-200 hover:scale-110 active:scale-95 ${
+              className={`transition-all cursor-pointer duration-200 hover:scale-110 active:scale-95 ${
                 isLiked ? "text-red-500" : "text-slate-700 hover:text-red-500"
               }`}
             >
@@ -323,13 +343,13 @@ export const FeedCard = ({ post }: FeedCardProps) => {
             </button>
             <button
               onClick={() => setShowComments(!showComments)}
-              className="text-slate-700 hover:text-primary transition-all duration-200 hover:scale-110 active:scale-95"
+              className="text-slate-700 cursor-pointer hover:text-primary transition-all duration-200 hover:scale-110 active:scale-95"
             >
               <MessageCircle className="w-7 h-7" />
             </button>
             <button
               onClick={() => setShowShareDialog(true)}
-              className="text-slate-700 hover:text-green-500 transition-all duration-200 hover:scale-110 active:scale-95"
+              className="text-slate-700 cursor-pointer hover:text-green-500 transition-all duration-200 hover:scale-110 active:scale-95"
             >
               <Send className="w-7 h-7" />
             </button>
@@ -375,18 +395,9 @@ export const FeedCard = ({ post }: FeedCardProps) => {
           </div>
         </div>
 
-        {commentsList.length > 0 && !showComments && (
-          <button
-            onClick={() => setShowComments(true)}
-            className="px-4 pb-3 text-sm text-slate-500 hover:text-slate-700 transition-colors font-medium"
-          >
-            View all {commentsList.length} comments
-          </button>
-        )}
-
         {showComments && commentsList.length > 0 && (
           <div className="px-4 pb-3 space-y-4 max-h-96 overflow-y-auto">
-            {commentsList.map((comment) => (
+            {displayedComments.map((comment) => (
               <div key={comment.id} className="flex gap-3 group">
                 <Avatar className="w-9 h-9 shrink-0 ring-2 ring-white">
                   <AvatarImage
@@ -433,6 +444,26 @@ export const FeedCard = ({ post }: FeedCardProps) => {
                 </button>
               </div>
             ))}
+
+            {/* View all comments button */}
+            {commentsList.length > 2 && !showAllComments && (
+              <button
+                onClick={() => setShowAllComments(true)}
+                className="w-full text-sm text-slate-500 cursor-pointer hover:text-slate-700 transition-colors font-medium py-2"
+              >
+                View all comments
+              </button>
+            )}
+
+            {/* Show less button */}
+            {showAllComments && commentsList.length > 2 && (
+              <button
+                onClick={() => setShowAllComments(false)}
+                className="w-full text-sm text-slate-500 hover:text-slate-700 transition-colors font-medium py-2"
+              >
+                Show less
+              </button>
+            )}
           </div>
         )}
 
@@ -558,67 +589,8 @@ interface FeedProps {
 }
 
 const Feed = ({ userPosts }: FeedProps) => {
-  const defaultPosts: Post[] = [
-    {
-      id: 1,
-      name: "Sarah Chen",
-      role: "Product Manager",
-      timestamp: "2h",
-      avatar:
-        "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop",
-      image:
-        "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=600&fit=crop",
-      mediaType: "image",
-      title: "TechConnect Summit",
-      content:
-        "Excited to be at TechConnect Summit 2025! Meeting so many amazing people in the tech industry. 🚀",
-      images: [
-        "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=800&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1591115765373-5207764f72e7?w=800&h=600&fit=crop",
-      ],
-      likes: 1247,
-      comments: 89,
-      shares: 34,
-    },
-    {
-      id: 2,
-      name: "Marcus Rodriguez",
-      role: "Senior Developer",
-      timestamp: "5h",
-      avatar:
-        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop",
-      image:
-        "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=800&h=600&fit=crop",
-      mediaType: "image",
-
-      title: "Conference Memories",
-      content:
-        "Looking back at some incredible moments from conferences I attended this year. 💡",
-      likes: 892,
-      comments: 45,
-      shares: 23,
-    },
-    {
-      id: 3,
-      name: "Amit Patel",
-      role: "UX Director",
-      timestamp: "8h",
-      avatar:
-        "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&h=100&fit=crop",
-      image:
-        "https://images.unsplash.com/photo-1591115765373-5207764f72e7?w=800&h=600&fit=crop",
-      mediaType: "image",
-
-      title: "Design Workshop",
-      content:
-        "Amazing workshop on user experience design patterns. Learned so much! 🎨",
-      likes: 567,
-      comments: 28,
-      shares: 15,
-    },
-  ];
-
   const allPosts = [...userPosts, ...defaultPosts];
+  const [feedSearchQuery, setFeedSearchQuery] = useState("");
 
   const suggestedUsers = [
     {
@@ -642,20 +614,6 @@ const Feed = ({ userPosts }: FeedProps) => {
       avatar:
         "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop",
     },
-    // {
-    //   id: 4,
-    //   name: "misika_soniga",
-    //   subtitle: "Follows you",
-    //   avatar:
-    //     "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop",
-    // },
-    // {
-    //   id: 5,
-    //   name: "pierre_thecomet",
-    //   subtitle: "Followed by misika_soniga + 6 more",
-    //   avatar:
-    //     "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&h=100&fit=crop",
-    // },
   ];
 
   const [followedUsers, setFollowedUsers] = useState<number[]>([]);
@@ -668,62 +626,127 @@ const Feed = ({ userPosts }: FeedProps) => {
     );
   };
 
+  // Filter posts based on search query
+  const filteredPosts = allPosts.filter((post) => {
+    const searchLower = feedSearchQuery.toLowerCase();
+    return (
+      post.name.toLowerCase().includes(searchLower) ||
+      post.content.toLowerCase().includes(searchLower) ||
+      post.title.toLowerCase().includes(searchLower)
+    );
+  });
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30">
       <div className="max-w-[1400px] mx-auto pt-6 sm:pt-8 px-3 sm:px-6">
         <div className="flex gap-8 justify-center">
           <main className="w-full max-w-[620px]">
+            {/* Search Bar */}
+            <div className="mb-6 sticky top-0 z-10 bg-gradient-to-br from-slate-50 via-white to-blue-50/30 pt-2 pb-4">
+              <div className="relative">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                <Input
+                  type="text"
+                  placeholder="Search users..."
+                  value={feedSearchQuery}
+                  onChange={(e) => setFeedSearchQuery(e.target.value)}
+                  className="w-full pl-12 pr-4 py-6 bg-white border-slate-200 rounded-2xl shadow-sm focus-visible:ring-2 focus-visible:ring-primary placeholder:text-slate-400 text-sm"
+                />
+                {feedSearchQuery && (
+                  <button
+                    onClick={() => setFeedSearchQuery("")}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                  >
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Posts */}
             <div className="space-y-0">
-              {allPosts.map((post) => (
-                <FeedCard key={post.id} post={post} />
-              ))}
+              {filteredPosts.length > 0 ? (
+                filteredPosts.map((post) => (
+                  <FeedCard key={post.id} post={post} />
+                ))
+              ) : (
+                <div className="text-center py-12">
+                  <Search className="w-16 h-16 text-slate-300 mx-auto mb-4" />
+                  <h3 className="text-lg font-bold text-slate-700 mb-2">
+                    No posts found
+                  </h3>
+                  <p className="text-sm text-slate-500">
+                    Try searching for something else
+                  </p>
+                </div>
+              )}
             </div>
 
             {/* MOBILE ONLY: Suggested Users Carousel */}
-            <div className="xl:hidden mt-6 mb-20">
-              <h3 className="px-3 pb-3 font-bold text-sm text-slate-700">
-                Suggested for you
-              </h3>
+            {filteredPosts.length > 0 && (
+              <div className="xl:hidden mt-6 mb-20">
+                <h3 className="px-3 pb-3 font-bold text-sm text-slate-700">
+                  Suggested for you
+                </h3>
 
-              <div className="flex gap-4 overflow-x-auto px-3 pb-4">
-                {suggestedUsers.map((user) => (
-                  <div
-                    key={user.id}
-                    className="min-w-[140px] bg-white border rounded-xl p-4 text-center shadow-sm"
-                  >
-                    <Avatar className="w-14 h-14 mx-auto mb-2">
-                      <AvatarImage src={user.avatar} />
-                      <AvatarFallback>
-                        {user.name[0].toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
-                    <Link to={`/user-post-profile/${user.id}`}>
-                      {" "}
-                      <p className="text-sm font-bold truncate">{user.name}</p>
-                    </Link>
-                    <p className="text-xs text-slate-500 truncate">
-                      {user.subtitle}
-                    </p>
-
-                    <button
-                      onClick={() => handleFollow(user.id)}
-                      className="mt-2 text-xs font-bold text-primary"
+                <div className="flex gap-4 overflow-x-auto px-3 pb-4">
+                  {suggestedUsers.map((user) => (
+                    <div
+                      key={user.id}
+                      className="min-w-[140px] bg-white border rounded-xl p-4 text-center shadow-sm"
                     >
-                      {followedUsers.includes(user.id) ? "Following" : "Follow"}
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
+                      <Avatar className="w-14 h-14 mx-auto mb-2">
+                        <AvatarImage src={user.avatar} />
+                        <AvatarFallback>
+                          {user.name[0].toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                      <Link to={`/user-post-profile/${user.id}`}>
+                        {" "}
+                        <p className="text-sm font-bold truncate">
+                          {user.name}
+                        </p>
+                      </Link>
+                      <p className="text-xs text-slate-500 truncate">
+                        {user.subtitle}
+                      </p>
 
-            <div className="mt-12 mb-10 text-center">
-              <div className="inline-flex items-center gap-2 bg-white rounded-full px-6 py-3 shadow-sm border border-slate-200">
-                <Sparkles className="w-5 h-5 text-primary" />
-                <p className="text-sm font-medium text-slate-600">
-                  You're all caught up!
-                </p>
+                      <button
+                        onClick={() => handleFollow(user.id)}
+                        className="mt-2 text-xs font-bold text-primary"
+                      >
+                        {followedUsers.includes(user.id)
+                          ? "Following"
+                          : "Follow"}
+                      </button>
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
+
+            {filteredPosts.length > 0 && (
+              <div className="mt-12 mb-10 text-center">
+                <div className="inline-flex items-center gap-2 bg-white rounded-full px-6 py-3 shadow-sm border border-slate-200">
+                  <Sparkles className="w-5 h-5 text-primary" />
+                  <p className="text-sm font-medium text-slate-600">
+                    You're all caught up!
+                  </p>
+                </div>
+              </div>
+            )}
           </main>
 
           {/* DESKTOP ONLY: Suggested Users Sidebar */}
