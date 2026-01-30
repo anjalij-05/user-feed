@@ -2,8 +2,6 @@ import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import {
-  Heart,
-  MessageCircle,
   Grid,
   Film,
   User,
@@ -184,14 +182,14 @@ export default function UserPostProfile({ allPosts }: UserPostProfileProps) {
               <p>No posts yet</p>
             </div>
           ) : (
-            <div className="grid grid-cols-3 gap-1">
+            <div className="grid grid-cols-3 gap-0.5">
               {userPosts.map((post) => {
                 const postImage = post.image || post.images?.[0];
                 return (
                   <Link
                     key={post.id}
                     to={`/post/${post.id}`}
-                    className="relative aspect-square group cursor-pointer"
+                    className="relative group cursor-pointer h-[250px] md:h-[200px] w-full"
                   >
                     {post.mediaType === "video" ? (
                       <video
@@ -215,18 +213,7 @@ export default function UserPostProfile({ allPosts }: UserPostProfileProps) {
                       </div>
                     )}
 
-                    <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100">
-                      <div className="flex gap-6 text-white font-semibold">
-                        <div className="flex items-center gap-2">
-                          <Heart className="w-6 h-6 fill-white" />
-                          <span>{post.likes.toLocaleString()}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <MessageCircle className="w-6 h-6 fill-white" />
-                          <span>{post.comments}</span>
-                        </div>
-                      </div>
-                    </div>
+                  <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition flex items-center justify-center"></div>
                   </Link>
                 );
               })}
@@ -243,7 +230,7 @@ export default function UserPostProfile({ allPosts }: UserPostProfileProps) {
               <p>No videos yet</p>
             </div>
           ) : (
-            <div className="grid grid-cols-3 gap-1">
+            <div className="grid grid-cols-3 gap-0.5">
               {userPosts
                 .filter((p) => p.mediaType === "video")
                 .map((post) => {
@@ -252,7 +239,7 @@ export default function UserPostProfile({ allPosts }: UserPostProfileProps) {
                     <Link
                       key={post.id}
                       to={`/post/${post.id}`}
-                      className="relative aspect-square group cursor-pointer"
+                      className="relative group cursor-pointer h-[250px] md:h-[200px] w-full"
                     >
                       <video
                         src={postImage}
@@ -264,18 +251,7 @@ export default function UserPostProfile({ allPosts }: UserPostProfileProps) {
                       <div className="absolute top-2 right-2 bg-black/60 rounded-full p-1">
                         <Film className="w-4 h-4 text-white" />
                       </div>
-                      <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100">
-                        <div className="flex gap-6 text-white font-semibold">
-                          <div className="flex items-center gap-2">
-                            <Heart className="w-6 h-6 fill-white" />
-                            <span>{post.likes.toLocaleString()}</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <MessageCircle className="w-6 h-6 fill-white" />
-                            <span>{post.comments}</span>
-                          </div>
-                        </div>
-                      </div>
+                      <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100"></div>
                     </Link>
                   );
                 })}

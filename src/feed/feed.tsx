@@ -106,7 +106,7 @@ export const FeedCard = ({ post }: FeedCardProps) => {
     setLikeCount(isLiked ? likeCount - 1 : likeCount + 1);
     if (newLikedState) {
       setShowLikeAnimation(true);
-      setTimeout(() => setShowLikeAnimation(false), 1000);
+      setTimeout(() => setShowLikeAnimation(false), 1400);
     }
   };
 
@@ -169,6 +169,60 @@ export const FeedCard = ({ post }: FeedCardProps) => {
 
   return (
     <>
+      <style>
+        {`
+          @keyframes heartPop {
+            0% {
+              transform: scale(0) rotate(-10deg);
+              opacity: 0;
+            }
+            20% {
+              transform: scale(1.3) rotate(5deg);
+              opacity: 1;
+            }
+            40% {
+              transform: scale(1.15) rotate(-3deg);
+              opacity: 1;
+            }
+            60% {
+              transform: scale(1.25) rotate(0deg);
+              opacity: 1;
+            }
+            80% {
+              transform: scale(1.6) rotate(0deg);
+              opacity: 0.6;
+            }
+            100% {
+              transform: scale(2.2) rotate(0deg);
+              opacity: 0;
+            }
+          }
+
+          @keyframes heartBounce {
+            0%, 100% {
+              transform: scale(0.5);
+            }
+            25% {
+              transform: scale(1.3);
+            }
+            50% {
+              transform: scale(0.9);
+            }
+            75% {
+              transform: scale(1.1);
+            }
+          }
+
+          @keyframes heartGlow {
+            0%, 100% {
+              filter: drop-shadow(0 0 10px rgba(239, 68, 68, 0.3));
+            }
+            50% {
+              filter: drop-shadow(0 0 30px rgba(239, 68, 68, 0.8));
+            }
+          }
+        `}
+      </style>
       <div className="bg-white border border-slate-200 rounded-2xl mb-6 shadow-sm hover:shadow-md transition-shadow overflow-hidden">
         <div className="flex items-center justify-between px-4 py-4">
           <div className="flex items-center gap-3">
@@ -246,7 +300,9 @@ export const FeedCard = ({ post }: FeedCardProps) => {
                   src={allImages[currentImageIndex]}
                   controls
                   className={`w-full max-h-[600px] object-contain bg-black select-none transition-all duration-500 ease-in-out ${
-                    isTransitioning ? "opacity-0 scale-95" : "opacity-110 scale-100"
+                    isTransitioning
+                      ? "opacity-0 scale-95"
+                      : "opacity-110 scale-100"
                   }`}
                 />
               ) : (
@@ -255,14 +311,22 @@ export const FeedCard = ({ post }: FeedCardProps) => {
                   src={allImages[currentImageIndex]}
                   alt="Post content"
                   className={`w-full max-h-[600px] object-contain select-none transition-all duration-500 ease-in-out ${
-                    isTransitioning ? "opacity-0 scale-95" : "opacity-100 scale-100"
+                    isTransitioning
+                      ? "opacity-0 scale-95"
+                      : "opacity-100 scale-100"
                   }`}
                 />
               )}
 
               {showLikeAnimation && (
-                <div className="absolute inset-0 flex items-center justify-center pointer-events-none animate-in zoom-in-50 fade-in duration-300">
-                  <Heart className="w-28 h-28 sm:w-36 sm:h-36 text-red-500 fill-red-500 drop-shadow-2xl" />
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
+                  <Heart
+                    className="w-32 h-32 sm:w-40 sm:h-40 text-red-500 fill-red-500"
+                    style={{
+                      animation:
+                        "heartPop 1.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards, heartGlow 1.4s ease-in-out forwards",
+                    }}
+                  />
                 </div>
               )}
 
@@ -338,6 +402,7 @@ export const FeedCard = ({ post }: FeedCardProps) => {
               className={`transition-all cursor-pointer duration-200 hover:scale-110 active:scale-95 ${
                 isLiked ? "text-red-500" : "text-slate-700 hover:text-red-500"
               }`}
+              style={isLiked ? { animation: "heartBounce 0.4s ease-out" } : {}}
             >
               <Heart className={`w-7 h-7 ${isLiked ? "fill-current" : ""}`} />
             </button>
