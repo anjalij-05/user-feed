@@ -572,7 +572,7 @@ export const FeedCard = ({ post }: FeedCardProps) => {
                 </div>
                 <button
                   onClick={() => handleCommentLike(comment.id)}
-                  className="shrink-0 mt-2"
+                  className="shrink-0 mt-2 cursor-pointer"
                 >
                   <Heart
                     className={`w-4 h-4 transition-colors ${
