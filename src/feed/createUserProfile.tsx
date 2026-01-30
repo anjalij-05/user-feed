@@ -12,7 +12,6 @@ import {
   Check,
 } from "lucide-react";
 
-
 interface Post {
   id: number;
   name: string;
@@ -63,7 +62,7 @@ export default function UserProfile({ posts }: UserProfileProps) {
   // Transform posts to display format with original post data
   const displayPosts = posts.map((post) => ({
     ...post, // Keep all original post data
-    media: post.image || "", // image OR video url
+    media: post.image || (post.images && post.images[0]) || "", // Get first image from array or single image
     mediaType: post.mediaType ?? "image",
   }));
 
