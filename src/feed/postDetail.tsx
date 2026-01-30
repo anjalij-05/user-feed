@@ -1,22 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, Sparkles } from "lucide-react";
 import { FeedCard } from "@/feed/feed";
-
-interface Post {
-  id: number;
-  name: string;
-  role: string;
-  timestamp: string;
-  avatar: string;
-  image?: string;
-  mediaType?: "image" | "video";
-  title: string;
-  content: string;
-  images?: string[];
-  likes: number;
-  comments: number;
-  shares?: number;
-}
+import type { Post } from "@/types/post";
 
 interface PostDetailViewProps {
   userPosts: Post[];
@@ -67,7 +52,7 @@ const PostDetailView = ({ userPosts }: PostDetailViewProps) => {
     );
   }
 
-  // ✅ Get ALL posts from this user (filter by name)
+  // Get ALL posts from this user (filter by name)
   const userSpecificPosts = userPosts.filter(
     (p) => p.name === clickedPost.name,
   );
@@ -89,7 +74,7 @@ const PostDetailView = ({ userPosts }: PostDetailViewProps) => {
             className="p-2 hover:bg-slate-100 rounded-full transition-colors active:scale-95"
             aria-label="Go back"
           >
-            <ArrowLeft className="w-6 h-6 text-slate-700" />
+            <ArrowLeft className="w-6 h-6 text-slate-700 cursor-pointer" />
           </button>
           <h1 className="font-bold text-lg text-slate-900">
             {username}'s Posts
