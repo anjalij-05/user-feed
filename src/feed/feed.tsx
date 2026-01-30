@@ -59,6 +59,7 @@ export const FeedCard = ({ post }: FeedCardProps) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [likedComments, setLikedComments] = useState<number[]>([]);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [showRipple, setShowRipple] = useState<string | null>(null);
 
   // Check if this is the current user's post
   const isOwnPost = post.name === "Azwedo Drdr";
@@ -106,7 +107,11 @@ export const FeedCard = ({ post }: FeedCardProps) => {
     setLikeCount(isLiked ? likeCount - 1 : likeCount + 1);
     if (newLikedState) {
       setShowLikeAnimation(true);
-      setTimeout(() => setShowLikeAnimation(false), 1400);
+      setShowRipple("like");
+      setTimeout(() => {
+        setShowLikeAnimation(false);
+        setShowRipple(null);
+      }, 1400);
     }
   };
 
@@ -114,6 +119,18 @@ export const FeedCard = ({ post }: FeedCardProps) => {
     if (!isLiked) {
       handleLike();
     }
+  };
+
+  const handleCommentClick = () => {
+    setShowComments(!showComments);
+    setShowRipple("comment");
+    setTimeout(() => setShowRipple(null), 600);
+  };
+
+  const handleShareClick = () => {
+    setShowShareDialog(true);
+    setShowRipple("share");
+    setTimeout(() => setShowRipple(null), 600);
   };
 
   const handleCommentSubmit = (e: React.FormEvent) => {
@@ -200,7 +217,7 @@ export const FeedCard = ({ post }: FeedCardProps) => {
 
           @keyframes heartBounce {
             0%, 100% {
-              transform: scale(0.5);
+              transform: scale(1);
             }
             25% {
               transform: scale(1.3);
@@ -220,6 +237,52 @@ export const FeedCard = ({ post }: FeedCardProps) => {
             50% {
               filter: drop-shadow(0 0 30px rgba(239, 68, 68, 0.8));
             }
+          }
+
+          @keyframes float {
+            0%, 100% { 
+              transform: translateY(0px);
+            }
+            50% { 
+              transform: translateY(-8px);
+            }
+          }
+
+          @keyframes ripple {
+            0% {
+              transform: scale(1);
+              opacity: 0.6;
+            }
+            100% {
+              transform: scale(1.8);
+              opacity: 0;
+            }
+          }
+
+          .floating-bubble {
+            animation: float 3s ease-in-out infinite;
+          }
+
+          .floating-bubble:nth-child(1) { 
+            animation-delay: 0s; 
+          }
+          
+          .floating-bubble:nth-child(2) { 
+            animation-delay: 0.4s; 
+          }
+          
+          .floating-bubble:nth-child(3) { 
+            animation-delay: 0.8s; 
+          }
+
+          .ripple-effect::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            background: currentColor;
+            opacity: 0;
+            animation: ripple 0.6s ease-out;
           }
         `}
       </style>
@@ -395,47 +458,60 @@ export const FeedCard = ({ post }: FeedCardProps) => {
           )}
         </div>
 
-        <div className="flex items-center justify-between px-4 py-3">
-          <div className="flex items-center gap-5">
-            <button
-              onClick={handleLike}
-              className={`transition-all cursor-pointer duration-200 hover:scale-110 active:scale-95 ${
-                isLiked ? "text-red-500" : "text-slate-700 hover:text-red-500"
-              }`}
-              style={isLiked ? { animation: "heartBounce 0.4s ease-out" } : {}}
-            >
-              <Heart className={`w-7 h-7 ${isLiked ? "fill-current" : ""}`} />
-            </button>
-            <button
-              onClick={() => setShowComments(!showComments)}
-              className="text-slate-700 cursor-pointer hover:text-primary transition-all duration-200 hover:scale-110 active:scale-95"
-            >
-              <MessageCircle className="w-7 h-7" />
-            </button>
-            <button
-              onClick={() => setShowShareDialog(true)}
-              className="text-slate-700 cursor-pointer hover:text-green-500 transition-all duration-200 hover:scale-110 active:scale-95"
-            >
-              <Send className="w-7 h-7" />
-            </button>
-          </div>
-          {/* <button
-            onClick={() => setIsBookmarked(!isBookmarked)}
-            className={`transition-all duration-200 hover:scale-110 active:scale-95 ${
-              isBookmarked
-                ? "text-amber-500"
-                : "text-slate-700 hover:text-amber-500"
-            }`}
+        {/* Floating Bubble Action Buttons */}
+        <div className="flex items-center justify-center gap-8 px-4 py-6">
+          {/* Like Button - Floating Bubble */}
+          <button
+            onClick={handleLike}
+            className="floating-bubble group relative"
           >
-            <Bookmark
-              className={`w-7 h-7 ${isBookmarked ? "fill-current" : ""}`}
-            />
-          </button> */}
-        </div>
+            <div
+              className={`w-16 h-16 rounded-full flex items-center justify-center shadow-xl transition-all duration-300 group-hover:scale-125 ${
+                isLiked
+                  ? "bg-gradient-to-br from-red-400 to-pink-500 group-hover:shadow-red-300"
+                  : "bg-gradient-to-br from-red-300 to-pink-400 group-hover:shadow-red-200"
+              } ${showRipple === "like" ? "ripple-effect" : ""}`}
+            >
+              <Heart
+                className={`w-8 h-8 text-white transition-all duration-300 ${
+                  isLiked ? "fill-white scale-110" : ""
+                }`}
+              />
+            </div>
+            <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 text-xs font-bold text-slate-700 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+              {likeCount.toLocaleString()}
+            </div>
+          </button>
 
-        <div className="px-4 pb-2">
-          <button className="font-bold text-sm hover:text-slate-600 transition-colors">
-            {likeCount.toLocaleString()} likes
+          {/* Comment Button - Floating Bubble */}
+          <button
+            onClick={handleCommentClick}
+            className="floating-bubble group relative"
+          >
+            <div
+              className={`w-16 h-16 rounded-full bg-gradient-to-br from-blue-400 to-cyan-500 flex items-center justify-center shadow-xl transition-all duration-300 group-hover:scale-125 group-hover:shadow-blue-300 ${showRipple === "comment" ? "ripple-effect" : ""}`}
+            >
+              <MessageCircle className="w-8 h-8 text-white" />
+            </div>
+            <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 text-xs font-bold text-slate-700 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+              {commentsList.length}{" "}
+              {commentsList.length === 1 ? "comment" : "comments"}
+            </div>
+          </button>
+
+          {/* Share Button - Floating Bubble */}
+          <button
+            onClick={handleShareClick}
+            className="floating-bubble group relative"
+          >
+            <div
+              className={`w-16 h-16 rounded-full bg-gradient-to-br from-purple-400 to-indigo-500 flex items-center justify-center shadow-xl transition-all duration-300 group-hover:scale-125 group-hover:shadow-purple-300 ${showRipple === "share" ? "ripple-effect" : ""}`}
+            >
+              <Send className="w-8 h-8 text-white" />
+            </div>
+            <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 text-xs font-bold text-slate-700 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+              Share
+            </div>
           </button>
         </div>
 
