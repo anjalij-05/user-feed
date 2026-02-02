@@ -1,6 +1,14 @@
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Bell, Home, MessageCircle, PlusSquare } from "lucide-react";
+import {
+  Bell,
+  Home,
+  MessageCircle,
+  PlusSquare,
+  Trophy,
+  User,
+  UserPlus,
+} from "lucide-react";
 import Navbar from "@/components/navbar";
 
 interface Post {
@@ -33,7 +41,10 @@ const UserFeedLayout = ({ userPosts, onPostCreated }: UserFeedLayoutProps) => {
 
   const navItems = [
     { to: "/", icon: Home, label: "Home" },
-    { to: "#", icon: MessageCircle, label: "Messages" },
+    { to: "/nearby-users", icon: User, label: "People" },
+    { to: "#", icon: Trophy, label: "Events" },
+    { to: "#", icon: MessageCircle, label: "Chats" },
+    { to: "#", icon: UserPlus, label: "Connections" },
     { to: "#", icon: Bell, label: "Notifications" },
     { to: "/user-feed/create-post", icon: PlusSquare, label: "Create" },
   ];
@@ -42,7 +53,7 @@ const UserFeedLayout = ({ userPosts, onPostCreated }: UserFeedLayoutProps) => {
     <div className="min-h-screen pb-16 lg:pb-0">
       {/* Desktop Sidebar */}
       <aside className="hidden lg:block fixed left-0 top-0 h-screen w-[244px] border-r border-border/40 px-3 py-8 bg-background z-20">
-      <Navbar />
+        <Navbar />
         <nav className="space-y-2 mt-10">
           {navItems.map((item) => (
             <Link

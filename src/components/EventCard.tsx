@@ -1,0 +1,414 @@
+import { ChartBarBig, Globe, MapPin, Printer, Trash } from "lucide-react";
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import { toast } from "sonner";
+
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import Wave from "@/components/Wave";
+import useEventStore from "@/store/eventStore";
+import { Separator } from "@/components/ui/separator";
+import useAuthStore from "@/store/authStore";
+
+interface EventCardProps {
+  title: string;
+  location: string;
+  date: string;
+  image: string;
+  imageAlt: string;
+  isLive?: boolean;
+  isUpcoming: boolean;
+  isPast: boolean;
+  slug: string;
+  id: number;
+  uuid: string;
+  total_attendees: number;
+  total_speaker: number;
+  total_sponsor: number;
+  total_checkedin_speaker: number;
+  total_checkedin_sponsor: number;
+  total_pending_delegate: number;
+  total_checked_in: number;
+  poll?: 0 | 1;
+}
+
+const buttonLinks = [
+  { label: "View Event", path: `/all-events/view/` },
+  { label: "Edit Event", path: `/all-events/update-event/` },
+  { label: "Attendees", path: `/all-events/attendees/` },
+  { label: "Send Invitations", path: `/all-events/send-invitations/` },
+  { label: "View Agendas", path: `/all-agendas/` },
+];
+
+const reportLinks = [
+  { label: "Reports", path: "/all-reports/mail-report/" },
+  { label: "Transcriber", path: "/all-reports/ai-transcriber/" },
+  { label: "Photos", path: "/all-reports/ai-photos/" },
+  { label: "Charts", path: "/all-reports/charts/" },
+ { disabled: true, label: "Generate PDF", path: "#", color: "gray-600" }
+];
+
+
+const EventCard: React.FC<EventCardProps> = ({
+  title,
+  location,
+  date,
+  image,
+  imageAlt,
+  slug,
+  id,
+  uuid,
+  isLive = false,
+  isUpcoming,
+  isPast,
+  total_attendees,
+  total_speaker,
+  total_sponsor,
+  total_checkedin_speaker,
+  total_checkedin_sponsor,
+  total_pending_delegate,
+  total_checked_in,
+  poll,
+}) => {
+  const [loading, setLoading] = useState<boolean>(false);
+  const { deleteEvent } = useEventStore((state) => state);
+  const checkInCounts = useEventStore((s) => s.checkInCounts);
+  const checkInCount = checkInCounts[uuid] || 0;
+
+  const { user } = useAuthStore((state) => state);
+
+  // Format date from YYYY-MM-DD to DD-MMM-YYYY
+  const formatDate = (dateString: string) => {
+    if (!dateString) return "";
+
+    try {
+      const date = new Date(dateString);
+      const day = date.getDate();
+      const month = date.toLocaleString("default", { month: "short" });
+      const year = date.getFullYear();
+
+      return `${day}-${month}-${year}`;
+    } catch (error) {
+      console.log(error);
+
+      return dateString; // Return original if parsing fails
+    }
+  };
+
+  const handleDeleteEvent = async () => {
+    if (id) {
+      setLoading(true);
+      try {
+        const response = await deleteEvent(id);
+        if (response.status === 200) {
+          toast(response.message || "Event deleted successfully", {
+            className:
+              "!bg-green-800 !text-white !font-sans !font-regular tracking-wider",
+          });
+        }
+      } catch (error: any) {
+        toast(error.message || "Failed to delete event", {
+          className:
+            "!bg-red-800 !text-white !font-sans !font-regular tracking-wider",
+        });
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+
+  if (loading) return <Wave />;
+
+  return (
+    <div
+      className={`flex scale-95 sm:scale-100 bg-accent rounded-xl h-80 ${
+        isLive ? "w-xl" : "max-w-80"
+      }`}
+    >
+      {/* Image Div */}
+      <div className="h-full flex flex-col relative justify-between min-w-80 overflow-hidden rounded-xl p-1.5">
+        <div className="max-h-44 relative overflow-hidden">
+          <div className="p-2 flex justify-between min-h-24 absolute bg-linear-to-b rounded-xl from-black/0 via-black/40 to-black w-full bottom-0" />
+          <div className="absolute flex items-center justify-between w-full bottom-2 px-2">
+            <span className="rounded-full px-2.5 py-1.5 w-fit text-background dark:text-foreground border backdrop-blur-xs dark:border-foreground text-xs grid place-content-center">
+              {formatDate(date)}
+            </span>
+            <div className="flex gap-2 items-center">
+              {isUpcoming && poll === 1 && (
+                <Link
+                  to={`/create-poll/${slug}`}
+                  className="p-2 bg-teal-500 rounded-full text-white"
+                >
+                  <ChartBarBig size={16} />
+                </Link>
+              )}
+
+              {location && (
+                <Link
+                  to={`/create-badge/${slug}`}
+                  className="p-2 bg-primary rounded-full text-white"
+                >
+                  <Printer size={16} />
+                </Link>
+              )}
+
+              {user?.role === "admin" && (
+                <AlertDialog>
+                  <AlertDialogTrigger className="grid place-content-center text-white w-8 h-8 bg-secondary cursor-pointer rounded-full z-50 top-2 right-2">
+                    <Trash size={16} />
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>
+                        Do you really want to delete {title} ?
+                      </AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This action cannot be undone. This will permanently
+                        delete {title}
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel className="cursor-pointer">
+                        Cancel
+                      </AlertDialogCancel>
+                      <AlertDialogAction
+                        className="cursor-pointer bg-secondary text-white"
+                        onClick={handleDeleteEvent}
+                      >
+                        Delete
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              )}
+            </div>
+          </div>
+
+          {/* Live Tag */}
+          <div
+            hidden={!isLive}
+            className="max-w-fit h-14 absolute overflow-hidden"
+          >
+            <svg
+              width="100%"
+              height="100%"
+              viewBox="0 0 94 46"
+              fill="none"
+              className="-mt-px fill-accent"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path d="M0 14V46C0 37 7.5 32 14 32C28.8333 32.1667 59.5 32 65 32C71 32 81 28 81 14C81 3.2 90.3106 0.166667 94.9658 0L0 0L0 14Z" />
+            </svg>
+
+            <span className="absolute top-0 left-0 px-5 z-20 py-1 font-semibold rounded-full bg-white dark:bg-muted flex items-center gap-2">
+              <span className="inline-block size-3 rounded-full bg-destructive animate-pulse duration-1000" />
+              Live
+            </span>
+          </div>
+
+          {/* Upcoming Tag */}
+          <div
+            hidden={!isUpcoming || isLive}
+            className="max-w-fit absolute overflow-hidden"
+          >
+            <svg
+              width="127"
+              height="56"
+              viewBox="0 0 127 56"
+              className="-ml-1px -mt-1px"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M0.00192035 14.0015C-0.0051926 21.5009 0.00974393 54.0001 0.00974393 54.0001L0.00974945 55.9744C0.0170754 47.4855 7.32604 42.0023 14.613 42.0023C20.1505 41.9987 81.8316 41.9987 94.7029 41.9987H95.8025C103.92 41.9987 112.443 36.3214 112.465 24.0029C112.467 22.9993 112.468 17.5067 112.465 14.0033C112.458 3.26056 122.308 -0.00311438 127 0.00048524C119.185 -0.000766513 20.8516 0.000431773 14.613 0.00375349C6.79837 0.000431773 -0.0053073 5.99843 0.00192035 14.0015Z"
+                fill="#D9D9D9"
+                className="dark:fill-accent"
+              />
+            </svg>
+
+            <span className="absolute mt-0.5 top-0 left-0 px-3 z-20 py-1 font-semibold rounded-full bg-white dark:bg-muted flex items-center gap-2">
+              Upcoming
+            </span>
+          </div>
+
+          {/* Completed Tag */}
+          <div hidden={!isPast} className="max-w-fit absolute overflow-hidden">
+            <svg
+              width="135"
+              height="56"
+              viewBox="0 0 135 56"
+              className="-ml-1px -mt-1px"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M0.00194563 14.0028C-0.00526096 21.5019 0.00987221 54.0001 0.00987221 54.0001L0.00987779 55.9744C0.0173002 47.4858 7.42248 42.0027 14.8053 42.0027C20.5986 41.999 93.3722 41.9972 103.392 41.9972C111.617 41.9972 120.212 36.3165 120.234 23.9984C120.236 22.9949 120.237 17.5024 120.234 13.9991C120.227 3.2567 130.247 -0.00331736 135 0.000282142C127.083 -0.000969572 21.1261 0.0021558 14.8053 0.00547741C6.88786 0.0021558 -0.00537717 5.99997 0.00194563 14.0028Z"
+                fill="#D9D9D9"
+                className="dark:fill-accent"
+              />
+            </svg>
+
+            <span className="absolute mt-0.5 top-0 left-0 px-3 z-20 py-1 font-semibold rounded-full bg-white dark:bg-muted flex items-center gap-2">
+              Completed
+            </span>
+          </div>
+
+          {/* Event Image */}
+          <img
+            src={image}
+            alt={imageAlt}
+            className="object-center object-cover w-full rounded-xl max-h-44"
+          />
+        </div>
+        <h4 className="text-sm font-semibold text-nowrap text-ellipsis overflow-hidden uppercase mt-1">
+          {title}
+        </h4>
+        <div className="overflow-hidden text-ellipsis text-nowrap flex gap-1 mt-1 items-center">
+          {!isLive ? (
+            <>
+              {location ? (
+                <>
+                  <MapPin className="min-w-4 min-h-4 size-4 text-muted-foreground" />
+                  <span className="text-sm overflow-hidden text-ellipsis text-nowrap">
+                    {location}
+                  </span>
+                </>
+              ) : (
+                <>
+                  <Globe className="min-w-4 min-h-4 size-4 text-muted-foreground" />
+                  <span className="text-sm overflow-hidden text-ellipsis text-nowrap">
+                    Online
+                  </span>
+                </>
+              )}
+            </>
+          ) : (
+            <div className="text-primary font-medium text-sm">
+              Live CheckIn Count - {checkInCount || total_checked_in}
+            </div>
+          )}
+        </div>
+        <Separator className="bg-muted h-px mt-1" />
+        {/* Buttons */}
+        <div className="grid grid-row-2 gap-2 mt-1">
+          <div
+            className={`grid gap-2 ${
+              user?.role === "subuser" ? "grid-cols-2" : "grid-cols-3"
+            }`}
+          >
+            {buttonLinks.slice(0, 3).map((button, index) =>
+              button.path === "/all-events/update-event/" &&
+              user?.role === "subuser" ? null : (
+                <Link
+                  key={index}
+                  to={`${button.path}${slug}`}
+                  className="w-full tracking-normal rounded-full bg-muted text-primary dark:text-foreground hover:shadow-sm text-center px-2 py-1 grid place-content-center text-sm"
+                >
+                  {button.label}
+                </Link>
+              )
+            )}
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            {buttonLinks.slice(3).map((button, index) => (
+              <Link
+                key={index}
+                to={`${button.path}${slug}`}
+                className="w-full tracking-normal rounded-full bg-muted text-primary dark:text-foreground hover:shadow-sm text-center px-2 py-1 grid place-content-center text-sm"
+              >
+                {button.label}
+              </Link>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Live Stats Section */}
+      <div hidden={!isLive} className="w-full flex flex-col gap-2 p-1.5">
+        {/* Live Counts */}
+        <div className="flex flex-col gap-2">
+          <div className="flex gap-2">
+            <div className="w-full border-2 dark:bg-muted border-primary h-14 rounded-2xl p-2 px-2.5 bg-muted">
+              <h6 className="font-semibold text-sm">Registrations</h6>
+              <p className="text-xs mt-1">
+                {total_checked_in}/{total_attendees}
+              </p>
+            </div>
+
+            <div className="w-full border-2 dark:bg-muted border-primary h-14 rounded-2xl p-2 px-2.5 bg-muted">
+              <h6 className="font-semibold text-sm">Sponsors</h6>
+              <p className="text-xs mt-1">
+                {total_checkedin_sponsor}/{total_sponsor}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex gap-2">
+            <div className="w-full border-2 dark:bg-muted border-primary h-14 rounded-2xl p-2 px-2.5 bg-muted">
+              <h6 className="font-semibold text-sm">Speakers</h6>
+              <p className="text-xs mt-1">
+                {total_checkedin_speaker}/{total_speaker}
+              </p>
+            </div>
+
+            <div className="w-full border-2 dark:bg-muted border-primary h-14 rounded-2xl p-2 px-2.5 bg-muted">
+              <h6 className="font-semibold text-sm">Attendees</h6>
+              <p className="text-xs mt-1">
+                {total_checked_in}/{total_attendees}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Pending Delegates */}
+        <div className="w-full rounded-full text-xs bg-muted p-3 flex justify-between items-center">
+          <h6 className="font-semibold">Pending Delegates</h6>
+          <span>{total_pending_delegate}</span>
+        </div>
+
+        <Separator className="h-0.5 bg-muted" />
+
+        <div className="grid grid-cols-2 gap-2">
+  {reportLinks.map((link, index) => {
+    const isDisabled = link.disabled === true;
+
+    return (
+      <Link
+        key={index}
+        to={isDisabled ? "#" : `${link.path}${slug}`}
+        aria-disabled={isDisabled}
+        onClick={(e) => isDisabled && e.preventDefault()}
+        className={`
+          w-full tracking-normal rounded-full border hover:shadow-sm px-1 py-1.5 grid place-content-center text-sm text-center 
+          
+          ${isDisabled 
+            ? "cursor-not-allowed opacity-50" 
+            : "bg-muted text-primary dark:text-foreground"
+          }
+
+          ${link.color ? `text-${link.color}` : ""}
+
+          ${index === reportLinks.length - 1 ? "col-span-2" : ""}
+        `}
+      >
+        {link.label}
+      </Link>
+    );
+  })}
+</div>
+
+      </div>
+    </div>
+  );
+};
+
+export default EventCard;

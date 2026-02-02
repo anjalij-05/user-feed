@@ -1,0 +1,308 @@
+import { domain, token } from "@/constants";
+import axios from "axios";
+import { create } from "zustand";
+
+interface SheetRow {
+    companyname: string;
+    designation: string[];
+    country_name: string;
+    state_name: string;
+    employee_size: string;
+    priority: string;
+    industry: string;
+    uuid: string;
+}
+
+export interface ICPSheet {
+    sheetRows: SheetRow[];
+    sheet_name: string;
+    uuid: string;
+}
+
+export interface Preferences {
+    uuid: string;
+    designation: string[];
+    industry: string[];
+    country_name: string;
+    state_name: string;
+    employee_size: string[];
+}
+
+export interface PreferencesPayload {
+    sheet_name: string;
+    preferences?: Preferences[];
+}
+
+interface CreateICPPayload {
+    sheet_name: string;
+    employee_size: string;
+    designation: string[];
+    company_name: string[];
+    state_name: string;
+    country_name: string;
+    priority: string[];
+}
+
+interface ICPStore {
+    loading: boolean;
+    icpSheets: ICPSheet[];
+    icpMetaData: PreferencesPayload[];
+    getICPSheets: (userId: number) => Promise<void>;
+    getICPExcelSheets: (sheet_name: string) => Promise<ICPSheet[]>;
+    deleteICPSheet: (uuid: string) => Promise<{ status: number; message: string } | void>;
+    uploadICPSheet: (userId: number, file: File, sheetName: string) => Promise<{ status: number; message?: string } | void>;
+    createICP: (payload: any) => Promise<{ success: boolean; message?: string }>;
+    updateRow: (sheetName: string, payload: any) => Promise<{ success: boolean; message?: string }>;
+    updateICP: (payload: any) => Promise<{ success: boolean; message?: string }>;
+    // Entry-level CRUD (console.log only for now)
+    addICPEntry: (payload: CreateICPPayload, userId: number) => Promise<{ success: boolean; message: string }>;
+    updateICPEntry: (sheetUuid: string, rowUuid: string, rowIndex: number, entry: SheetRow, userId: number) => Promise<{ success: boolean; message: string }>;
+    deleteICPEntry: (sheetUuid: string, rowUuid: string) => Promise<{ success: boolean; message: string }>;
+}
+
+const useICPStore = create<ICPStore>((set, get) => ({
+    loading: false,
+    icpSheets: [],
+    icpMetaData: [],
+    createICP: async (payload: any) => {
+        try {
+            const response = await axios.post(`${domain}/api/store-icp`, payload, {
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                }
+            });
+            if (response.data.success) {
+                return {
+                    success: response.data.success,
+                    message: response.data.message
+                };
+            } else {
+                return {
+                    success: false,
+                    message: response.data.message || 'Failed to create ICP',
+                };
+            }
+        } catch (error) {
+            console.error('Failed to create ICP:', error);
+            throw error;
+        }
+    },
+    getICPSheets: async (userId: number) => {
+        set({ loading: true });
+        try {
+            const response = await axios.get(`${domain}/api/get-sheet-preferences/${userId}`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                }
+            });
+            if (response.data.status === 200) {
+                set({ icpMetaData: response.data.data });
+            } else {
+                console.error('Failed to fetch ICP sheets:', response.data.message);
+                throw new Error(response.data.message);
+            }
+        } finally {
+            set({ loading: false });
+        }
+    },
+    getICPExcelSheets: async (sheet_name: string) => {
+        set({ loading: true });
+        try {
+            const response = await axios.get(`${domain}/api/get-icp-data/${sheet_name}`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                }
+            });
+            if (response.data.status === 200) {
+                return response.data.data;
+                // set({ icpMetaData: response.data.data });
+            } else {
+                console.error('Failed to fetch ICP sheets:', response.data.message);
+                throw new Error(response.data.message);
+            }
+        } finally {
+            set({ loading: false });
+        }
+    },
+    deleteICPSheet: async (uuid: string) => {
+        const { icpSheets } = get();
+        set({ icpSheets: icpSheets.filter((s) => s.uuid !== uuid) });
+        try {
+            const response = await axios.delete(`${domain}/api/delete-icp-data/${uuid}`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                }
+            });
+            if (response?.data?.status !== undefined) {
+                return { status: response.data.status, message: response.data.message };
+            }
+        } catch (error) {
+            set({ icpSheets });
+            throw error;
+        }
+    },
+    uploadICPSheet: async (userId: number, file: File, sheetName: string) => {
+        try {
+            const formData = new FormData();
+            formData.append('user_id', String(userId));
+            formData.append('file', file);
+            formData.append('sheet_name', sheetName);
+
+            const response = await axios.post(`${domain}/api/store-icp-data`, formData, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+
+            // Refresh list after successful upload
+            if (response?.data?.status === 200 || response?.data?.status === 201) {
+                await get().getICPSheets(userId);
+            }
+
+            if (response?.data?.status !== undefined) {
+                return { status: response.data.status, message: response.data.message };
+            }
+        } catch (error) {
+            throw error;
+        }
+    },
+    addICPEntry: async (payload: CreateICPPayload, userId: number) => {
+        const data = {
+            user_id: userId,
+            company_name: payload.company_name,
+            designation: payload.designation,
+            priority: payload.priority,
+            country_name: payload.country_name,
+            state_name: payload.state_name,
+            employee_size: payload.employee_size
+        };
+
+        await axios.post(`${domain}/api/add-icp-data/${payload.sheet_name}`, data, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+            }
+        });
+
+        // set((state) => ({
+        //     icpSheets: state.icpSheets.map((s) =>
+        //         s.uuid === payload.sheet_name ? { ...s, sheetRows: [...s.sheetRows, data] } : s
+        //     ),
+        // }));
+        return Promise.resolve({ success: true, message: 'Entry added' });
+    },
+    updateICPEntry: async (sheetUuid, rowUuid, rowIndex, entry, userId) => {
+        const data = {
+            company_name: entry.companyname,
+            designation: entry.designation,
+            country_name: entry.country_name,
+            state_name: entry.state_name,
+            employee_size: entry.employee_size,
+            priority: entry.priority,
+            _method: 'PUT',
+            user_id: userId
+        }
+        await axios.post(`${domain}/api/update-icp-data/${rowUuid}`, data, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+            }
+        });
+        set((state) => ({
+            icpSheets: state.icpSheets.map((s) =>
+                s.uuid === sheetUuid
+                    ? {
+                        ...s,
+                        sheetRows: s.sheetRows.map((r, i) => (i === rowIndex ? entry : r)),
+                    }
+                    : s
+            ),
+        }));
+        return Promise.resolve({ success: true, message: 'Entry updated' });
+    },
+    deleteICPEntry: async (sheetUuid, rowUuid) => {
+        axios.delete(`${domain}/api/delete-icp/${rowUuid}`, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+            }
+        });
+        set((state) => ({
+            icpSheets: state.icpSheets.map((s) =>
+                s.uuid === sheetUuid
+                    ? { ...s, sheetRows: s.sheetRows.filter((r) => r.uuid !== rowUuid) }
+                    : s
+            ),
+        }));
+        return Promise.resolve({ success: true, message: 'Entry deleted' });
+    },
+    updateRow: async (sheetName: string, payload: any) => {
+        try {
+            const response = await axios.post(`${domain}/api/update-icp/${sheetName}`, payload, {
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                }
+            });
+            if (response.data.success) {
+                return {
+                    success: response.data.success,
+                    message: response.data.message
+                };
+            } else {
+                return {
+                    success: false,
+                    message: response.data.message || 'Failed to update ICP',
+                };
+            }
+        } catch (error) {
+            console.error('Failed to update ICP:', error);
+            throw error;
+        }
+    },
+    updateICP: async (payload: any) => {
+        try {
+            const response = await axios.post(`${domain}/api/update-sheet`, payload, {
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                }
+            });
+            if (response.data.success) {
+                return {
+                    success: response.data.success,
+                    message: response.data.message
+                };
+            } else {
+                return {
+                    success: false,
+                    message: response.data.message || 'Failed to update ICP',
+                };
+            }
+        } catch (error) {
+            console.error('Failed to update ICP:', error);
+            throw error;
+        }
+    }
+}));
+
+export default useICPStore;
+
+
+
+
+
+
+
+
+
+
+
+
+
+

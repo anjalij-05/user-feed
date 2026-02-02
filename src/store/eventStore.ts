@@ -1,0 +1,119 @@
+import { addEvent, deleteEvent, getAllEvents, updateEvent } from "@/api/events";
+import { create } from "zustand";
+import { AddEventType, EventType } from "@/types";
+import { AddEventResponse, DeleteEventResponse } from "@/types/api-responses";
+
+interface EventStore {
+  events: EventType[];
+  addEvent: (event: AddEventType, token?: string) => Promise<AddEventResponse>;
+  setEvents: (events: EventType[]) => void;
+  getAllEvents: (token: string) => Promise<void>;
+  getEventBySlug: (slug: string | undefined) => EventType | null;
+  updateEvent: (id: string, event: AddEventType) => Promise<AddEventResponse>;
+  deleteEvent: (id: number) => Promise<DeleteEventResponse>;
+  checkInCounts: { [eventUuid: string]: number };
+  setCheckInCount: (eventUuid: string, count: number) => void;
+  fetchEventDataFromAI: (url: string) => Promise<any>;
+}
+
+const useEventStore = create<EventStore>((set, get) => ({
+  events: [],
+  checkInCounts: {},
+  setCheckInCount: (eventUuid, count) =>
+    set((state) => ({
+      checkInCounts: { ...state.checkInCounts, [eventUuid]: count },
+    })),
+  setEvents: (events: EventType[]) => set({ events }),
+  getAllEvents: async (token: string) => {
+    const response = await getAllEvents(token);
+    set({ events: response.data });
+  },
+  getEventBySlug: (slug: string | undefined) => {
+    const { events } = get();
+    return events.find((event) => event.slug === slug) || null;
+  },
+  addEvent: async (event: AddEventType, token?: string) => {
+    const tokenToUse =
+      token ||
+      (localStorage.getItem("klout-organiser-storage")
+        ? JSON.parse(localStorage?.getItem("klout-organiser-storage") || "")
+            .state.token
+        : null);
+
+    const response = await addEvent(event, tokenToUse);
+    if (response.status === 200) {
+      set((state) => ({
+        events: [...state.events, response.data],
+      }));
+    }
+    return response;
+  },
+  updateEvent: async (id: string, event: AddEventType) => {
+    const tokenData = localStorage.getItem("klout-organiser-storage");
+    const token = tokenData ? JSON.parse(tokenData).state.token : null;
+
+    if (!token) {
+      throw new Error("Authentication token not found");
+    }
+
+    const response = await updateEvent(id, event, token);
+    if (response.status === 200) {
+      set((state) => ({
+        events: state.events.map((e) =>
+          String(e.id) === id ? response.data : e
+        ),
+      }));
+    }
+    return response;
+  },
+  deleteEvent: async (id: number) => {
+    const response = await deleteEvent(id);
+    if (response.status === 200) {
+      set((state) => ({
+        events: state.events.filter((event) => event.id !== id),
+      }));
+    }
+    return response;
+  },
+  fetchEventDataFromAI: async (url: string) => {
+    try {
+      const response = await fetch(
+        "https://quantamcoder.space/api/organiser/v1/event-upload/event-upload-ai",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ url }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch event data");
+      }
+
+      const result = await response.json();
+
+      if (result.status && result.data) {
+        return {
+          success: true,
+          data: result.data,
+        };
+      } else {
+        return {
+          success: false,
+          error: "No data returned from API",
+        };
+      }
+    } catch (error) {
+      console.error("Error in fetchEventDataFromAI:", error);
+      return {
+        success: false,
+        error:
+          error instanceof Error ? error.message : "Unknown error occurred",
+      };
+    }
+  },
+}));
+
+export default useEventStore;

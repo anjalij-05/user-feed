@@ -1,5 +1,5 @@
 import { useOutletContext } from "react-router-dom";
-import PostDetailView from "@/feed/postDetail";
+import PostDetailView from "@/pages/feed/postDetail";
 
 interface Post {
   id: number;

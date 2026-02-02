@@ -1,15 +1,19 @@
 import { Route, Routes } from "react-router-dom";
 import "./App.css";
-import UserFeedLayout from "./feed/layout";
-import UserProfile from "./feed/createUserProfile";
-import CreatePostWrapper from "./feed/createWrapper";
-import FeedWrapper from "./feed/feedWrapper";
+import UserFeedLayout from "./pages/feed/layout";
+import UserProfile from "./pages/feed/createUserProfile";
+import CreatePostWrapper from "./pages/feed/createWrapper";
+import FeedWrapper from "./pages/feed/feedWrapper";
 import { useState } from "react";
-import PostDetailViewWrapper from "./feed/postDetailViewWrapper";
-import UserPostProfileWrapper from "@/feed/userpostProfileWrapper";
+import PostDetailViewWrapper from "./pages/feed/postDetailViewWrapper";
+import UserPostProfileWrapper from "@/pages/feed/userpostProfileWrapper";
 import type { Post } from "@/types/post";
 import Navbar from "./components/navbar";
-
+import Explore from "./pages/explore";
+import ChatPage from "./pages/chats/chatPage";
+import Connects from "./pages/connects";
+import Updates from "./pages/updates";
+import ExploreAllEvents from "./pages/explore-all-events";
 
 function App() {
   const [userPosts, setUserPosts] = useState<Post[]>([]);
@@ -48,6 +52,12 @@ function App() {
           path="user-post-profile/:userId"
           element={<UserPostProfileWrapper />}
         />
+        <Route path="/nearby-users" element={<Explore />} />
+        <Route path="/chats" element={<ChatPage />} />
+        <Route path="/connects" element={<Connects />} />
+        <Route path="/updates" element={<Updates />} />
+        <Route path="/events" element={<ExploreAllEvents/>} />
+        <Route path="/chats" element={<ChatPage />} />
       </Route>
     </Routes>
   );

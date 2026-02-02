@@ -1,0 +1,596 @@
+export interface SubUserType {
+    id: number;
+    uuid: string;
+    name: string;
+    email: string;
+    role: string;
+    event_permission: [];
+    event_ids: number[] | [];
+    created_at: string;
+}
+
+export interface UserType {
+    id: number;
+    uuid: string;
+    first_name: string;
+    last_name: string;
+    email: string;
+    email_verified_at: string | null;
+    mobile_number: string;
+    company: string;
+    company_logo: string | null;
+    designation: string;
+    pincode: string;
+    country_code: string;
+    address: string;
+    tnc: number;
+    notifications: number;
+    created_at: string;
+    updated_at: string;
+    image: string | null;
+    company_name: string;
+    designation_name: string;
+    deleted_at: string | null;
+    role: "subuser" | "admin";
+    wallet_balance: number;
+    feature_permission: {
+        id: number;
+        uuid: string;
+        user_id: number;
+        search_people: 0 | 1;
+        vendor: 0 | 1;
+        wallet: 0 | 1;
+        icp: 0 | 1;
+        personalised_email: 0 | 1;
+        personalised_whatsapp: 0 | 1;
+    };
+    sub_users: SubUserType[];
+}
+
+export interface EventType {
+    id: number;
+    uuid: string;
+    user_id: number;
+    slug: string;
+    title: string;
+    description: string;
+    event_date: string;
+    location: string;
+    start_time: string;
+    start_time_type: string;
+    end_time: string;
+    end_time_type: string;
+    image: string;
+    event_venue_name: string;
+    event_venue_address_1: string;
+    event_venue_address_2: string;
+    city: string;
+    state: string;
+    country: string;
+    pincode: string;
+    google_map_link: string;
+    created_at: string;
+    updated_at: string;
+    status: number;
+    end_minute_time: string;
+    start_minute_time: string;
+    qr_code: string;
+    start_time_format: string;
+    feedback: number;
+    event_start_date: string;
+    event_end_date: string;
+    why_attend_info: string | null;
+    more_information: string | null;
+    t_and_conditions: string | null;
+    pdf_path: string | null;
+    video_url: string | null;
+    printer_count: number | null;
+    view_agenda_by: number;
+    event_otp: string;
+    paid_event: number;
+    event_fee: string;
+    event_mode: 0 | 1;
+    webinar_link: string;
+    total_attendee: number;
+    total_accepted: number;
+    total_not_accepted: number;
+    total_rejected: number;
+    total_checkedin: number;
+    total_checkedin_speaker: number;
+    total_speaker: number;
+    total_sponsor: number;
+    total_checkedin_sponsor: number;
+    total_pending_delegate: number;
+    break_out: number | string;
+    badge_banner?: string | null;
+    badge_background_color?: string;
+    badge_text_color?: string;
+    delegate_tag_color?: string;
+    delegate_text_color?: string;
+    speaker_tag_color?: string;
+    speaker_text_color?: string;
+    sponsor_tag_color?: string;
+    sponsor_text_color?: string;
+    panelist_tag_color?: string;
+    panelist_text_color?: string;
+    organizer_tag_color?: string;
+    organizer_text_color?: string;
+    target_number?: number | string;
+    progress_number?: number | string;
+    gamification: 0 | 1;
+    poll: 0 | 1;
+    session_feedback_open_text_box: 0 | 1;
+}
+
+export interface AddEventType {
+    title: string;
+    image: File | string | null; // This can be either a File from the file input or a string for selected template URLs
+    description: string;
+    event_start_date: string;
+    event_end_date?: string;
+    event_date: string;
+    google_map_link: string;
+    start_time: string; // New field for formatted start time (e.g., '16:05')
+    start_minute_time: string; // New field for start time minute part (e.g., '05')
+    start_time_type: string; // New field for AM/PM designation (e.g., 'PM')
+    end_time: string; // New field for formatted end time (e.g., '17:05')
+    end_minute_time: string; // New field for end time minute part (e.g., '05')
+    end_time_type: string; // New field for AM/PM designation (e.g., 'PM')
+    status: number;
+    feedback: number;
+    event_otp: string;
+    view_agenda_by: number;
+    event_fee: string;
+    paid_event: number;
+    printer_count: number | null;
+    event_mode: 0 | 1;
+    webinar_link: string;
+    event_venue_name: string;
+    event_venue_address_1: string;
+    event_venue_address_2: string;
+    state: string;
+    city: string;
+    country: string;
+    pincode: string;
+    break_out: number | string;
+    target_number: number | string;
+}
+
+export interface AttendeeType {
+    title: string;
+    id: number;
+    uuid: string;
+    user_id: number;
+    event_id: number;
+    first_name: string;
+    last_name: string;
+    email_id: string;
+    phone_number: string;
+    website: string;
+    linkedin_page_link: string;
+    employee_size: string;
+    company_turn_over: string;
+    status: string;
+    country_code: string;
+    created_at: string;
+    updated_at: string;
+    image: string | null;
+    virtual_business_card: string | null;
+    profile_completed: number;
+    alternate_mobile_number: string;
+    alternate_email: string | null;
+    company_name: string;
+    industry: string;
+    job_title: string;
+    event_invitation: number;
+    user_invitation_request: number;
+    check_in: number;
+    check_in_second: number | null;
+    check_in_third: number | null;
+    check_in_forth: number | null;
+    check_in_fifth: number | null;
+    check_in_time: string | null;
+    check_in_second_time: string | null;
+    check_in_third_time: string | null;
+    check_in_forth_time: string | null;
+    check_in_fifth_time: string | null;
+    not_invited: number;
+    award_winner: number;
+    break_out_room_and_time: string[];
+    gift_given: number;
+    gift_given_time: string;
+    _id?: string;
+}
+
+// // Old Interface
+// export interface CompanyType {
+//     id: number;
+//     parent_id: number;
+//     name: string;
+//     created_at: string;
+//     updated_at: string;
+// }
+// // Old Interface
+// export interface JobTitleType extends CompanyType { }
+
+// New Interface
+export interface CompanyType {
+    _id: string;
+    company: string;
+    companySize: string;
+    headquarters: string;
+    overview: string;
+    companyLogo: string;
+}
+//New Interface
+export interface DesignationType {
+    _id: string;
+    designation: string;
+}
+
+export interface IndustryType extends CompanyType { }
+
+export interface SponsorType extends AttendeeType { }
+
+
+export interface MessageTemplateType {
+    event_id: string;
+    send_to: string;
+    send_method: string;
+    subject: string;
+    message: string;
+    start_date: string;
+    delivery_schedule: string;
+    start_date_time: string;
+    start_date_type: string;
+    end_date: string;
+    end_date_time: string;
+    end_date_type: string;
+    no_of_times: number;
+    hour_interval: number;
+    status: number;
+    check_in: number;
+    template_banner?: File | string | null;
+}
+
+
+export interface SendReminderType extends Omit<MessageTemplateType, 'check_in'> { }
+
+export interface SendReminderBreakfastType extends Omit<MessageTemplateType, 'check_in'> { }
+
+export interface SessionReminderType extends MessageTemplateType { }
+
+export interface VisitBoothReminderType extends MessageTemplateType { }
+
+export interface DayTwoReminderType extends MessageTemplateType { }
+
+export interface ThankYouMessageType extends MessageTemplateType { }
+
+export interface InviteRegistrationType extends MessageTemplateType { }
+
+export interface SendInAppMessage {
+    event_id: string;
+    title: string;
+    message: string;
+}
+
+export interface SendPollType extends MessageTemplateType {
+    link: string;
+}
+
+export interface AgendaType {
+    id: number;
+    uuid: string;
+    event_id: number;
+    title: string;
+    description: string;
+    tag_speakers: string;
+    event_date: string;
+    start_time: string;
+    start_time_type: string;
+    end_time: string;
+    end_time_type: string;
+    image_path: string | null;
+    created_at: string;
+    updated_at: string;
+    start_minute_time: string;
+    end_minute_time: string;
+    position: number;
+    speakers: AttendeeType[] | [];
+}
+
+
+export interface RequestedAttendeeType {
+    id: number;
+    uuid: string;
+    user_id: number;
+    event_id: number;
+    first_name: string;
+    last_name: string;
+    email_id: string;
+    phone_number: string;
+    status: string;
+    alternate_mobile_number: string;
+    alternate_email: string;
+    company_name: string;
+    job_title: string;
+    confirmed_status: number;
+    reaching_out_status: string;
+    follow_up: string | null;
+    managed_by: string;
+    remark: string | null;
+    country_code: string;
+    linkedin_url: string;
+    created_at: string;
+    updated_at: string;
+}
+
+
+
+// Vendors
+export interface VendorCompanyType {
+    id: number;
+    uuid: string;
+    agency_name: string;
+    agency_mail: string;
+    agency_contact_number: string;
+    agency_alternate_mail: string | null;
+    agency_alternate_contact_number: string | null;
+    agency_website: string;
+    agency_logo: string;
+    city: string[];
+}
+
+
+export interface BadgeData {
+    firstName: string;
+    lastName: string;
+    companyName: string;
+    jobTitle: string;
+    image: string | null;
+    status: string;
+    speakerTagColor: string;
+    delegateTagColor: string;
+    sponsorTagColor: string;
+    speakerTextColor: string;
+    delegateTextColor: string;
+    sponsorTextColor: string;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Web app
+export interface Event {
+    id: number;
+    uuid: string;
+    title: string;
+    description: string;
+    slug: string;
+    image: string;
+    qr_code: string | null;
+    city: string;
+    state: string;
+    country: string;
+    pincode: string;
+    location: string;
+    company_name: string;
+    event_date: string;
+    event_start_date: string;
+    event_end_date: string;
+    start_time: string;
+    start_minute_time: string;
+    start_time_type: "AM" | "PM";
+    start_time_format: string;
+    end_time: string;
+    end_minute_time: string;
+    end_time_type: "AM" | "PM";
+    event_fee: string;
+    paid_event: number;
+    event_venue_name: string;
+    event_venue_address_1: string;
+    event_venue_address_2: string;
+    feedback: number;
+    status: number;
+    user_id: number;
+    total_attendee: number;
+    total_accepted: number;
+    total_not_accepted: number;
+    total_rejected: number;
+    more_information: string | null;
+    t_and_conditions: string | null;
+    why_attend_info: string | null;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface Agenda {
+    id: number;
+    uuid: string;
+    event_id: number;
+    title: string;
+    description: string;
+    tag_speakers: string;
+    event_date: string;
+    start_time: string;
+    start_time_type: string;
+    end_time: string;
+    end_time_type: string;
+    image_path: string | null;
+    created_at: string;
+    updated_at: string;
+    start_minute_time: string;
+    end_minute_time: string;
+    position: number;
+}
+
+export interface Attendee {
+    id: number;
+    uuid: string;
+    user_id: number;
+    event_id: number;
+    first_name: string;
+    last_name: string;
+    email_id: string;
+    phone_number: string;
+    website: string;
+    linkedin_page_link: string;
+    employee_size: string;
+    company_turn_over: string;
+    status: string;
+    created_at: string;
+    updated_at: string;
+    image: string | null;
+    virtual_business_card: string | null;
+    profile_completed: number;
+    alternate_mobile_number: string;
+    alternate_email: string | null;
+    company_name: string;
+    job_title: string;
+    event_invitation: number;
+    user_invitation_request: number;
+    check_in: number;
+    check_in_second: number | null;
+    check_in_third: number | null;
+    check_in_forth: number | null;
+    check_in_fifth: number | null;
+    check_in_time: string | null;
+    check_in_second_time: string | null;
+    check_in_third_time: string | null;
+    check_in_forth_time: string | null;
+    check_in_fifth_time: string | null;
+    not_invited: number;
+    award_winner: number;
+    break_out_room_and_time: string | null;
+}
+
+export interface EventDetails {
+    id: number;
+    uuid: string;
+    user_id: number;
+    company_name: string;
+    title: string;
+    description: string;
+    event_date: string;
+    location: string;
+    start_time: string;
+    start_time_type: string;
+    end_time: string;
+    end_time_type: string;
+    image: string;
+    event_venue_name: string | null;
+    event_venue_address_1: string;
+    event_venue_address_2: string | null;
+    city: string | null;
+    city_id: number | null;
+    state: string | null;
+    country: string | null;
+    pincode: string | null;
+    created_at: string;
+    updated_at: string;
+    status: number;
+    end_minute_time: string;
+    start_minute_time: string;
+    qr_code: string;
+    start_time_format: string;
+    feedback: number;
+    event_start_date: string;
+    event_end_date: string;
+    why_attend_info: string | null;
+    more_information: string | null;
+    t_and_conditions: string | null;
+    user_invitation_request: number;
+    paid_event: number;
+    event_fee: string;
+    agendas: Agenda[];
+    speakers: Attendee[];
+    jury: Attendee[];
+    sponsor: Attendee[];
+    check_in: number;
+    check_in_second: number;
+    check_in_third: number;
+    check_in_forth: number;
+    check_in_fifth: number;
+    video_url: string | null;
+    view_agenda_by: number;
+    event_mode: number;
+    webinar_link: string;
+}
+
+export interface AppUser {
+    cityId: string;
+    _id: string;
+    first_name: string;
+    last_name: string;
+    emailId: string;
+    mobileNumber: number;
+    imageBaseUrl: string;
+    profileImage: string;
+    company: string;
+    designation: string;
+    linkedInId: string;
+    deviceVersion: string;
+    appVersion: string;
+    deviceType: string;
+    deviceName: string;
+    latitude: string;
+    longitude: string;
+    city: string;
+    status: string;
+    whatsAppNotifications: string | boolean;
+    shareLastSeen: string;
+    searchDistanceinKm: string;
+    preferred_skills: string;
+    industryName: string;
+    googleId: string;
+    appleId: string | null;
+    images: string[]; // JSON string; ideally should be parsed into array
+    role: string;
+    isDeactivate: number;
+    blocked: any[];
+    blockedBy: any[];
+    createdAt: string;
+    updatedAt: string;
+    deviceToken: string;
+    experience: string;
+    responsibility: string;
+    aboutMe: string;
+    awards: string | null;
+    featured: string | null;
+    professionalHighlight: string | null;
+    jobFunction: string;
+    isOldUser: boolean;
+    showEmail: boolean;
+    showMobile: boolean;
+    planExpiryDays: number;
+    linkedinProfileUrl: string;
+    showProfileImage: boolean;
+    xProfileUrl: string;
+    showProfileImageToConnections: boolean;
+    userEnteredCompany: string;
+    userEnteredDesignation: string;
+    linkedinFollowers: number;
+    xFollowers: number;
+    education: string; // JSON string; ideally should be parsed into array
+    lastDecrementDate: string;
+    countryCode: number;
+    maxDistance?: number;
+    score?: number; // TLS score
+    // coverImages?: string[];
+    [key: string]: any; // allows additional dynamic properties
+}

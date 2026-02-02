@@ -146,7 +146,7 @@ export const FeedCard = ({ post }: FeedCardProps) => {
         timestamp: "now",
         likes: 0,
       };
-      setCommentsList([...commentsList, comment]);
+      setCommentsList([comment, ...commentsList]);
       setNewComment("");
     }
   };
@@ -183,6 +183,8 @@ export const FeedCard = ({ post }: FeedCardProps) => {
       setIsTransitioning(false);
     }, 150);
   };
+
+  
 
   return (
     <>
@@ -459,17 +461,17 @@ export const FeedCard = ({ post }: FeedCardProps) => {
         </div>
 
         {/* Floating Bubble Action Buttons */}
-        <div className="flex items-center justify-center gap-8 px-4 py-8">
+        <div className="flex items-center gap-5 px-4 py-3">
           {/* Like Button - Floating Bubble */}
           <button
             onClick={handleLike}
-            className="floating-bubble group relative cursor-pointer"
+            className="group relative cursor-pointer"
           >
             <div
-              className={`w-12 h-12 rounded-full flex items-center justify-center shadow-xl transition-all duration-300 group-hover:scale-125 ${
+              className={`w-10 h-10 rounded-full flex items-center justify-center shadow-xl transition-all duration-300 group-hover:scale-105 ${
                 isLiked
-                  ? "bg-gradient-to-br from-red-400 to-pink-500 group-hover:shadow-red-300"
-                  : "bg-gradient-to-br from-red-300 to-pink-400 group-hover:shadow-red-200"
+                  ? "bg-gradient-to-br from-red-500 to-pink-500 group-hover:shadow-red-300"
+                  : "bg-gradient-to-br from-red-400 to-pink-400 group-hover:shadow-red-200"
               } ${showRipple === "like" ? "ripple-effect" : ""}`}
             >
               <Heart
@@ -478,7 +480,7 @@ export const FeedCard = ({ post }: FeedCardProps) => {
                 }`}
               />
             </div>
-            <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 text-xs font-bold text-slate-700 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+            <div className="absolute hidden -bottom-8 left-1/2 -translate-x-1/2 text-xs font-bold text-slate-700 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
               {likeCount.toLocaleString()}
             </div>
           </button>
@@ -486,14 +488,14 @@ export const FeedCard = ({ post }: FeedCardProps) => {
           {/* Comment Button - Floating Bubble */}
           <button
             onClick={handleCommentClick}
-            className="floating-bubble group relative cursor-pointer"
+            className=" group relative cursor-pointer"
           >
             <div
-              className={`w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-cyan-500 flex items-center justify-center shadow-xl transition-all duration-300 group-hover:scale-125 group-hover:shadow-blue-300 ${showRipple === "comment" ? "ripple-effect" : ""}`}
+              className={`w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-cyan-500 flex items-center justify-center shadow-xl transition-all duration-300 group-hover:scale-105 group-hover:shadow-blue-300 ${showRipple === "comment" ? "ripple-effect" : ""}`}
             >
               <MessageCircle className="w-6 h-6 text-white" />
             </div>
-            <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 text-xs font-bold text-slate-700 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+            <div className="absolute hidden -bottom-8 left-1/2 -translate-x-1/2 text-xs font-bold text-slate-700 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
               Comments
             </div>
           </button>
@@ -501,14 +503,14 @@ export const FeedCard = ({ post }: FeedCardProps) => {
           {/* Share Button - Floating Bubble */}
           <button
             onClick={handleShareClick}
-            className="floating-bubble group relative cursor-pointer"
+            className=" group relative cursor-pointer"
           >
             <div
-              className={`w-12 h-12 rounded-full bg-gradient-to-br from-indigo-400 to-purple-500 flex items-center justify-center shadow-xl transition-all duration-300 group-hover:scale-125 group-hover:shadow-purple-300 ${showRipple === "share" ? "ripple-effect" : ""}`}
+              className={`w-10 h-10 rounded-full bg-gradient-to-br from-indigo-400 to-purple-500 flex items-center justify-center shadow-xl transition-all duration-300 group-hover:scale-105 group-hover:shadow-purple-300 ${showRipple === "share" ? "ripple-effect" : ""}`}
             >
               <Send className="w-6 h-6 text-white" />
             </div>
-            <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 text-xs font-bold text-slate-700 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+            <div className="absolute hidden -bottom-8 left-1/2 -translate-x-1/2 text-xs font-bold text-slate-700 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
               Share
             </div>
           </button>
@@ -599,7 +601,7 @@ export const FeedCard = ({ post }: FeedCardProps) => {
             {showAllComments && commentsList.length > 2 && (
               <button
                 onClick={() => setShowAllComments(false)}
-                className="w-full text-sm cursor-pointer text-slate-500 hover:text-slate-700 transition-colors font-medium py-2"
+                className="w-full text-sm text-slate-500 hover:text-slate-700 transition-colors font-medium py-2"
               >
                 Show less
               </button>
@@ -706,14 +708,14 @@ export const FeedCard = ({ post }: FeedCardProps) => {
                 setSelectedPeople([]);
                 setSearchQuery("");
               }}
-              className="flex-1 rounded-xl border-slate-300"
+              className="flex-1 cursor-pointer rounded-xl border-slate-300"
             >
               Cancel
             </Button>
             <Button
               onClick={handleSendShare}
               disabled={selectedPeople.length === 0}
-              className="flex-1 bg-gradient-to-r from-primary to-primary hover:from-primary hover:to-primary rounded-xl shadow-md"
+              className="flex-1 bg-gradient-to-r cursor-pointer from-primary to-primary hover:from-primary hover:to-primary rounded-xl shadow-md"
             >
               Send ({selectedPeople.length})
             </Button>

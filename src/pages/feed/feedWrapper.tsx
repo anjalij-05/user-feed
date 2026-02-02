@@ -1,5 +1,5 @@
 import { useOutletContext } from "react-router-dom";
-import CreatePost from "@/feed/createPost";
+import Feed from "@/pages/feed/feed";
 
 interface Post {
   id: number;
@@ -22,12 +22,12 @@ interface OutletContext {
   onPostCreated: (post: Post) => void;
 }
 
-const CreatePostWrapper = () => {
-  const { onPostCreated } = useOutletContext<OutletContext>();
+const FeedWrapper = () => {
+  const { userPosts } = useOutletContext<OutletContext>();
 
-  // console.log("CreatePostWrapper - onPostCreated function:", onPostCreated);
+  // console.log("FeedWrapper - userPosts:", userPosts);
 
-  return <CreatePost onPostCreated={onPostCreated} />;
+  return <Feed userPosts={userPosts} />;
 };
 
-export default CreatePostWrapper;
+export default FeedWrapper;

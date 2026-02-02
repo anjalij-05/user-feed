@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, Sparkles } from "lucide-react";
-import { FeedCard } from "@/feed/feed";
+import { FeedCard } from "@/pages/feed/feed";
 
 interface Post {
   id: number;
