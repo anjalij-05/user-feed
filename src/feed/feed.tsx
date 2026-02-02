@@ -599,7 +599,7 @@ export const FeedCard = ({ post }: FeedCardProps) => {
             {showAllComments && commentsList.length > 2 && (
               <button
                 onClick={() => setShowAllComments(false)}
-                className="w-full text-sm text-slate-500 hover:text-slate-700 transition-colors font-medium py-2"
+                className="w-full text-sm cursor-pointer text-slate-500 hover:text-slate-700 transition-colors font-medium py-2"
               >
                 Show less
               </button>
