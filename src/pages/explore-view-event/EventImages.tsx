@@ -6,7 +6,7 @@ import DummyImage from "@/assets/dummy_image.webp";
 import React, { useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Wave from "@/components/Wave";
-import { AttendeeType } from "@/types";
+import type { AttendeeType } from "@/types";
 import {
   ChevronLeft,
   ChevronRight,
@@ -45,7 +45,7 @@ const EventImages: React.FC<EventImagesProps> = ({
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
 
-  // ✅ ALL HOOKS MUST BE AT THE TOP - BEFORE ANY CONDITIONAL RETURNS
+  // ALL HOOKS MUST BE AT THE TOP - BEFORE ANY CONDITIONAL RETURNS
 
   // Fetch user images
   useEffect(() => {

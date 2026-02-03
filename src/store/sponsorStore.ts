@@ -1,5 +1,5 @@
 import { getAllEventsSponsors } from "@/api/sponsors";
-import { SponsorType } from "@/types";
+import type { SponsorType } from "@/types";
 import { create } from "zustand";
 
 interface SponsorStore {

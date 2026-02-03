@@ -10,8 +10,8 @@ import {
 } from "@/constants";
 import Wave from "@/components/Wave";
 import GoogleMap from "@/components/GoogleMap";
-import { AgendaType, AttendeeType, EventType } from "@/types";
-import ReactHlsPlayer from "react-hls-player";
+import type { AgendaType, AttendeeType, EventType } from "@/types";
+
 import { toast } from "sonner";
 import {
   ArrowRight,
@@ -1490,16 +1490,8 @@ const ExploreViewEvent: React.FC = () => {
                     />
                   </div>
 
-                  {/* Video Player */}
-                  <ReactHlsPlayer
-                    src={liveURL}
-                    autoPlay={true}
-                    muted={true} // Required for autoplay to work
-                    controls={true}
-                    width="100%"
-                    height="auto"
-                    playerRef={videoRef as React.RefObject<HTMLVideoElement>}
-                  />
+                 
+                  
 
                   {/* Active Agenda Overlay */}
                   {(() => {

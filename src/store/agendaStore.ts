@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { AgendaType } from "@/types";
+import type { AgendaType } from "@/types";
 import {
   deleteAgenda,
   getAgendaById,
@@ -7,7 +7,7 @@ import {
   importAgenda,
   updateAgenda,
 } from "@/api/agendas";
-import { BasicResponse, GetEventAgendasResponse } from "@/types/api-responses";
+import type { BasicResponse, GetEventAgendasResponse } from "@/types/api-responses";
 
 interface EventAgendas {
   event_id: number | null;

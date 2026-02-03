@@ -42,10 +42,10 @@ const UserFeedLayout = ({ userPosts, onPostCreated }: UserFeedLayoutProps) => {
   const navItems = [
     { to: "/", icon: Home, label: "Home" },
     { to: "/nearby-users", icon: User, label: "People" },
-    { to: "#", icon: Trophy, label: "Events" },
-    { to: "#", icon: MessageCircle, label: "Chats" },
-    { to: "#", icon: UserPlus, label: "Connections" },
-    { to: "#", icon: Bell, label: "Notifications" },
+    { to: "/events", icon: Trophy, label: "Events" },
+    { to: "/chats", icon: MessageCircle, label: "Chats" },
+    { to: "/connects", icon: UserPlus, label: "Connections" },
+    { to: "/updates", icon: Bell, label: "Notifications" },
     { to: "/user-feed/create-post", icon: PlusSquare, label: "Create" },
   ];
 

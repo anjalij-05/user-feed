@@ -1,6 +1,6 @@
 import { addAttendee, bulkDeleteAttendees, bulkUploadAttendees, customCheckIn, deleteAttendee, getAllEventsAttendees, getSingleEventAttendees, updateAttendee } from "@/api/attendees";
-import { AttendeeType } from "@/types";
-import { AddAttendeeResponse, AddBulkAttendeeResponse, BulkDeleteAttendeesResponse, CustomCheckInResponse, DeleteAttendeeResponse } from "@/types/api-responses";
+import type { AttendeeType } from "@/types";
+import type { AddAttendeeResponse, AddBulkAttendeeResponse, BulkDeleteAttendeesResponse, CustomCheckInResponse, DeleteAttendeeResponse } from "@/types/api-responses";
 import { create } from "zustand";
 
 interface AttendeeStore {

@@ -14,6 +14,8 @@ import ChatPage from "./pages/chats/chatPage";
 import Connects from "./pages/connects";
 import Updates from "./pages/updates";
 import ExploreAllEvents from "./pages/explore-all-events";
+import ProfileDetails from "./pages/userProfileDetails";
+import ExploreViewEvent from "./pages/explore-view-event";
 
 function App() {
   const [userPosts, setUserPosts] = useState<Post[]>([]);
@@ -56,8 +58,10 @@ function App() {
         <Route path="/chats" element={<ChatPage />} />
         <Route path="/connects" element={<Connects />} />
         <Route path="/updates" element={<Updates />} />
-        <Route path="/events" element={<ExploreAllEvents/>} />
-        <Route path="/chats" element={<ChatPage />} />
+        <Route path="/events" element={<ExploreAllEvents />} />
+        <Route path="events/:slug" element={<ExploreViewEvent />} />
+
+        <Route path="/profile/:id" element={<ProfileDetails />} />
       </Route>
     </Routes>
   );

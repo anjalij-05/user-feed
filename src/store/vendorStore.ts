@@ -1,7 +1,7 @@
 import { create } from "zustand";
 
 import { getAcquisitionVendors, getGiftingVendors, getEventSetupVendors } from "@/api/vendors";
-import { VendorCompanyType } from "@/types";
+import type { VendorCompanyType } from "@/types";
 
 export interface VendorStore {
     acquisitionVendors: VendorCompanyType[];

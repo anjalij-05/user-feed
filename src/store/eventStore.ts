@@ -1,7 +1,7 @@
 import { addEvent, deleteEvent, getAllEvents, updateEvent } from "@/api/events";
 import { create } from "zustand";
-import { AddEventType, EventType } from "@/types";
-import { AddEventResponse, DeleteEventResponse } from "@/types/api-responses";
+import type { AddEventType, EventType } from "@/types";
+import type { AddEventResponse, DeleteEventResponse } from "@/types/api-responses";
 
 interface EventStore {
   events: EventType[];

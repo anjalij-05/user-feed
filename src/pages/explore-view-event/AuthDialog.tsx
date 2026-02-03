@@ -20,8 +20,8 @@ import DummyImage from "@/assets/dummy_image.webp";
 import { getUserProfileImage } from "@/lib/utils";
 import axios from "axios";
 import { appUrl } from "@/constants";
-import type { RegisterForm } from "@/pages/user/validation/registerSchema";
-import { registerSchema } from "@/pages/user/validation/registerSchema";
+import type { RegisterForm } from "@/pages/validation/registerSchema";
+import { registerSchema } from "@/pages/validation/registerSchema";
 
 // Validation schemas
 const sendOtpSchema = yup.object({

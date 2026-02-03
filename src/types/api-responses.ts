@@ -1,4 +1,4 @@
-import { AttendeeType, EventType, UserType, SponsorType, AgendaType } from "./index";
+import type { AttendeeType, EventType, UserType, SponsorType, AgendaType } from "./index";
 
 export interface LoginResponse {
     status: number;

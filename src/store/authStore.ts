@@ -1,8 +1,8 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { login, getProfile } from "@/api/auth";
-import { UserType } from "@/types";
-import { LoginResponse } from "@/types/api-responses";
+import type { UserType } from "@/types";
+import type { LoginResponse } from "@/types/api-responses";
 import axios from "axios";
 import { domain } from "@/constants";
 

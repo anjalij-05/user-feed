@@ -1,5 +1,5 @@
 import { getAllCompanies, getAllDesignations, getAllIndustries } from "@/api/extras";
-import { CompanyType, DesignationType } from "@/types";
+import type { CompanyType, DesignationType } from "@/types";
 import { create } from "zustand";
 
 interface ExtrasStore {

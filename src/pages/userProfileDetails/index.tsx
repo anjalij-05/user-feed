@@ -67,7 +67,7 @@ import PremiumLogo from "@/assets/premium.webp";
 import ImageDialog from "@/components/imageDialogBox";
 import PremiumDialog from "@/components/premiumDialog";
 import axios from "axios";
-import { Event } from "@/types";
+import type { Event } from "@/types";
 import { Textarea } from "@/components/ui/textarea";
 
 const FALLBACK_LAT = 28.6139;
@@ -96,7 +96,7 @@ const AttendedEventCard = ({
       const response = await axios.get(`${domain}/api/all_events`);
 
       const filteredEvent = response.data.data.filter(
-        (e: Event) => e.uuid === event.eventUUID
+        (e: Event) => e.uuid === event.eventUUID,
       )[0];
 
       if (filteredEvent) {
@@ -153,7 +153,7 @@ const factorLabels: Record<string, string> = {
 };
 
 const parseUserImages = (
-  imagesData: string | string[] | undefined
+  imagesData: string | string[] | undefined,
 ): string[] => {
   if (!imagesData) return [];
   if (Array.isArray(imagesData)) return imagesData;
@@ -255,7 +255,7 @@ const ProfileDetails: React.FC = () => {
   const navigate = useNavigate();
   const { user, token } = useAppSelector((s) => s.auth);
   const { nearbyProfiles, publicProfiles } = useAppSelector(
-    (s) => s.nearByProfiles
+    (s) => s.nearByProfiles,
   );
 
   // Get connection data from Redux
@@ -265,7 +265,7 @@ const ProfileDetails: React.FC = () => {
   const { list } = useAppSelector((s) => s.notification);
   const { score, factorGroup } = useAppSelector((s) => s.tls);
   const { blockedUsers, loading: blockLoading } = useAppSelector(
-    (s) => s.blockUser
+    (s) => s.blockUser,
   );
   const dispatch = useAppDispatch();
 
@@ -330,7 +330,7 @@ const ProfileDetails: React.FC = () => {
 
     // Check if user is already connected (accepted connection)
     const isConnected = connectionIdData.some(
-      (conn: any) => conn.userId === id || conn._id === id
+      (conn: any) => conn.userId === id || conn._id === id,
     );
 
     if (isConnected) {
@@ -343,7 +343,7 @@ const ProfileDetails: React.FC = () => {
       (req: any) =>
         req.request_user_id === user._id &&
         req.receive_user_id === id &&
-        req.status === 1
+        req.status === 1,
     );
 
     // If we have connection data in Redux but user is not connected, don't fetch
@@ -391,13 +391,13 @@ const ProfileDetails: React.FC = () => {
 
   const nextImage = () => {
     setCurrentImageIndex((prev) =>
-      prev === coverImages.length - 1 ? 0 : prev + 1
+      prev === coverImages.length - 1 ? 0 : prev + 1,
     );
   };
 
   const prevImage = () => {
     setCurrentImageIndex((prev) =>
-      prev === 0 ? coverImages.length - 1 : prev - 1
+      prev === 0 ? coverImages.length - 1 : prev - 1,
     );
   };
 
@@ -420,7 +420,7 @@ const ProfileDetails: React.FC = () => {
     const uniqueEvents = filtered.reduce((acc: any[], current) => {
       const eventId = current.eventUUID || current._id;
       const isDuplicate = acc.some(
-        (event) => (event.eventUUID || event._id) === eventId
+        (event) => (event.eventUUID || event._id) === eventId,
       );
       if (!isDuplicate) {
         acc.push(current);
@@ -484,7 +484,7 @@ const ProfileDetails: React.FC = () => {
           token,
           loggedInUserId: user._id,
           toUserId: id,
-        })
+        }),
       ).unwrap();
     } catch (err) {
       console.error("Failed to send profile view notification", err);
@@ -506,7 +506,7 @@ const ProfileDetails: React.FC = () => {
             latitude: pos.coords.latitude,
             longitude: pos.coords.longitude,
             distance: 50,
-          })
+          }),
         ).unwrap(),
       ]);
     } catch (err: any) {
@@ -532,7 +532,7 @@ const ProfileDetails: React.FC = () => {
             id,
             pos.coords.latitude,
             pos.coords.longitude,
-            50
+            50,
           );
           details = data?.result?.details || null;
         } else {
@@ -621,7 +621,7 @@ const ProfileDetails: React.FC = () => {
   const pendingRequest = useMemo(() => {
     return list.find(
       (n: any) =>
-        n.from_user_id === id && JSON.parse(n.data || "{}").Type === "1"
+        n.from_user_id === id && JSON.parse(n.data || "{}").Type === "1",
     );
   }, [list, id]);
 
@@ -668,7 +668,7 @@ const ProfileDetails: React.FC = () => {
         (r: any) =>
           r.request_user_id === user._id &&
           r.receive_user_id === id &&
-          r.status === 1
+          r.status === 1,
       );
 
       if (!pendingReq) {
@@ -681,7 +681,7 @@ const ProfileDetails: React.FC = () => {
       const cancelRes = await cancelConnectionRequest(
         token,
         user._id,
-        pendingReq.receive_user_id
+        pendingReq.receive_user_id,
       );
 
       if (cancelRes?.status) {
@@ -704,7 +704,7 @@ const ProfileDetails: React.FC = () => {
       const connectionRecord = connectionsList.find(
         (c: any) =>
           (c.from_user_id === user._id && c.to_user_id === id) ||
-          (c.from_user_id === id && c.to_user_id === user._id)
+          (c.from_user_id === id && c.to_user_id === user._id),
       );
 
       if (!connectionRecord) {
@@ -715,7 +715,7 @@ const ProfileDetails: React.FC = () => {
 
       const connectionId = connectionRecord._id;
       const res = await dispatch(
-        removeConnection({ token, userId: user._id, connectionId })
+        removeConnection({ token, userId: user._id, connectionId }),
       ).unwrap();
 
       if (res?.status) {
@@ -755,7 +755,7 @@ const ProfileDetails: React.FC = () => {
           targetUserId: id,
           status: "1",
           note: bookmarkNote.trim() || undefined, // Send note if provided
-        })
+        }),
       ).unwrap();
 
       if (res?.status) {
@@ -768,7 +768,7 @@ const ProfileDetails: React.FC = () => {
             latitude: FALLBACK_LAT,
             longitude: FALLBACK_LNG,
             distance: 50,
-          })
+          }),
         );
         setShowBookmarkDialog(false);
         setBookmarkNote("");
@@ -793,7 +793,7 @@ const ProfileDetails: React.FC = () => {
           loggedInUserId: user._id,
           targetUserId: id,
           status: "0",
-        })
+        }),
       ).unwrap();
 
       if (res?.status) {
@@ -806,7 +806,7 @@ const ProfileDetails: React.FC = () => {
             latitude: FALLBACK_LAT,
             longitude: FALLBACK_LNG,
             distance: 50,
-          })
+          }),
         );
         setBookmarkNote("");
       } else {
@@ -833,7 +833,7 @@ const ProfileDetails: React.FC = () => {
           connectionReqId: requestId,
           notificationId: pendingRequest._id,
           status: "1",
-        })
+        }),
       ).unwrap();
 
       dispatch(removeNotification(pendingRequest._id));
@@ -858,7 +858,7 @@ const ProfileDetails: React.FC = () => {
           connectionReqId: requestId,
           notificationId: pendingRequest._id,
           status: "2",
-        })
+        }),
       ).unwrap();
 
       dispatch(removeNotification(pendingRequest._id));
@@ -877,7 +877,7 @@ const ProfileDetails: React.FC = () => {
           token,
           userId: user._id,
           blockUserId: id,
-        })
+        }),
       ).unwrap();
 
       toast.success("User blocked successfully");
@@ -896,7 +896,7 @@ const ProfileDetails: React.FC = () => {
           token,
           userId: user._id,
           unblockUserId: id,
-        })
+        }),
       ).unwrap();
 
       toast.success("User unblocked successfully");
@@ -1235,7 +1235,7 @@ const ProfileDetails: React.FC = () => {
             <img
               src={getUserProfileImage(
                 user?.imageBaseUrl as string,
-                coverImages[currentImageIndex]
+                coverImages[currentImageIndex],
               )}
               alt={`Cover ${currentImageIndex + 1}`}
               className="absolute inset-0 w-full h-full object-cover"
@@ -1360,7 +1360,7 @@ const ProfileDetails: React.FC = () => {
                   <img
                     src={getUserProfileImage(
                       user?.imageBaseUrl as string,
-                      profile.profileImage
+                      profile.profileImage,
                     )}
                     alt={`${profile.first_name} ${profile.last_name}`}
                     className="w-full h-full object-cover rounded-full"
@@ -1853,7 +1853,7 @@ const ProfileDetails: React.FC = () => {
                                 {showPhone
                                   ? profile?.mobileNumber
                                   : `••••••${String(
-                                      profile?.mobileNumber
+                                      profile?.mobileNumber,
                                     ).slice(-4)}`}
                               </span>
                             </div>
@@ -2181,7 +2181,7 @@ const ProfileDetails: React.FC = () => {
                           className="w-full bg-orange-500 hover:bg-orange-600 text-white cursor-pointer text-sm"
                           onClick={() =>
                             navigate(
-                              `/compare-leadership-scores?user1=${user?._id}&user2=${id}`
+                              `/compare-leadership-scores?user1=${user?._id}&user2=${id}`,
                             )
                           }
                         >
@@ -2294,7 +2294,7 @@ const ProfileDetails: React.FC = () => {
                                     member.profileImage
                                       ? getUserProfileImage(
                                           user?.imageBaseUrl || "",
-                                          member.profileImage
+                                          member.profileImage,
                                         )
                                       : DummyImage
                                   }
