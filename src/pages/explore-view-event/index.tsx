@@ -6,7 +6,7 @@ import {
   domain,
   appDomain,
   UserAvatar,
-  appUrl,
+  // appUrl,
 } from "@/constants";
 import Wave from "@/components/Wave";
 import GoogleMap from "@/components/GoogleMap";
