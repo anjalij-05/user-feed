@@ -4,7 +4,7 @@ import { fetchAttendedEvents, type AttendedEvent } from "@/app-api/attendedEvent
 import { domain } from "@/constants";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { Event } from "@/types";
+import type { Event } from "@/types";
 
 export interface AttendedEventCardProps {
   event: AttendedEvent;

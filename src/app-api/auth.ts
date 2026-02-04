@@ -1,7 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import { appUrl } from "@/constants";
-import type { RegisterForm } from "@/pages/user/validation/registerSchema";
+import type { RegisterForm } from "@/pages/validation/registerSchema";
 
 // Send OTP API
 export const sendOtp = createAsyncThunk<

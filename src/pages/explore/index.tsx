@@ -1217,7 +1217,7 @@ const Explore: React.FC = () => {
             </button>
           )}
         </div>
-        {center && !locationDenied && (
+        {isLoaded && center && !locationDenied && (
           <GoogleMap
             mapContainerStyle={containerStyle}
             center={center}

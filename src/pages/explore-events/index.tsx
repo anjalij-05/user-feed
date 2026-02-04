@@ -5,7 +5,7 @@ import { Volume2, VolumeX } from 'lucide-react';
 import Video from '@/assets/video.mp4';
 import Phone from '@/assets/frame.png';
 import Footer from '@/components/Footer';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 
 const ExploreEvents: React.FC = () => {
 

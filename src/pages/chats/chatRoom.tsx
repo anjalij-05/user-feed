@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import {
   chatService,
-  ChatUser,
+  type ChatUser,
   type FirebaseMessage,
 } from "@/firebase/chatService";
 import {

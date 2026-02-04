@@ -7,7 +7,7 @@ import Instagram from "@/assets/social-media/instagram.svg";
 import LogoFullWhite from "@/assets/logo-full-white.svg";
 import LogoWhite from "@/assets/logo-white.svg";
 import FooterBg from "@/assets/footerbg.webp";
-import AppleStore from "./AppleStore";
+import AppleStore from "@/components/AppleStore";
 import GooglePlay from "./GooglePlay";
 import AwsSsl from "@/assets/aws-ssl.webp";
 import { HeartIcon } from "lucide-react";

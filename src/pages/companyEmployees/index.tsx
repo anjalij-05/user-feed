@@ -8,7 +8,7 @@ import DummyImage from "@/assets/dummy_image.webp";
 import TlsImage from "@/assets/tlsImage.webp";
 import { getUserProfileImage } from "@/lib/utils";
 import { toast } from "sonner";
-import { Profile } from "../explore";
+import type { Profile } from "../explore";
 
 const CompanyEmployees: React.FC = () => {
   const dispatch = useAppDispatch();

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import DummyImage from "@/assets/dummy_image.webp";
 import { Link, useNavigate } from "react-router-dom";
 import { useAppSelector } from "@/redux/hooks";

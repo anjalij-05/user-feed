@@ -1,6 +1,6 @@
 import React from 'react';
 import Tls from "@/assets/tls.webp";
-import AppleStore from '../AppleStore';
+import AppleStore from '@/components/AppleStore';
 import GooglePlay from '../GooglePlay';
 
 const TlsSection: React.FC = () => {
