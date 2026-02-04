@@ -840,7 +840,7 @@ const ExploreViewEvent: React.FC = () => {
       completeEventData &&
       videoRef.current
     ) {
-      const videoUrl = `${appUrl}/stream/${completeEventData?.user_uuid}__${currentEvent.uuid}/live.m3u8`;
+      // const videoUrl = `${appUrl}/stream/${completeEventData?.user_uuid}__${currentEvent.uuid}/live.m3u8`;
       // setliveURL(videoUrl);
       //   setliveURL(
       //     "https://quantamcoder.space/stream/63de4c24-3bb8-4bcf-88f2-025f6cdee956__dad9a089-4628-4459-8736-5027a1168a78/live.m3u8"
