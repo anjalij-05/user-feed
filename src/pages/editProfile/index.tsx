@@ -20,10 +20,10 @@ import { appUrl } from "@/constants";
 import axios from "axios";
 import SkillsSelector from "@/components/skillsSection";
 import {
-  Awards,
+  type Awards,
   EditAwards,
   EditFeatured,
-  Featured,
+  type Featured,
 } from "@/components/awardAndFeatured";
 
 // Define the EditSection type - UPDATED to include "personal"

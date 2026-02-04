@@ -19,7 +19,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import EditProfile from "@/pages/user/editProfile";
+import EditProfile from "@/pages/editProfile";
 import { getUserProfileImage, safeParseArray } from "@/lib/utils";
 import ProfileImageUploader from "@/components/profileImageUploader";
 import { fetchTlsScore } from "@/app-api/tls";

@@ -11,9 +11,9 @@ const ProfileSetting: React.FC = () => {
   const navigate = useNavigate();
   const [dialogOpen, setDialogOpen] = useState(false);
 
-  useEffect(() => {
-    if (!user) navigate("/login");
-  }, [user, navigate]);
+  // useEffect(() => {
+  //   if (!user) navigate("/user-login");
+  // }, [user, navigate]);
 
   const profileImg = user?.profileImage
     ? getUserProfileImage(user.imageBaseUrl, user.profileImage)

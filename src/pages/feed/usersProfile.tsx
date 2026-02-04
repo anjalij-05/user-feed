@@ -86,7 +86,9 @@ export default function UserPostProfile({ allPosts }: UserPostProfileProps) {
           </div>
         </div>
         <div className="flex gap-4">
+          <Link to="/profile-setting">
           <Settings className="w-6 h-6 cursor-pointer hover:text-gray-600 transition-colors" />
+          </Link>
           <MoreHorizontal className="w-6 h-6 cursor-pointer hover:text-gray-600 transition-colors" />
         </div>
       </div>
@@ -110,13 +112,13 @@ export default function UserPostProfile({ allPosts }: UserPostProfileProps) {
                 <div className="font-semibold text-lg">
                   {(clickedPost.likes * 10).toLocaleString()}
                 </div>
-                <div className="text-gray-600 text-sm">followers</div>
+                <div className="text-gray-600 text-sm">connections</div>
               </div>
               <div className="text-center cursor-pointer hover:text-gray-600 transition-colors">
                 <div className="font-semibold text-lg">
                   {(clickedPost.comments * 8).toLocaleString()}
                 </div>
-                <div className="text-gray-600 text-sm">following</div>
+                <div className="text-gray-600 text-sm">tls</div>
               </div>
             </div>
           </div>
@@ -134,15 +136,18 @@ export default function UserPostProfile({ allPosts }: UserPostProfileProps) {
         <div className="flex gap-2">
           <button
             onClick={() => setIsFollowing(!isFollowing)}
-            className={`flex-1 font-semibold py-2 rounded-lg transition-colors ${
+            className={`flex-1 font-semibold py-2 rounded-lg transition-colors cursor-pointer ${
               isFollowing
                 ? "bg-gray-200 hover:bg-gray-300 text-gray-800"
-                : "bg-primary text-white hover:bg-blue-700"
+                : "bg-primary text-white hover:primary-dark"
             }`}
           >
             {isFollowing ? "Following" : "Follow"}
           </button>
-          <button className="flex-1 bg-gray-200 cursor-pointer font-semibold py-2 rounded-lg hover:bg-gray-300 transition-colors">
+          <button
+            className="flex-1 bg-gray-200 cursor-pointer font-semibold py-2 rounded-lg hover:bg-gray-300 transition-colors"
+            onClick={() => navigate("/chats")}
+          >
             Message
           </button>
           <button className="bg-gray-200 px-3 py-2 rounded-lg hover:bg-gray-300 transition-colors">

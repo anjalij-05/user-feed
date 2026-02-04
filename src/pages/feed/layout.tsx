@@ -51,6 +51,22 @@ const UserFeedLayout = ({ userPosts, onPostCreated }: UserFeedLayoutProps) => {
 
   return (
     <div className="min-h-screen pb-16 lg:pb-0">
+      {/* Mobile Top Navbar */}
+      <header className="lg:hidden fixed top-0 left-0 right-0 bg-background border-b border-border/40 z-30 px-4 py-3">
+        <div className="flex items-center justify-between">
+          <Navbar />
+          <Link to="/user-feed/create-user-profile">
+            <Avatar className="w-8 h-8">
+              <AvatarImage
+                src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100"
+                className="object-cover"
+              />
+              <AvatarFallback>AZ</AvatarFallback>
+            </Avatar>
+          </Link>
+        </div>
+      </header>
+
       {/* Desktop Sidebar */}
       <aside className="hidden lg:block fixed left-0 top-0 h-screen w-[244px] border-r border-border/40 px-3 py-8 bg-background z-20">
         <Navbar />
@@ -111,29 +127,11 @@ const UserFeedLayout = ({ userPosts, onPostCreated }: UserFeedLayoutProps) => {
               <span className="text-xs font-medium">{item.label}</span>
             </Link>
           ))}
-
-          <Link
-            to="/user-feed/create-user-profile"
-            className={`flex flex-col items-center gap-1 px-3 py-2 rounded-lg transition-colors ${
-              isActive("/user-feed/create-user-profile")
-                ? "text-primary"
-                : "text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            <Avatar className="w-6 h-6">
-              <AvatarImage
-                src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100"
-                className="object-cover"
-              />
-              <AvatarFallback className="text-xs">AZ</AvatarFallback>
-            </Avatar>
-            <span className="text-xs font-medium">Profile</span>
-          </Link>
         </div>
       </nav>
 
       {/* Main Content */}
-      <main className="lg:ml-[244px] min-h-screen">
+      <main className="lg:ml-[244px] pt-16 lg:pt-0 min-h-screen">
         <Outlet context={{ userPosts, onPostCreated }} />
       </main>
     </div>

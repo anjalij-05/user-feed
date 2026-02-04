@@ -15,6 +15,6 @@
         "./src/*"
       ]
     },
-    "forceConsistentCasingInFileNames": true
+    // "forceConsistentCasingInFileNames": true
   }
 }

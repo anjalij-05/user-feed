@@ -42,8 +42,8 @@ export default function UserProfile({ posts }: UserProfileProps) {
     username: "azwedo_drdr",
     bio: "📸 Content Creator",
     posts: posts.length,
-    followers: 12500,
-    following: 890,
+    connections: 12500,
+    tls: 890,
     profilePic:
       "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop",
     isVerified: true,
@@ -138,7 +138,9 @@ export default function UserProfile({ posts }: UserProfileProps) {
           <h1 className="text-xl font-semibold">{profileData.username}</h1>
         </div>
         <div className="flex gap-4">
+          <Link to="/profile-setting">
           <Settings className="w-6 h-6 cursor-pointer hover:text-gray-600 transition-colors" />
+          </Link>
           <MoreHorizontal className="w-6 h-6 cursor-pointer hover:text-gray-600 transition-colors" />
         </div>
       </div>
@@ -162,15 +164,15 @@ export default function UserProfile({ posts }: UserProfileProps) {
               </div>
               <div className="text-center cursor-pointer">
                 <div className="font-semibold text-lg">
-                  {profileData.followers.toLocaleString()}
+                  {profileData.connections.toLocaleString()}
                 </div>
-                <div className="text-gray-600 text-sm">followers</div>
+                <div className="text-gray-600 text-sm">connections</div>
               </div>
               <div className="text-center cursor-pointer">
                 <div className="font-semibold text-lg">
-                  {profileData.following.toLocaleString()}
+                  {profileData.tls.toLocaleString()}
                 </div>
-                <div className="text-gray-600 text-sm">following</div>
+                <div className="text-gray-600 text-sm">tls</div>
               </div>
             </div>
           </div>
@@ -185,7 +187,7 @@ export default function UserProfile({ posts }: UserProfileProps) {
 
         <div className="flex gap-2">
           <button
-            onClick={handleEditProfile}
+            onClick={() => handleEditProfile()}
             className="flex-1 bg-gray-200 cursor-pointer font-semibold py-1.5 rounded-lg hover:bg-gray-300 transition"
           >
             Edit profile

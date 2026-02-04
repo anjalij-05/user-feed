@@ -16,6 +16,10 @@ import Updates from "./pages/updates";
 import ExploreAllEvents from "./pages/explore-all-events";
 import ProfileDetails from "./pages/userProfileDetails";
 import ExploreViewEvent from "./pages/explore-view-event";
+import UserLogin from "./pages/login";
+import Signup from "./pages/signup";
+import ProfileSetting from "./pages/profile-setting";
+import MyProfile from "./pages/my-profile";
 
 function App() {
   const [userPosts, setUserPosts] = useState<Post[]>([]);
@@ -60,8 +64,11 @@ function App() {
         <Route path="/updates" element={<Updates />} />
         <Route path="/events" element={<ExploreAllEvents />} />
         <Route path="events/:slug" element={<ExploreViewEvent />} />
-
         <Route path="/profile/:id" element={<ProfileDetails />} />
+        <Route path="/my-profile" element={<MyProfile />} />
+        <Route path="/profile-setting" element={<ProfileSetting />} />
+        <Route path="/user-login" element={<UserLogin />} />
+        <Route path="/user-signup" element={<Signup />} />
       </Route>
     </Routes>
   );

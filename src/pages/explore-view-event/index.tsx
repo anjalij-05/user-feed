@@ -11,7 +11,7 @@ import {
 import Wave from "@/components/Wave";
 import GoogleMap from "@/components/GoogleMap";
 import type { AgendaType, AttendeeType, EventType } from "@/types";
-
+// import ReactHlsPlayer from "react-hls-player";
 import { toast } from "sonner";
 import {
   ArrowRight,
@@ -54,6 +54,13 @@ import { AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import AuthDialog from "./AuthDialog";
 import useEventStore from "@/store/eventStore";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface CompanySponsor {
   id: number;
@@ -200,12 +207,20 @@ const CustomComboBox = React.memo(
 
     // Handle input change
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      const newValue = e.target.value;
-      setInputValue(newValue);
-      setSearchTerm(newValue);
+      const { name, value } = e.target;
+
+      // Allow only letters for first & last name
+      if (name === "first_name" || name === "last_name") {
+        if (!/^[A-Za-z\s.'-]*$/.test(value)) {
+          return; // block numbers & special chars
+        }
+      }
+
+      setInputValue(value);
+      setSearchTerm(value);
       setIsOpen(true);
       setSelectedIndex(-1);
-      onValueChange(newValue);
+      onValueChange(value);
     };
 
     // Handle key down for navigation
@@ -433,109 +448,101 @@ const ExploreViewEvent: React.FC = () => {
     acceptance: "1",
   });
 
+  // Add form errors state
+  const [formErrors, setFormErrors] = useState({
+    first_name: "",
+    last_name: "",
+    email_id: "",
+    country_code: "",
+    phone_number: "",
+    company_name: "",
+    job_title: "",
+  });
+
+  // Country options
+  const countryOptions = [
+    { code: "91", name: "India", abbreviation: "IN" },
+    { code: "971", name: "Dubai", abbreviation: "AE" },
+  ];
+
   const validateForm = () => {
     let isValid = true;
     const errors = {
       first_name: "",
       last_name: "",
-      phone_number: "",
       email_id: "",
       country_code: "",
+      phone_number: "",
       company_name: "",
       job_title: "",
     };
 
+    // First Name validation
     if (!userAccount.first_name.trim()) {
       errors.first_name = "First name is required";
       isValid = false;
-      toast("First name is required", {
-        className:
-          "!bg-red-800 !text-white !font-sans !font-regular tracking-wider flex items-center gap-2",
-        icon: <CircleXIcon className="size-5" />,
-      });
-      return;
+    } else if (!/^[A-Za-z\s.'-]+$/.test(userAccount.first_name)) {
+      errors.first_name = "First name can contain only letters";
+      isValid = false;
     }
 
+    // Last Name validation
     if (!userAccount.last_name.trim()) {
       errors.last_name = "Last name is required";
       isValid = false;
-      toast("Last name is required", {
-        className:
-          "!bg-red-800 !text-white !font-sans !font-regular tracking-wider flex items-center gap-2",
-        icon: <CircleXIcon className="size-5" />,
-      });
-      return;
+    } else if (!/^[A-Za-z\s.'-]+$/.test(userAccount.last_name)) {
+      errors.last_name = "Last name can contain only letters";
+      isValid = false;
     }
 
-    if (!userAccount.country_code.trim()) {
-      errors.country_code = "Country code is required";
-      isValid = false;
-      toast("Country Code is required", {
-        className:
-          "!bg-red-800 !text-white !font-sans !font-regular tracking-wider flex items-center gap-2",
-        icon: <CircleXIcon className="size-5" />,
-      });
-      return;
-    }
-
-    if (!userAccount.phone_number.trim()) {
-      errors.phone_number = "Mobile number is required";
-      isValid = false;
-      toast("Mobile number is required", {
-        className:
-          "!bg-red-800 !text-white !font-sans !font-regular tracking-wider flex items-center gap-2",
-        icon: <CircleXIcon className="size-5" />,
-      });
-    } else if (!/^\d{10}$/.test(userAccount.phone_number)) {
-      errors.phone_number = "Please enter a valid 10-digit mobile number";
-      isValid = false;
-      toast("Please enter a valid 10-digit mobile number", {
-        className:
-          "!bg-red-800 !text-white !font-sans !font-regular tracking-wider flex items-center gap-2",
-        icon: <CircleXIcon className="size-5" />,
-      });
-      return;
-    }
-
+    // Email validation
     if (!userAccount.email_id.trim()) {
       errors.email_id = "Email is required";
       isValid = false;
-      toast("Email is required", {
-        className:
-          "!bg-red-800 !text-white !font-sans !font-regular tracking-wider flex items-center gap-2",
-        icon: <CircleXIcon className="size-5" />,
-      });
     } else if (!/\S+@\S+\.\S+/.test(userAccount.email_id)) {
       errors.email_id = "Please enter a valid email address";
       isValid = false;
-      toast("Please enter a valid email address", {
-        className:
-          "!bg-red-800 !text-white !font-sans !font-regular tracking-wider flex items-center gap-2",
-        icon: <CircleXIcon className="size-5" />,
-      });
-      return;
     }
 
+    // Country Code validation
+    if (!userAccount.country_code.trim()) {
+      errors.country_code = "Country is required";
+      isValid = false;
+    }
+
+    // Phone Number validation
+    if (!userAccount.phone_number.trim()) {
+      errors.phone_number = "Mobile number is required";
+      isValid = false;
+    } else if (!/^\d{10}$/.test(userAccount.phone_number)) {
+      errors.phone_number = "Please enter a valid 10-digit mobile number";
+      isValid = false;
+    }
+
+    // Company Name validation
     if (!userAccount.company_name.trim()) {
-      errors.company_name = "Please select a company";
+      errors.company_name = "Company name is required";
       isValid = false;
-      toast("Please select a company", {
-        className:
-          "!bg-red-800 !text-white !font-sans !font-regular tracking-wider flex items-center gap-2",
-        icon: <CircleXIcon className="size-5" />,
-      });
-      return;
     }
 
+    // Job Title validation
     if (!userAccount.job_title.trim()) {
-      errors.job_title = "Please select a job title";
+      errors.job_title = "Designation is required";
       isValid = false;
-      toast("Please select a job title", {
-        className:
-          "!bg-red-800 !text-white !font-sans !font-regular tracking-wider flex items-center gap-2",
-        icon: <CircleXIcon className="size-5" />,
-      });
-      return;
+    }
+
+    setFormErrors(errors);
+
+    // Show first error in toast
+    if (!isValid) {
+      const firstError = Object.values(errors).find((error) => error !== "");
+      if (firstError) {
+        toast(firstError, {
+          className:
+            "!bg-red-800 !text-white !font-sans !font-regular tracking-wider flex items-center gap-2",
+          icon: <CircleXIcon className="size-5" />,
+        });
+      }
     }
 
     return isValid;
@@ -1010,10 +1017,40 @@ const ExploreViewEvent: React.FC = () => {
       ...prev,
       [name]: value,
     }));
+
+    // Clear error for this field
+    setFormErrors((prev) => ({
+      ...prev,
+      [name]: "",
+    }));
+  };
+
+  // Add handler for country code change
+  const handleCountryCodeChange = (value: string) => {
+    setUserAccount((prev) => ({
+      ...prev,
+      country_code: value,
+    }));
+
+    // Clear error for country code
+    setFormErrors((prev) => ({
+      ...prev,
+      country_code: "",
+    }));
   };
 
   const handleCreateAccount = async () => {
     if (!validateForm()) return;
+
+    console.log("Button clicked!"); // Add this
+    console.log("Form data:", userAccount); // Add this
+
+    if (!validateForm()) {
+      console.log("Validation failed!"); // Add this
+      return;
+    }
+
+    console.log("Validation passed, submitting..."); // Add this
 
     try {
       setIsLoading(true);
@@ -1152,6 +1189,16 @@ const ExploreViewEvent: React.FC = () => {
     return () => clearInterval(interval);
   }, [showLiveStream, agendaData, currentEvent]);
 
+  // Set default country code when dialog opens
+  useEffect(() => {
+    if (open && !userAccount.country_code) {
+      setUserAccount((prev) => ({
+        ...prev,
+        country_code: "91", // Default to India
+      }));
+    }
+  }, [open]);
+
   const isEventDatePassed = () => {
     if (!currentEvent?.event_start_date) return false;
 
@@ -1206,13 +1253,6 @@ const ExploreViewEvent: React.FC = () => {
     });
   };
 
-  if (isLoading) {
-    return (
-      <div className="w-full h-screen flex justify-center items-center">
-        <Wave />
-      </div>
-    );
-  }
   // Use currentEvent if available, otherwise fallback to temp from store
   const eventData = currentEvent || temp;
 
@@ -1230,6 +1270,14 @@ const ExploreViewEvent: React.FC = () => {
   useEffect(() => {
     document.title = pageTitle;
   }, [pageTitle]);
+
+  if (isLoading) {
+    return (
+      <div className="w-full h-screen flex justify-center items-center">
+        <Wave />
+      </div>
+    );
+  }
 
   return (
     <React.Fragment>
@@ -1397,7 +1445,7 @@ const ExploreViewEvent: React.FC = () => {
                   <Button
                     disabled={isEventDatePassed()}
                     onClick={() => setOpen(true)}
-                    className="w-full h-12 mt-4"
+                    className="w-full h-12 mt-4 cursor-pointer"
                   >
                     Get an Invite
                   </Button>
@@ -1490,8 +1538,16 @@ const ExploreViewEvent: React.FC = () => {
                     />
                   </div>
 
-                 
-                  
+                  {/* Video Player */}
+                  {/* <ReactHlsPlayer
+                    src={liveURL}
+                    autoPlay={true}
+                    muted={true} // Required for autoplay to work
+                    controls={true}
+                    width="100%"
+                    height="auto"
+                    playerRef={videoRef as React.RefObject<HTMLVideoElement>}
+                  /> */}
 
                   {/* Active Agenda Overlay */}
                   {(() => {
@@ -2965,7 +3021,7 @@ const ExploreViewEvent: React.FC = () => {
         </div>
 
         <Dialog open={open} onOpenChange={setOpen}>
-          <DialogContent className="bg-muted/80 backdrop-blur-2xl">
+          <DialogContent className="bg-muted/80 backdrop-blur-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle className="text-center text-2xl">
                 Get an Invite
@@ -2973,18 +3029,28 @@ const ExploreViewEvent: React.FC = () => {
 
               <div>
                 {/* First Name & Last Name */}
-                <div className="flex gap-5 justify-between">
+                <div className="flex gap-5 justify-between flex-col sm:flex-row">
                   <div className="flex mt-5 gap-2 flex-col w-full">
                     <Label className="font-semibold">
                       First Name <span className="text-secondary">*</span>
                     </Label>
-                    <div className="input h-12! min-w-full! relative p-1! flex items-center justify-end">
+                    <div className="relative">
                       <Input
                         value={userAccount.first_name}
                         onChange={handleInputChange}
                         name="first_name"
-                        className="input h-full! min-w-full absolute right-0 text-base z-10"
+                        className={`h-12 text-base ${
+                          formErrors.first_name
+                            ? "border-red-500 focus-visible:ring-red-500"
+                            : ""
+                        }`}
+                        placeholder="Enter first name"
                       />
+                      {formErrors.first_name && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {formErrors.first_name}
+                        </p>
+                      )}
                     </div>
                   </div>
 
@@ -2992,45 +3058,104 @@ const ExploreViewEvent: React.FC = () => {
                     <Label className="font-semibold">
                       Last Name <span className="text-secondary">*</span>
                     </Label>
-                    <div className="input h-12! min-w-full! relative p-1! flex items-center justify-end">
+                    <div className="relative">
                       <Input
                         value={userAccount.last_name}
                         onChange={handleInputChange}
                         name="last_name"
-                        className="input h-full! min-w-full absolute right-0 text-base z-10"
+                        className={`h-12 text-base ${
+                          formErrors.last_name
+                            ? "border-red-500 focus-visible:ring-red-500"
+                            : ""
+                        }`}
+                        placeholder="Enter last name"
                       />
+                      {formErrors.last_name && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {formErrors.last_name}
+                        </p>
+                      )}
                     </div>
                   </div>
                 </div>
 
-                {/* Email & Mobile Number */}
+                {/* Email */}
                 <div className="flex gap-5 flex-col justify-between mt-5">
                   <div className="flex gap-2 flex-col w-full">
                     <Label className="font-semibold">
                       Email <span className="text-secondary">*</span>
                     </Label>
-                    <div className="input h-12! min-w-full! relative p-1! flex items-center justify-end">
+                    <div className="relative">
                       <Input
                         value={userAccount.email_id}
                         onChange={handleInputChange}
                         name="email_id"
-                        className="input h-full! min-w-full absolute right-0 text-base z-10"
+                        type="email"
+                        className={`h-12 text-base ${
+                          formErrors.email_id
+                            ? "border-red-500 focus-visible:ring-red-500"
+                            : ""
+                        }`}
+                        placeholder="Enter email address"
                       />
+                      {formErrors.email_id && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {formErrors.email_id}
+                        </p>
+                      )}
                     </div>
                   </div>
 
-                  <div className="flex gap-5">
-                    <div className="flex gap-2 flex-col w-40">
+                  {/* Country Code & Mobile Number */}
+                  <div className="flex gap-5 flex-col sm:flex-row">
+                    <div className="flex gap-2 flex-col w-full sm:w-52">
                       <Label className="font-semibold">
-                        Country Code <span className="text-secondary">*</span>
+                        Country <span className="text-secondary">*</span>
                       </Label>
-                      <div className="input h-12! min-w-full! relative p-1! flex items-center justify-end">
-                        <Input
+                      <div className="relative">
+                        <Select
                           value={userAccount.country_code}
-                          onChange={handleInputChange}
-                          name="country_code"
-                          className="input h-full! min-w-full absolute right-0 text-base z-10"
-                        />
+                          onValueChange={handleCountryCodeChange}
+                        >
+                          <SelectTrigger
+                            className={`h-12 text-base ${
+                              formErrors.country_code
+                                ? "border-red-500 focus:ring-red-500"
+                                : ""
+                            }`}
+                          >
+                            <SelectValue placeholder="Select country">
+                              {userAccount.country_code && (
+                                <span className="flex items-center gap-2">
+                                  {
+                                    countryOptions.find(
+                                      (c) =>
+                                        c.code === userAccount.country_code,
+                                    )?.abbreviation
+                                  }
+                                </span>
+                              )}
+                            </SelectValue>
+                          </SelectTrigger>
+                          <SelectContent>
+                            {countryOptions.map((country) => (
+                              <SelectItem
+                                key={country.code}
+                                value={country.code}
+                              >
+                                <span className="flex items-center gap-2">
+                                  {country.name} ({country.abbreviation}) (+
+                                  {country.code})
+                                </span>
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        {formErrors.country_code && (
+                          <p className="text-red-500 text-xs mt-1">
+                            {formErrors.country_code}
+                          </p>
+                        )}
                       </div>
                     </div>
 
@@ -3038,13 +3163,25 @@ const ExploreViewEvent: React.FC = () => {
                       <Label className="font-semibold">
                         Mobile Number <span className="text-secondary">*</span>
                       </Label>
-                      <div className="input h-12! min-w-full! relative p-1! flex items-center justify-end">
+                      <div className="relative">
                         <Input
                           value={userAccount.phone_number}
                           onChange={handleInputChange}
                           name="phone_number"
-                          className="input h-full! min-w-full absolute right-0 text-base z-10"
+                          type="tel"
+                          maxLength={10}
+                          className={`h-12 text-base ${
+                            formErrors.phone_number
+                              ? "border-red-500 focus-visible:ring-red-500"
+                              : ""
+                          }`}
+                          placeholder="10-digit mobile number"
                         />
+                        {formErrors.phone_number && (
+                          <p className="text-red-500 text-xs mt-1">
+                            {formErrors.phone_number}
+                          </p>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -3052,46 +3189,72 @@ const ExploreViewEvent: React.FC = () => {
 
                 {/* Company Name */}
                 <div className="flex gap-5 justify-between mt-5">
-                  <CustomComboBox
-                    label="Company Name"
-                    value={userAccount.company_name}
-                    onValueChange={(value: string) =>
-                      setUserAccount((prev) => ({
-                        ...prev,
-                        company_name: value,
-                      }))
-                    }
-                    placeholder="Type or select company"
-                    options={companies.map((company, index) => ({
-                      id: index + 1,
-                      name: company.company,
-                    }))}
-                    required
-                  />
+                  <div className="w-full">
+                    <CustomComboBox
+                      label="Company Name"
+                      value={userAccount.company_name}
+                      onValueChange={(value: string) => {
+                        setUserAccount((prev) => ({
+                          ...prev,
+                          company_name: value,
+                        }));
+                        setFormErrors((prev) => ({
+                          ...prev,
+                          company_name: "",
+                        }));
+                      }}
+                      placeholder="Type or select company"
+                      options={companies.map((company, index) => ({
+                        id: index + 1,
+                        name: company.company,
+                      }))}
+                      required
+                    />
+                    {formErrors.company_name && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {formErrors.company_name}
+                      </p>
+                    )}
+                  </div>
                 </div>
 
                 {/* Designation */}
                 <div className="flex gap-5 justify-between mt-5">
-                  <CustomComboBox
-                    label="Designation"
-                    value={userAccount.job_title}
-                    onValueChange={(value: string) =>
-                      setUserAccount((prev) => ({ ...prev, job_title: value }))
-                    }
-                    placeholder="Type or select designation"
-                    options={designations.map((designation, index) => ({
-                      id: index + 1,
-                      name: designation.designation,
-                    }))}
-                    required
-                  />
+                  <div className="w-full">
+                    <CustomComboBox
+                      label="Designation"
+                      value={userAccount.job_title}
+                      onValueChange={(value: string) => {
+                        setUserAccount((prev) => ({
+                          ...prev,
+                          job_title: value,
+                        }));
+                        setFormErrors((prev) => ({
+                          ...prev,
+                          job_title: "",
+                        }));
+                      }}
+                      placeholder="Type or select designation"
+                      options={designations.map((designation, index) => ({
+                        id: index + 1,
+                        name: designation.designation,
+                      }))}
+                      required
+                    />
+                    {formErrors.job_title && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {formErrors.job_title}
+                      </p>
+                    )}
+                  </div>
                 </div>
 
                 <Button
                   onClick={handleCreateAccount}
-                  className="mt-5 btn mx-auto w-full"
+                  disabled={isLoading}
+                  className="mt-5 btn mx-auto w-full h-12"
                 >
-                  Submit
+                  {isLoading ? "Submitting..." : "Submit"}
                 </Button>
               </div>
             </DialogHeader>
