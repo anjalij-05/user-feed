@@ -20,6 +20,10 @@ import UserLogin from "./pages/login";
 import Signup from "./pages/signup";
 import ProfileSetting from "./pages/profile-setting";
 import MyProfile from "./pages/my-profile";
+import Settings from "./pages/setting";
+import VCard from "./pages/v-card";
+import NotFound from "./pages/notFound";
+import MyAttendedEvents from "./pages/myAttendedEvents";
 
 function App() {
   const [userPosts, setUserPosts] = useState<Post[]>([]);
@@ -69,6 +73,10 @@ function App() {
         <Route path="/profile-setting" element={<ProfileSetting />} />
         <Route path="/user-login" element={<UserLogin />} />
         <Route path="/user-signup" element={<Signup />} />
+        <Route path="/settings" element={<Settings />} />
+        <Route path="/v-card" element={<VCard />} />{" "}
+        <Route path="/my-attended-events" element={<MyAttendedEvents />} />
+        <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>
   );
