@@ -176,7 +176,7 @@ const UserLogin: React.FC = () => {
           "!bg-green-800 !text-white !font-sans !font-regular tracking-wider flex items-center gap-2",
         icon: <CircleCheckBig className="size-5" />,
       });
-      navigate("/nearby-users");
+      navigate("/user-feed");
       return;
     }
 

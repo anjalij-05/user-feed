@@ -24,6 +24,7 @@ import Settings from "./pages/setting";
 import VCard from "./pages/v-card";
 import NotFound from "./pages/notFound";
 import MyAttendedEvents from "./pages/myAttendedEvents";
+import CompareTls from "./pages/compareScore";
 
 function App() {
   const [userPosts, setUserPosts] = useState<Post[]>([]);
@@ -76,6 +77,7 @@ function App() {
         <Route path="/settings" element={<Settings />} />
         <Route path="/v-card" element={<VCard />} />{" "}
         <Route path="/my-attended-events" element={<MyAttendedEvents />} />
+        <Route path="/compare-leadership-scores" element={<CompareTls />} />
         <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>

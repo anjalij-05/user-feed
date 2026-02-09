@@ -1,15 +1,7 @@
-import { Link, Outlet, useLocation } from "react-router-dom";
+import { Link, Outlet } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  Bell,
-  Home,
-  MessageCircle,
-  PlusSquare,
-  Trophy,
-  User,
-  UserPlus,
-} from "lucide-react";
 import Navbar from "@/components/navbar";
+import { useAppSelector } from "@/redux/hooks";
 
 interface Post {
   id: number;
@@ -33,102 +25,30 @@ interface UserFeedLayoutProps {
 }
 
 const UserFeedLayout = ({ userPosts, onPostCreated }: UserFeedLayoutProps) => {
-  const location = useLocation();
-
-  const isActive = (path: string) => {
-    return location.pathname === path;
-  };
-
-  const navItems = [
-    { to: "/", icon: Home, label: "Home" },
-    { to: "/nearby-users", icon: User, label: "People" },
-    { to: "/events", icon: Trophy, label: "Events" },
-    { to: "/chats", icon: MessageCircle, label: "Chats" },
-    { to: "/connects", icon: UserPlus, label: "Connections" },
-    { to: "/updates", icon: Bell, label: "Notifications" },
-    { to: "/user-feed/create-post", icon: PlusSquare, label: "Create" },
-  ];
-
+   const { user } = useAppSelector((state) => state.auth);
+  
+  const userAvatar = user?.profileImage 
+    ? `${user.imageBaseUrl}${user.profileImage}`
+    : "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100";
   return (
     <div className="min-h-screen pb-16 lg:pb-0">
       {/* Mobile Top Navbar */}
-      <header className="lg:hidden fixed top-0 left-0 right-0 bg-background border-b border-border/40 z-30 px-4 py-3">
+     <header className="lg:hidden fixed top-0 left-0 right-0 bg-background border-b border-border/40 z-30 px-4 py-3">
         <div className="flex items-center justify-between">
           <Navbar />
           <Link to="/user-feed/create-user-profile">
             <Avatar className="w-8 h-8">
-              <AvatarImage
-                src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100"
-                className="object-cover"
-              />
-              <AvatarFallback>AZ</AvatarFallback>
+              <AvatarImage src={userAvatar} className="object-cover" />
+              <AvatarFallback>
+                {user?.firstName?.[0]}{user?.lastName?.[0]}
+              </AvatarFallback>
             </Avatar>
           </Link>
         </div>
       </header>
 
-      {/* Desktop Sidebar */}
-      <aside className="hidden lg:block fixed left-0 top-0 h-screen w-[244px] border-r border-border/40 px-3 py-8 bg-background z-20">
-        <Navbar />
-        <nav className="space-y-2 mt-10">
-          {navItems.map((item) => (
-            <Link
-              key={item.to}
-              to={item.to}
-              className={`flex items-center gap-4 px-3 py-3 rounded-lg transition-colors ${
-                isActive(item.to)
-                  ? "bg-primary/10 text-primary font-semibold"
-                  : "hover:bg-muted"
-              }`}
-            >
-              <item.icon className="w-7 h-7" />
-              <span>{item.label}</span>
-            </Link>
-          ))}
-
-          <Link
-            to="/user-feed/create-user-profile"
-            className={`flex items-center gap-4 px-3 py-3 rounded-lg transition-colors ${
-              isActive("/user-feed/create-user-profile")
-                ? "bg-primary/10 text-primary font-semibold"
-                : "hover:bg-muted"
-            }`}
-          >
-            <Avatar className="w-7 h-7">
-              <AvatarImage
-                src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100"
-                className="object-cover"
-              />
-              <AvatarFallback>AZ</AvatarFallback>
-            </Avatar>
-            <span>Profile</span>
-          </Link>
-        </nav>
-      </aside>
-
-      {/* Mobile Bottom Navigation */}
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-background border-t border-border/40 z-30 px-2 py-2">
-        <div className="flex items-center justify-around max-w-md mx-auto">
-          {navItems.map((item) => (
-            <Link
-              key={item.to}
-              to={item.to}
-              className={`flex flex-col items-center gap-1 px-3 py-2 rounded-lg transition-colors ${
-                isActive(item.to)
-                  ? "text-primary"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              <item.icon
-                className={`w-6 h-6 ${
-                  isActive(item.to) ? "fill-primary/20" : ""
-                }`}
-              />
-              <span className="text-xs font-medium">{item.label}</span>
-            </Link>
-          ))}
-        </div>
-      </nav>
+      {/* Desktop Sidebar & Mobile Bottom Nav (now in Navbar component) */}
+      <Navbar />
 
       {/* Main Content */}
       <main className="lg:ml-[244px] pt-16 lg:pt-0 min-h-screen">

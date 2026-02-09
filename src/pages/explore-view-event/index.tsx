@@ -6,7 +6,7 @@ import {
   domain,
   appDomain,
   UserAvatar,
-  // appUrl,
+  appUrl,
 } from "@/constants";
 import Wave from "@/components/Wave";
 import GoogleMap from "@/components/GoogleMap";
@@ -61,6 +61,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { sanitizeHtml } from "@/lib/sanitizeHtml";
 
 interface CompanySponsor {
   id: number;
@@ -319,9 +320,8 @@ const CustomComboBox = React.memo(
               className="w-full capitalize h-12! text-base pr-10"
             />
             <ChevronDown
-              className={`absolute right-3 top-1/2 transform -translate-y-1/2 size-4 opacity-50 transition-transform cursor-pointer ${
-                isOpen ? "rotate-180" : ""
-              }`}
+              className={`absolute right-3 top-1/2 transform -translate-y-1/2 size-4 opacity-50 transition-transform cursor-pointer ${isOpen ? "rotate-180" : ""
+                }`}
               onClick={() => {
                 setIsOpen(!isOpen);
                 inputRef.current?.focus();
@@ -335,9 +335,8 @@ const CustomComboBox = React.memo(
                 filteredOptions.map((option, index) => (
                   <div
                     key={option.id}
-                    className={`px-3 py-2 cursor-pointer hover:bg-accent flex items-center justify-between text-sm ${
-                      selectedIndex === index ? "bg-accent" : ""
-                    } option`}
+                    className={`px-3 py-2 cursor-pointer hover:bg-accent flex items-center justify-between text-sm ${selectedIndex === index ? "bg-accent" : ""
+                      } option`}
                     onClick={() => handleOptionSelect(option)}
                   >
                     <span className="capitalize">{option.name}</span>
@@ -386,7 +385,7 @@ const ExploreViewEvent: React.FC = () => {
     (state) => state.attendedEvents.events,
   );
 
-  // const [liveURL, setliveURL] = useState<string>("");
+  const [liveURL, setliveURL] = useState<string>("");
   const [completeEventData, setCompleteEventData] = useState<any>(null);
   const temp = useEventStore((state) => state.getEventBySlug(slug));
 
@@ -664,7 +663,7 @@ const ExploreViewEvent: React.FC = () => {
         // Calculate day number (1-based)
         const daysDiff = Math.floor(
           (agendaDate.getTime() - eventStartDate.getTime()) /
-            (1000 * 60 * 60 * 24),
+          (1000 * 60 * 60 * 24),
         );
         const dayNumber = daysDiff + 1;
 
@@ -840,8 +839,8 @@ const ExploreViewEvent: React.FC = () => {
       completeEventData &&
       videoRef.current
     ) {
-      // const videoUrl = `${appUrl}/stream/${completeEventData?.user_uuid}__${currentEvent.uuid}/live.m3u8`;
-      // setliveURL(videoUrl);
+      const videoUrl = `${appUrl}/stream/${completeEventData?.user_uuid}__${currentEvent.uuid}/live.m3u8`;
+      setliveURL(videoUrl);
       //   setliveURL(
       //     "https://quantamcoder.space/stream/63de4c24-3bb8-4bcf-88f2-025f6cdee956__dad9a089-4628-4459-8736-5027a1168a78/live.m3u8"
       //   );
@@ -943,7 +942,7 @@ const ExploreViewEvent: React.FC = () => {
       const customs = urlSlug.slice(1);
       axios
         .get(`${domain}/api/express-interest/${customs.join("_")}`)
-        .then(() => {});
+        .then(() => { });
     }
   }, [slug]);
 
@@ -1154,10 +1153,14 @@ const ExploreViewEvent: React.FC = () => {
   };
 
   useEffect(() => {
-    const formData = document.getElementById("payment_post") as HTMLFormElement;
-    if (formData) {
-      formData.submit();
-    }
+    const timer = setTimeout(() => {
+      const formData = document.getElementById("payment_post") as HTMLFormElement;
+      if (formData) {
+        formData.submit();
+      }
+    }, 100); // Small delay to ensure DOM is updated
+
+    return () => clearTimeout(timer);
   }, [form]);
 
   // Handle fullscreen change
@@ -1259,9 +1262,8 @@ const ExploreViewEvent: React.FC = () => {
   // Generate dynamic page title using useMemo to recalculate when eventData changes
   const pageTitle = React.useMemo(() => {
     if (eventData?.title) {
-      return `${eventData.title}${
-        eventData.city ? `, ${eventData.city}` : ""
-      } | Klout Club`;
+      return `${eventData.title}${eventData.city ? `, ${eventData.city}` : ""
+        } | Klout Club`;
     }
     return "Event Details | Klout Club";
   }, [eventData?.title, eventData?.city]);
@@ -1307,7 +1309,7 @@ const ExploreViewEvent: React.FC = () => {
           <div className="space-y-4 w-full">
             <Link
               to={`/company/${encodeURIComponent(
-                currentEvent?.company_name || "",
+                currentEvent?.company_name.split(" ").join("-").toLowerCase() || ""
               )}`}
               className="hover:underline"
             >
@@ -1328,8 +1330,8 @@ const ExploreViewEvent: React.FC = () => {
                 <p className="uppercase text-secondary font-semibold text-xs text-center">
                   {startTime
                     ? new Date(startTime)
-                        .toLocaleString("en-US", { weekday: "short" })
-                        .toUpperCase()
+                      .toLocaleString("en-US", { weekday: "short" })
+                      .toUpperCase()
                     : ""}
                 </p>
                 <p className="text-2xl leading-none font-semibold text-foreground">
@@ -1413,14 +1415,12 @@ const ExploreViewEvent: React.FC = () => {
               </p>
 
               <div
-                className={`rounded-b-[10px] bg-muted ${
-                  isEventDatePassed() ? "opacity-50" : ""
-                }`}
+                className={`rounded-b-[10px] bg-muted ${isEventDatePassed() ? "opacity-50" : ""
+                  }`}
               >
                 <div
-                  className={`flex gap-2 p-2.5 border-b ${
-                    isEventDatePassed() ? "blur-[2px]" : ""
-                  }`}
+                  className={`flex gap-2 p-2.5 border-b ${isEventDatePassed() ? "blur-[2px]" : ""
+                    }`}
                 >
                   <div className="rounded-md grid place-content-center size-10 bg-background/50">
                     <UserRoundCheck size={30} className="text-foreground" />
@@ -1460,11 +1460,15 @@ const ExploreViewEvent: React.FC = () => {
                 isLive={isEventLive()}
               />
             )}
+
             {/* Event Details */}
             <div className="mt-6">
               <h3 className="font-semibold text-lg">Event Details</h3>
               <hr className="border-t-2 border-white my-2.5" />
-              <p className="text-foreground">{currentEvent?.description}</p>
+              <div
+                className='text-sm mt-2 text-brand-dark-gray prose prose-sm max-w-none dark:prose-invert'
+                dangerouslySetInnerHTML={{ __html: sanitizeHtml(currentEvent?.description || '') }}
+              />
             </div>
 
             {/* Event Images Section - Only show for past events */}
@@ -1650,10 +1654,9 @@ const ExploreViewEvent: React.FC = () => {
                             key={agenda.id}
                             className={`
                               relative rounded-lg border-2 p-4 transition-all duration-300
-                              ${
-                                isActive
-                                  ? "border-secondary bg-secondary/10 shadow-lg scale-[1.02]"
-                                  : "border-border bg-card hover:border-accent"
+                              ${isActive
+                                ? "border-secondary bg-secondary/10 shadow-lg scale-[1.02]"
+                                : "border-border bg-card hover:border-accent"
                               }
                             `}
                           >
@@ -1671,11 +1674,10 @@ const ExploreViewEvent: React.FC = () => {
                               <div
                                 className={`
                                 shrink-0 px-3 py-2 rounded-md text-sm font-semibold text-center min-w-[120px]
-                                ${
-                                  isActive
+                                ${isActive
                                     ? "bg-secondary text-secondary-foreground"
                                     : "bg-muted text-muted-foreground"
-                                }
+                                  }
                               `}
                               >
                                 <div className="text-xs opacity-80">
@@ -1694,11 +1696,10 @@ const ExploreViewEvent: React.FC = () => {
                                 <h4
                                   className={`
                                   font-semibold text-base mb-1
-                                  ${
-                                    isActive
+                                  ${isActive
                                       ? "text-secondary"
                                       : "text-foreground"
-                                  }
+                                    }
                                 `}
                                 >
                                   {agenda.title}
@@ -2593,7 +2594,7 @@ const ExploreViewEvent: React.FC = () => {
                                       if (response.data.status) {
                                         toast(
                                           response.data.message ||
-                                            "Rating submitted successfully!",
+                                          "Rating submitted successfully!",
                                           {
                                             className:
                                               "!bg-green-800 !text-white !font-sans !font-regular tracking-wider flex items-center gap-2",
@@ -2605,7 +2606,7 @@ const ExploreViewEvent: React.FC = () => {
                                       } else {
                                         toast(
                                           response.data.message ||
-                                            "Failed to submit rating",
+                                          "Failed to submit rating",
                                           {
                                             className:
                                               "!bg-red-800 !text-white !font-sans !font-regular tracking-wider flex items-center gap-2",
@@ -2668,11 +2669,10 @@ const ExploreViewEvent: React.FC = () => {
                                               onClick={() =>
                                                 handleSpeakerStarClick(star)
                                               }
-                                              className={`size-7 cursor-pointer transition-all hover:scale-110 ${
-                                                star <= currentSpeakerRating
+                                              className={`size-7 cursor-pointer transition-all hover:scale-110 ${star <= currentSpeakerRating
                                                   ? "fill-yellow-400 text-yellow-400"
                                                   : "text-gray-300 hover:text-yellow-200"
-                                              }`}
+                                                }`}
                                             />
                                           ))}
                                           {currentSpeakerRating > 0 && (
@@ -2686,21 +2686,21 @@ const ExploreViewEvent: React.FC = () => {
                                       {/* Feedback Textarea - Only shown if session_feedback_open_text_box is 1 */}
                                       {currentEvent?.session_feedback_open_text_box ===
                                         1 && (
-                                        <div className="mb-3">
-                                          <label className="text-sm font-medium mb-1.5 block">
-                                            Key Takeaways (optional):
-                                          </label>
-                                          <Textarea
-                                            value={currentSpeakerFeedback}
-                                            maxLength={200}
-                                            onChange={
-                                              handleSpeakerFeedbackChange
-                                            }
-                                            className="min-h-20 text-sm resize-none"
-                                            placeholder="Key takeaways (Max 200 characters)..."
-                                          />
-                                        </div>
-                                      )}
+                                          <div className="mb-3">
+                                            <label className="text-sm font-medium mb-1.5 block">
+                                              Key Takeaways (optional):
+                                            </label>
+                                            <Textarea
+                                              value={currentSpeakerFeedback}
+                                              maxLength={200}
+                                              onChange={
+                                                handleSpeakerFeedbackChange
+                                              }
+                                              className="min-h-20 text-sm resize-none"
+                                              placeholder="Key takeaways (Max 200 characters)..."
+                                            />
+                                          </div>
+                                        )}
 
                                       {/* Submit Button */}
                                       <div className="flex justify-end">
@@ -2831,7 +2831,7 @@ const ExploreViewEvent: React.FC = () => {
                                           if (response.data.status) {
                                             toast(
                                               response.data.message ||
-                                                "Rating submitted successfully!",
+                                              "Rating submitted successfully!",
                                               {
                                                 className:
                                                   "!bg-green-800 !text-white !font-sans !font-regular tracking-wider flex items-center gap-2",
@@ -2843,7 +2843,7 @@ const ExploreViewEvent: React.FC = () => {
                                           } else {
                                             toast(
                                               response.data.message ||
-                                                "Failed to submit rating",
+                                              "Failed to submit rating",
                                               {
                                                 className:
                                                   "!bg-red-800 !text-white !font-sans !font-regular tracking-wider flex items-center gap-2",
@@ -2907,11 +2907,10 @@ const ExploreViewEvent: React.FC = () => {
                                                   onClick={() =>
                                                     handleSpeakerStarClick(star)
                                                   }
-                                                  className={`size-7 cursor-pointer transition-all hover:scale-110 ${
-                                                    star <= currentSpeakerRating
+                                                  className={`size-7 cursor-pointer transition-all hover:scale-110 ${star <= currentSpeakerRating
                                                       ? "fill-yellow-400 text-yellow-400"
                                                       : "text-gray-300 hover:text-yellow-200"
-                                                  }`}
+                                                    }`}
                                                 />
                                               ))}
                                               {currentSpeakerRating > 0 && (
@@ -2925,20 +2924,20 @@ const ExploreViewEvent: React.FC = () => {
                                           {/* Feedback Textarea - Only shown if session_feedback_open_text_box is 1 */}
                                           {currentEvent?.session_feedback_open_text_box ===
                                             1 && (
-                                            <div className="mb-3">
-                                              <label className="text-sm font-medium mb-1.5 block">
-                                                Key Takeaways (optional):
-                                              </label>
-                                              <Textarea
-                                                value={currentSpeakerFeedback}
-                                                onChange={
-                                                  handleSpeakerFeedbackChange
-                                                }
-                                                className="min-h-20 text-sm resize-none"
-                                                placeholder="Key takeaways..."
-                                              />
-                                            </div>
-                                          )}
+                                              <div className="mb-3">
+                                                <label className="text-sm font-medium mb-1.5 block">
+                                                  Key Takeaways (optional):
+                                                </label>
+                                                <Textarea
+                                                  value={currentSpeakerFeedback}
+                                                  onChange={
+                                                    handleSpeakerFeedbackChange
+                                                  }
+                                                  className="min-h-20 text-sm resize-none"
+                                                  placeholder="Key takeaways..."
+                                                />
+                                              </div>
+                                            )}
 
                                           {/* Submit Button */}
                                           <div className="flex justify-end">

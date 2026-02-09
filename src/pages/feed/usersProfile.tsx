@@ -8,7 +8,6 @@ import {
   Film,
   User,
   Settings,
-  MoreHorizontal,
   ArrowLeft,
 } from "lucide-react";
 
@@ -86,10 +85,9 @@ export default function UserPostProfile({ allPosts }: UserPostProfileProps) {
           </div>
         </div>
         <div className="flex gap-4">
-          <Link to="/profile-setting">
+          <Link to="/settings">
           <Settings className="w-6 h-6 cursor-pointer hover:text-gray-600 transition-colors" />
           </Link>
-          <MoreHorizontal className="w-6 h-6 cursor-pointer hover:text-gray-600 transition-colors" />
         </div>
       </div>
 
