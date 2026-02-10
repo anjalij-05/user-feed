@@ -27,6 +27,8 @@ import MyAttendedEvents from "./pages/myAttendedEvents";
 import CompareTls from "./pages/compareScore";
 import ProtectedRoute from "./components/protectedRoute";
 import PublicRoute from "@/components/publicRoute";
+import CompanyDetails from "./pages/companyDetails";
+import CompanyEmployees from "./pages/companyEmployees";
 
 function App() {
   const [userPosts, setUserPosts] = useState<Post[]>([]);
@@ -98,6 +100,11 @@ function App() {
         <Route path="/v-card" element={<VCard />} />
         <Route path="/my-attended-events" element={<MyAttendedEvents />} />
         <Route path="/compare-leadership-scores" element={<CompareTls />} />
+        <Route
+          path="/company/:companyName/employees"
+          element={<CompanyEmployees />}
+        />
+        <Route path="/company/:companyName" element={<CompanyDetails />} />
       </Route>
 
       {/* 404 Page */}
