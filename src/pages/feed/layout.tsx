@@ -4,22 +4,7 @@ import Navbar from "@/components/navbar";
 import { useAppSelector } from "@/redux/hooks";
 import { getUserProfileImage } from "@/lib/utils";
 import DummyImage from "@/assets/dummy_image.webp";
-
-interface Post {
-  id: number;
-  name: string;
-  role: string;
-  timestamp: string;
-  avatar: string;
-  image?: string;
-  mediaType?: "image" | "video";
-  title: string;
-  content: string;
-  images?: string[];
-  likes: number;
-  comments: number;
-  shares?: number;
-}
+import type { Post } from "@/types/post";
 
 interface UserFeedLayoutProps {
   userPosts: Post[];
@@ -32,7 +17,7 @@ const UserFeedLayout = ({ userPosts, onPostCreated }: UserFeedLayoutProps) => {
   const userAvatar = user?.profileImage
     ? getUserProfileImage(user?.imageBaseUrl, user?.profileImage)
     : DummyImage;
-    
+
   return (
     <div className="min-h-screen pb-16 lg:pb-0">
       {/* Mobile Top Navbar */}

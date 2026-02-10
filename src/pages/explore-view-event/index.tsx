@@ -6,7 +6,7 @@ import {
   domain,
   appDomain,
   UserAvatar,
-  appUrl,
+  // appUrl,
 } from "@/constants";
 import Wave from "@/components/Wave";
 import GoogleMap from "@/components/GoogleMap";
@@ -405,9 +405,9 @@ const ExploreViewEvent: React.FC = () => {
   const appUser = useAppSelector((state) => state.auth.user);
 
   const [isUserCheckedIn, setIsUserCheckedIn] = useState<boolean>(false);
-  const [userUuid, setUserUuid] = useState<string>("");
+  // const [userUuid, setUserUuid] = useState<string>("");
   const [showLiveStream, setShowLiveStream] = useState<boolean>(false);
-  const videoRef = useRef<HTMLVideoElement>(null);
+  // const videoRef = useRef<HTMLVideoElement>(null);
   const [currentAgendaId, setCurrentAgendaId] = useState<number | null>(null);
 
   // Speaker ratings and feedback - key format: "agendaId_speakerId"
@@ -713,7 +713,7 @@ const ExploreViewEvent: React.FC = () => {
           });
 
           if (currentUserAttendee) {
-            setUserUuid(currentUserAttendee.uuid);
+            // setUserUuid(currentUserAttendee.uuid);
             setIsUserCheckedIn(currentUserAttendee.check_in === 1);
 
             // Check if event is live and user is checked in

@@ -7,22 +7,7 @@ import { getUserProfileImage } from "@/lib/utils";
 import { fetchTlsScore } from "@/app-api/tls";
 import { getMyConnections } from "@/app-api/connections";
 import ImageDialog from "@/components/imageDialogBox";
-
-interface Post {
-  id: number;
-  name: string;
-  role: string;
-  timestamp: string;
-  avatar: string;
-  image?: string;
-  mediaType?: "image" | "video";
-  title: string;
-  content: string;
-  images?: string[];
-  likes: number;
-  comments: number;
-  shares?: number;
-}
+import type { Post } from "@/types/post";
 
 interface UserProfileProps {
   posts: Post[];
