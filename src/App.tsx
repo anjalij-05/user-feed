@@ -8,7 +8,7 @@ import { useState } from "react";
 import PostDetailViewWrapper from "./pages/feed/postDetailViewWrapper";
 import UserPostProfileWrapper from "@/pages/feed/userpostProfileWrapper";
 import type { Post } from "@/types/post";
-import Navbar from "./components/navbar";
+// import Navbar from "./components/navbar";
 import Explore from "./pages/explore";
 import ChatPage from "./pages/chats/chatPage";
 import Connects from "./pages/connects";
