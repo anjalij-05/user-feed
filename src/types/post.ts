@@ -6,7 +6,6 @@ export interface Post {
   avatar: string;
   image?: string;
   mediaType?: "image" | "video";
-  title: string;
   content: string;
   images?: string[];
   likes: number;

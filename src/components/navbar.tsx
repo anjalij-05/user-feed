@@ -10,9 +10,13 @@ import {
   UserPlus,
 } from "lucide-react";
 import Logo from "@/assets/logo.webp";
+import { getUserProfileImage } from "@/lib/utils";
+import { useAppSelector } from "@/redux/hooks";
+import DummyImage from "@/assets/dummy_image.webp";
 
 export default function Navbar() {
   const location = useLocation();
+  const { user } = useAppSelector((state) => state.auth);
 
   const isActive = (path: string) => {
     return location.pathname === path;
@@ -68,10 +72,13 @@ export default function Navbar() {
           >
             <Avatar className="w-7 h-7">
               <AvatarImage
-                src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100"
+                src={getUserProfileImage(
+                  user?.imageBaseUrl as string,
+                  user?.profileImage as string,
+                )}
                 className="object-cover"
               />
-              <AvatarFallback>AZ</AvatarFallback>
+              <AvatarFallback><img src={DummyImage} alt="default avatar" className="w-7 h-7" /></AvatarFallback>
             </Avatar>
             <span> My Profile</span>
           </Link>
@@ -92,28 +99,31 @@ export default function Navbar() {
       </div>
 
       {/* Mobile Bottom Navigation */}
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-background border-t border-border/40 z-30 px-1 py-1">
-        <div className="flex items-center justify-around max-w-md mx-auto">
-          {navItems.map((item) => (
-            <Link
-              key={item.to}
-              to={item.to}
-              className={`flex flex-col items-center gap-1 px-3 py-2 rounded-lg transition-colors ${
-                isActive(item.to)
-                  ? "text-primary"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              <item.icon
-                className={`w-5 h-5 ${
-                  isActive(item.to) ? "text-primary" : "text-muted-foreground"
-                }`}
-              />
-              <span className="text-xs font-medium">{item.label}</span>
-            </Link>
-          ))}
-        </div>
-      </nav>
+     <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-background border-t border-border/40 z-30 px-1 py-1">
+  <div className="flex items-center justify-between max-w-full mx-auto">
+    {navItems.map((item) => (
+      <Link
+        key={item.to}
+        to={item.to}
+        className={`flex flex-col items-center justify-center gap-0.5 px-1 py-1 flex-1 transition-colors ${
+          isActive(item.to)
+            ? "text-primary"
+            : "text-muted-foreground hover:text-foreground"
+        }`}
+      >
+        <item.icon
+          className={`w-5 h-5 ${
+            isActive(item.to) ? "text-primary" : "text-muted-foreground"
+          }`}
+        />
+        <span className="text-[10px] leading-none font-medium">
+          {item.label}
+        </span>
+      </Link>
+    ))}
+  </div>
+</nav>
+
     </>
   );
 }

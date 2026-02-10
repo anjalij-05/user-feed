@@ -60,6 +60,8 @@ export const FeedCard = ({ post }: FeedCardProps) => {
   const [likedComments, setLikedComments] = useState<number[]>([]);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [showRipple, setShowRipple] = useState<string | null>(null);
+  const [touchStartX, setTouchStartX] = useState<number | null>(null);
+  const [touchStartY, setTouchStartY] = useState<number | null>(null);
 
   // Check if this is the current user's post
   const isOwnPost = post.name === "Azwedo Drdr";
@@ -184,7 +186,40 @@ export const FeedCard = ({ post }: FeedCardProps) => {
     }, 150);
   };
 
-  
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStartX(e.touches[0].clientX);
+    setTouchStartY(e.touches[0].clientY);
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX === null || touchStartY === null) return;
+
+    const touchEndX = e.changedTouches[0].clientX;
+    const touchEndY = e.changedTouches[0].clientY;
+
+    const deltaX = touchStartX - touchEndX;
+    const deltaY = touchStartY - touchEndY;
+
+    // Ignore vertical scrolls
+    if (Math.abs(deltaY) > Math.abs(deltaX)) return;
+
+    const SWIPE_THRESHOLD = 50;
+
+    if (deltaX > SWIPE_THRESHOLD) {
+      // swipe left → next
+      if (currentImageIndex < allImages.length - 1) {
+        handleImageChange(currentImageIndex + 1);
+      }
+    } else if (deltaX < -SWIPE_THRESHOLD) {
+      // swipe right → previous
+      if (currentImageIndex > 0) {
+        handleImageChange(currentImageIndex - 1);
+      }
+    }
+
+    setTouchStartX(null);
+    setTouchStartY(null);
+  };
 
   return (
     <>
@@ -353,8 +388,10 @@ export const FeedCard = ({ post }: FeedCardProps) => {
         </div>
 
         <div
-          className="relative bg-gradient-to-br from-slate-100 to-slate-50 overflow-hidden"
+          className="relative bg-gradient-to-br from-slate-100 to-slate-50 overflow-hidden touch-pan-y"
           onDoubleClick={handleImageDoubleTap}
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
         >
           {allImages.length > 0 && (
             <>
@@ -461,7 +498,7 @@ export const FeedCard = ({ post }: FeedCardProps) => {
         </div>
 
         {/* Floating Bubble Action Buttons */}
-        <div className="flex items-center gap-5 px-4 py-3">
+        <div className="flex items-center gap-2 px-4 py-3">
           {/* Like Button - Floating Bubble */}
           <button
             onClick={handleLike}
@@ -508,7 +545,7 @@ export const FeedCard = ({ post }: FeedCardProps) => {
             <div
               className={`w-10 h-10 rounded-full bg-gradient-to-br from-indigo-400 to-purple-500 flex items-center justify-center shadow-xl transition-all duration-300 group-hover:scale-105 group-hover:shadow-purple-300 ${showRipple === "share" ? "ripple-effect" : ""}`}
             >
-              <Send className="w-6 h-6 text-white" />
+              <Send className="w-6 h-6 text-white mt-0.5" />
             </div>
             <div className="absolute hidden -bottom-8 left-1/2 -translate-x-1/2 text-xs font-bold text-slate-700 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
               Share
@@ -773,8 +810,7 @@ const Feed = ({ userPosts }: FeedProps) => {
     const searchLower = feedSearchQuery.toLowerCase();
     return (
       post.name.toLowerCase().includes(searchLower) ||
-      post.content.toLowerCase().includes(searchLower) ||
-      post.title.toLowerCase().includes(searchLower)
+      post.content.toLowerCase().includes(searchLower)
     );
   });
 

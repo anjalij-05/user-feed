@@ -2,6 +2,8 @@ import { Link, Outlet } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Navbar from "@/components/navbar";
 import { useAppSelector } from "@/redux/hooks";
+import { getUserProfileImage } from "@/lib/utils";
+import DummyImage from "@/assets/dummy_image.webp";
 
 interface Post {
   id: number;
@@ -25,22 +27,24 @@ interface UserFeedLayoutProps {
 }
 
 const UserFeedLayout = ({ userPosts, onPostCreated }: UserFeedLayoutProps) => {
-   const { user } = useAppSelector((state) => state.auth);
-  
-  const userAvatar = user?.profileImage 
-    ? `${user.imageBaseUrl}${user.profileImage}`
-    : "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100";
+  const { user } = useAppSelector((state) => state.auth);
+
+  const userAvatar = user?.profileImage
+    ? getUserProfileImage(user?.imageBaseUrl, user?.profileImage)
+    : DummyImage;
+    
   return (
     <div className="min-h-screen pb-16 lg:pb-0">
       {/* Mobile Top Navbar */}
-     <header className="lg:hidden fixed top-0 left-0 right-0 bg-background border-b border-border/40 z-30 px-4 py-3">
+      <header className="lg:hidden fixed top-0 left-0 right-0 bg-background border-b border-border/40 z-30 px-4 py-3">
         <div className="flex items-center justify-between">
           <Navbar />
           <Link to="/user-feed/create-user-profile">
             <Avatar className="w-8 h-8">
               <AvatarImage src={userAvatar} className="object-cover" />
               <AvatarFallback>
-                {user?.firstName?.[0]}{user?.lastName?.[0]}
+                {user?.firstName?.[0]}
+                {user?.lastName?.[0]}
               </AvatarFallback>
             </Avatar>
           </Link>

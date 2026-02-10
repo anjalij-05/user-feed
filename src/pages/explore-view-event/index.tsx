@@ -385,7 +385,7 @@ const ExploreViewEvent: React.FC = () => {
     (state) => state.attendedEvents.events,
   );
 
-  const [liveURL, setliveURL] = useState<string>("");
+  // const [liveURL, setliveURL] = useState<string>("");
   const [completeEventData, setCompleteEventData] = useState<any>(null);
   const temp = useEventStore((state) => state.getEventBySlug(slug));
 
@@ -832,43 +832,43 @@ const ExploreViewEvent: React.FC = () => {
   };
 
   // Initialize HLS for live stream
-  useEffect(() => {
-    if (
-      showLiveStream &&
-      currentEvent?.uuid &&
-      completeEventData &&
-      videoRef.current
-    ) {
-      const videoUrl = `${appUrl}/stream/${completeEventData?.user_uuid}__${currentEvent.uuid}/live.m3u8`;
-      setliveURL(videoUrl);
-      //   setliveURL(
-      //     "https://quantamcoder.space/stream/63de4c24-3bb8-4bcf-88f2-025f6cdee956__dad9a089-4628-4459-8736-5027a1168a78/live.m3u8"
-      //   );
+  // useEffect(() => {
+  //   if (
+  //     showLiveStream &&
+  //     currentEvent?.uuid &&
+  //     completeEventData &&
+  //     videoRef.current
+  //   ) {
+  //     const videoUrl = `${appUrl}/stream/${completeEventData?.user_uuid}__${currentEvent.uuid}/live.m3u8`;
+  //     setliveURL(videoUrl);
+  //     //   setliveURL(
+  //     //     "https://quantamcoder.space/stream/63de4c24-3bb8-4bcf-88f2-025f6cdee956__dad9a089-4628-4459-8736-5027a1168a78/live.m3u8"
+  //     //   );
 
-      // Check if HLS is supported
-      //   if (videoRef.current.canPlayType("application/vnd.apple.mpegurl")) {
-      //     // Native HLS support (Safari)
-      //     videoRef.current.src = liveURL;
-      //   } else {
-      //     // Use HLS.js for other browsers
-      //     import("hls.js")
-      //       .then((module) => {
-      //         const Hls = module.default;
-      //         if (Hls.isSupported()) {
-      //           const hls = new Hls();
-      //           hls.loadSource(liveURL);
-      //           hls.attachMedia(videoRef.current!);
-      //           hls.on(Hls.Events.MANIFEST_PARSED, () => {
-      //             videoRef.current?.play();
-      //           });
-      //         }
-      //       })
-      //       .catch((error) => {
-      //         console.error("Error loading HLS.js:", error);
-      //       });
-      //   }
-    }
-  }, [showLiveStream, currentEvent?.uuid, userUuid, completeEventData]);
+  //     // Check if HLS is supported
+  //     //   if (videoRef.current.canPlayType("application/vnd.apple.mpegurl")) {
+  //     //     // Native HLS support (Safari)
+  //     //     videoRef.current.src = liveURL;
+  //     //   } else {
+  //     //     // Use HLS.js for other browsers
+  //     //     import("hls.js")
+  //     //       .then((module) => {
+  //     //         const Hls = module.default;
+  //     //         if (Hls.isSupported()) {
+  //     //           const hls = new Hls();
+  //     //           hls.loadSource(liveURL);
+  //     //           hls.attachMedia(videoRef.current!);
+  //     //           hls.on(Hls.Events.MANIFEST_PARSED, () => {
+  //     //             videoRef.current?.play();
+  //     //           });
+  //     //         }
+  //     //       })
+  //     //       .catch((error) => {
+  //     //         console.error("Error loading HLS.js:", error);
+  //     //       });
+  //     //   }
+  //   }
+  // }, [showLiveStream, currentEvent?.uuid, userUuid, completeEventData]);
 
   // Fetch attended events when user is logged in
   useEffect(() => {

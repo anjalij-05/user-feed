@@ -115,7 +115,6 @@ export const defaultPosts: Post[] = [
     image:
       "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=600&fit=crop",
     mediaType: "image",
-    title: "TechConnect Summit",
     content:
       "Excited to be at TechConnect Summit 2025! Meeting so many amazing people in the tech industry. 🚀",
     images: [
@@ -137,7 +136,6 @@ export const defaultPosts: Post[] = [
     image:
       "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=800&h=600&fit=crop",
     mediaType: "image",
-    title: "Conference Memories",
     content:
       "Looking back at some incredible moments from conferences I attended this year. 💡",
     likes: 892,
@@ -155,7 +153,6 @@ export const defaultPosts: Post[] = [
     image:
       "https://images.unsplash.com/photo-1591115765373-5207764f72e7?w=800&h=600&fit=crop",
     mediaType: "image",
-    title: "Design Workshop",
     content:
       "Amazing workshop on user experience design patterns. Learned so much! 🎨",
     likes: 567,

@@ -22,7 +22,6 @@ interface CreatePostProps {
     avatar: string;
     images?: string[];
     mediaType?: "image" | "video";
-    title: string;
     content: string;
     likes: number;
     comments: number;
@@ -41,7 +40,6 @@ const CreatePost = ({ onPostCreated }: CreatePostProps) => {
   const [videoPreview, setVideoPreview] = useState<string>("");
 
   const [mediaType, setMediaType] = useState<"image" | "video" | null>(null);
-  const [postTitle, setPostTitle] = useState("");
   const [postDescription, setPostDescription] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const [activeTab, setActiveTab] = useState<"upload" | "background">("upload");
@@ -109,7 +107,6 @@ const CreatePost = ({ onPostCreated }: CreatePostProps) => {
         "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop",
       images: imagePreviews,
       mediaType: mediaType as "image" | "video",
-      title: postTitle,
       content: postDescription,
       likes: 0,
       comments: 0,
@@ -120,7 +117,6 @@ const CreatePost = ({ onPostCreated }: CreatePostProps) => {
     setIsUploading(false);
 
     // Reset form
-    setPostTitle("");
     setPostDescription("");
     clearMedia();
 
@@ -129,7 +125,6 @@ const CreatePost = ({ onPostCreated }: CreatePostProps) => {
   };
 
   const canPost =
-    postTitle.trim() &&
     postDescription.trim() &&
     (imagePreviews.length > 0 || videoPreview);
 
@@ -316,29 +311,6 @@ const CreatePost = ({ onPostCreated }: CreatePostProps) => {
 
           <div className="bg-white rounded-2xl shadow-lg border border-slate-200/60 p-6">
             <label className="text-sm font-semibold mb-3 block text-slate-700">
-              Title <span className="text-red-500">*</span>
-            </label>
-            <Input
-              placeholder="Give your post an engaging title..."
-              value={postTitle}
-              onChange={(e) => setPostTitle(e.target.value)}
-              className="text-lg font-medium border-slate-300 focus:border-primary focus:ring-primary/20"
-              maxLength={100}
-            />
-            <div className="flex justify-between items-center mt-2">
-              <p className="text-xs text-slate-500">
-                Make it catchy and descriptive
-              </p>
-              <p
-                className={`text-xs font-medium ${postTitle.length > 90 ? "text-red-500" : "text-slate-500"}`}
-              >
-                {postTitle.length}/100
-              </p>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-2xl shadow-lg border border-slate-200/60 p-6">
-            <label className="text-sm font-semibold mb-3 block text-slate-700">
               Description <span className="text-red-500">*</span>
             </label>
             <Textarea
@@ -359,7 +331,7 @@ const CreatePost = ({ onPostCreated }: CreatePostProps) => {
             </div>
           </div>
 
-          {hasMedia && postTitle && (
+          {hasMedia && (
             <div className="bg-white rounded-2xl shadow-lg border border-slate-200/60 p-6">
               <h3 className="text-sm font-semibold mb-3 text-slate-700 flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-purple-600" />
@@ -386,7 +358,6 @@ const CreatePost = ({ onPostCreated }: CreatePostProps) => {
                   ) : null}
                 </div>
                 <div className="p-4">
-                  <h4 className="font-bold text-slate-900 mb-1">{postTitle}</h4>
                   <p className="text-sm text-slate-600 line-clamp-2">
                     {postDescription}
                   </p>

@@ -613,7 +613,7 @@ const Settings: React.FC = () => {
         <Button
           onClick={handleLogout}
           variant="outline"
-          className="text-destructive hover:text-destructive w-full h-12 rounded-xl"
+          className="text-destructive cursor-pointer hover:text-destructive w-full h-12 rounded-xl"
         >
           Logout
         </Button>
@@ -622,7 +622,7 @@ const Settings: React.FC = () => {
         <Button
           onClick={handleDeleteAccount}
           variant="outline"
-          className="w-full h-12 rounded-xl text-destructive hover:text-destructive"
+          className="w-full h-12 rounded-xl cursor-pointer text-destructive hover:text-destructive"
         >
           Delete Account
         </Button>

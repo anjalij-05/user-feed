@@ -1,8 +1,12 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Grid, Film, User, Settings } from "lucide-react";
-import { useAppSelector } from "@/redux/hooks";
+import { useAppSelector, useAppDispatch } from "@/redux/hooks";
 import DummyImage from "@/assets/dummy_image.webp";
+import { getUserProfileImage } from "@/lib/utils";
+import { fetchTlsScore } from "@/app-api/tls";
+import { getMyConnections } from "@/app-api/connections";
+import ImageDialog from "@/components/imageDialogBox";
 
 interface Post {
   id: number;
@@ -27,45 +31,140 @@ interface UserProfileProps {
 export default function UserProfile({ posts }: UserProfileProps) {
   const [activeTab, setActiveTab] = useState("posts");
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   // Get user data from Redux store
-  const { user } = useAppSelector((state) => state.auth);
+  const { user, token } = useAppSelector((state) => state.auth);
+  const { score, loading: tlsLoading } = useAppSelector((state) => state.tls);
+  const { connectionsList, loading: connectionsLoading } = useAppSelector(
+    (state) => state.connection,
+  );
+
+  // console.log("User:", user);
+  // console.log("Token:", token);
+  // console.log("TLS Score:", score);
+  // console.log("Connections List:", connectionsList);
+
+  // Fetch TLS score and connections on component mount
+  useEffect(() => {
+    console.log("=== UserProfile Mount - Starting API calls ===");
+
+    // Fetch TLS Score if we have the required data
+    if (user?.mobileNumber && token) {
+      console.log("Calling fetchTlsScore with mobile:", user.mobileNumber);
+      dispatch(
+        fetchTlsScore({
+          mobileNumber: user.mobileNumber,
+        }),
+      );
+    } else {
+      console.log("Cannot fetch TLS - missing data:", {
+        hasMobile: !!user?.mobileNumber,
+        hasToken: !!token,
+      });
+    }
+
+    // Fetch Connections with geolocation
+    if (user?._id && token) {
+      // console.log("Attempting to fetch connections for user:", user._id);
+
+      // Try to get user's actual location
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            console.log("Got user location:", {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude,
+            });
+
+            dispatch(
+              getMyConnections({
+                token: token,
+                userId: user._id,
+                latitude: position.coords.latitude,
+                longitude: position.coords.longitude,
+                distance: 50,
+              }),
+            );
+          },
+          (error) => {
+            console.log(
+              "Geolocation error, using default location:",
+              error.message,
+            );
+            // Fallback to default location if geolocation fails
+            dispatch(
+              getMyConnections({
+                token: token,
+                userId: user._id,
+                latitude: 28.4595, // Default: Gurugram
+                longitude: 77.0266,
+                distance: 50,
+              }),
+            );
+          },
+          {
+            timeout: 5000,
+            maximumAge: 300000, // Use cached location up to 5 minutes old
+          },
+        );
+      } else {
+        console.log("Geolocation not available, using default location");
+        // Fallback if geolocation is not supported
+        dispatch(
+          getMyConnections({
+            token: token,
+            userId: user._id,
+            latitude: 28.4595, // Default: Gurugram
+            longitude: 77.0266,
+            distance: 50,
+          }),
+        );
+      }
+    } else {
+      console.log("Cannot fetch connections - missing data:", {
+        hasUserId: !!user?._id,
+        hasToken: !!token,
+      });
+    }
+  }, [dispatch, user?._id, user?.mobile_number, token]);
 
   // Dynamic profile data based on logged-in user
   const [profileData, setProfileData] = useState({
     id: user?._id || 21,
     firstName: user?.first_name || "Guest",
     lastName: user?.last_name || "User",
-    // username: user?.username || "guest_user",
     bio: user?.bio || "📸 Content Creator",
     posts: posts.length,
-    connections: user?.connections?.length || 0,
-    tls: user?.tls || 0,
+    connections: connectionsList.length || 0,
+    tls: score || 0,
     profilePic: user?.profileImage
-      ? `${user?.imageBaseUrl}${user?.profileImage}`
+      ? getUserProfileImage(user?.imageBaseUrl, user?.profileImage)
       : DummyImage,
   });
 
-  // Update profile data when user changes
+  // Update profile data when user, score, or connectionsList changes
   useEffect(() => {
+    // console.log("Updating profile data - score:", score, "connections:", connectionsList.length);
+
     if (user) {
       setProfileData({
         id: user._id || 21,
         firstName: user.first_name || "Guest",
         lastName: user.last_name || "User",
-        // username: user.username || "guest_user",
         bio: user.bio || "📸 Content Creator",
         posts: posts.length,
-        connections: user.connections?.length || 0,
-        tls: user.tls || 0,
+        connections: connectionsList.length || 0,
+        tls: score || 0,
         profilePic: user.profileImage
-          ? `${user.imageBaseUrl}${user.profileImage}`
+          ? getUserProfileImage(user?.imageBaseUrl, user?.profileImage)
           : DummyImage,
       });
     }
-  }, [user, posts.length]);
+  }, [user, posts.length, score, connectionsList.length]);
 
-  console.log("Profile Data:", profileData);
+  // console.log("Profile Data:", profileData);got
 
   // Transform posts to display format with original post data
   const displayPosts = posts.map((post) => ({
@@ -85,8 +184,9 @@ export default function UserProfile({ posts }: UserProfileProps) {
       {/* Header */}
       <div className="border-b p-4 flex justify-between items-center">
         <div className="flex items-center gap-2">
-          <h1 className="text-xl font-semibold">{profileData.firstName} {profileData.lastName}</h1>
-       
+          <h1 className="text-xl font-semibold">
+            {profileData.firstName} {profileData.lastName}
+          </h1>
         </div>
         <div className="flex gap-4">
           <Link to="/settings">
@@ -102,7 +202,8 @@ export default function UserProfile({ posts }: UserProfileProps) {
             <img
               src={profileData.profilePic}
               alt={`${profileData.firstName} ${profileData.lastName}`}
-              className="w-20 h-20 rounded-full object-cover ring-2 ring-gray-200"
+              className="w-20 h-20 rounded-full object-cover ring-2 ring-gray-200 cursor-pointer"
+              onClick={() => setDialogOpen(true)}
             />
           </div>
 
@@ -114,13 +215,23 @@ export default function UserProfile({ posts }: UserProfileProps) {
               </div>
               <div className="text-center cursor-pointer">
                 <div className="font-semibold text-lg">
-                  {profileData.connections.toLocaleString()}
+                  {connectionsLoading ? (
+                    <span className="text-gray-400">...</span>
+                  ) : (
+                    connectionsList.length.toLocaleString()
+                  )}
                 </div>
                 <div className="text-gray-600 text-sm">connections</div>
               </div>
               <div className="text-center cursor-pointer">
                 <div className="font-semibold text-lg">
-                  {profileData.tls.toLocaleString()}
+                  {tlsLoading ? (
+                    <span className="text-gray-400">...</span>
+                  ) : score !== null ? (
+                    score.toLocaleString()
+                  ) : (
+                    "N/A"
+                  )}
                 </div>
                 <div className="text-gray-600 text-sm">tls</div>
               </div>
@@ -274,6 +385,16 @@ export default function UserProfile({ posts }: UserProfileProps) {
           )}
         </div>
       )}
+
+      <ImageDialog
+        isOpen={dialogOpen}
+        imageUrl={
+          user?.profileImage
+            ? getUserProfileImage(user.imageBaseUrl || "", user.profileImage)
+            : DummyImage
+        }
+        onClose={() => setDialogOpen(false)}
+      />
     </div>
   );
 }

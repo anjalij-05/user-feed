@@ -332,7 +332,7 @@ const ChatPage: React.FC = () => {
             <p className="text-muted-foreground mb-4">
               Login to view and continue your conversations
             </p>
-            <Button onClick={() => navigate("/user-login")} className="w-full">
+            <Button onClick={() => navigate("/user-login")} className="w-full cursor-pointer">
               Login to View Chats
             </Button>
           </CardContent>

@@ -332,7 +332,7 @@ const Connects: React.FC = () => {
             </p>
             <Button
               onClick={() => navigate("/user-login")}
-              className="w-full h-10 sm:h-11 font-semibold shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 transition-all duration-200"
+              className="w-full h-10 sm:h-11 cursor-pointer font-semibold shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 transition-all duration-200"
             >
               Login to Continue
             </Button>

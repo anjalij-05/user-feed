@@ -25,6 +25,8 @@ import VCard from "./pages/v-card";
 import NotFound from "./pages/notFound";
 import MyAttendedEvents from "./pages/myAttendedEvents";
 import CompareTls from "./pages/compareScore";
+import ProtectedRoute from "./components/protectedRoute";
+import PublicRoute from "@/components/publicRoute";
 
 function App() {
   const [userPosts, setUserPosts] = useState<Post[]>([]);
@@ -42,14 +44,34 @@ function App() {
 
   return (
     <Routes>
-      <Route path="/" element={<Navbar />} />
+      {/* Public Routes - Redirect to home if already logged in */}
+      <Route
+        path="/user-login"
+        element={
+          <PublicRoute>
+            <UserLogin />
+          </PublicRoute>
+        }
+      />
+      <Route
+        path="/user-signup"
+        element={
+          <PublicRoute>
+            <Signup />
+          </PublicRoute>
+        }
+      />
+
+      {/* Protected Routes - Require authentication */}
       <Route
         path="/"
         element={
-          <UserFeedLayout
-            userPosts={userPosts}
-            onPostCreated={handlePostCreated}
-          />
+          <ProtectedRoute>
+            <UserFeedLayout
+              userPosts={userPosts}
+              onPostCreated={handlePostCreated}
+            />
+          </ProtectedRoute>
         }
       >
         <Route index element={<FeedWrapper />} />
@@ -72,14 +94,14 @@ function App() {
         <Route path="/profile/:id" element={<ProfileDetails />} />
         <Route path="/my-profile" element={<MyProfile />} />
         <Route path="/profile-setting" element={<ProfileSetting />} />
-        <Route path="/user-login" element={<UserLogin />} />
-        <Route path="/user-signup" element={<Signup />} />
         <Route path="/settings" element={<Settings />} />
-        <Route path="/v-card" element={<VCard />} />{" "}
+        <Route path="/v-card" element={<VCard />} />
         <Route path="/my-attended-events" element={<MyAttendedEvents />} />
         <Route path="/compare-leadership-scores" element={<CompareTls />} />
-        <Route path="*" element={<NotFound />} />
       </Route>
+
+      {/* 404 Page */}
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 }

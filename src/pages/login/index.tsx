@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { getUserProfile, sendOtp, verifyOtp } from "@/app-api/auth";
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { toast } from "sonner";
 import { getMyConnections } from "@/app-api/connections";
 import { Input } from "@/components/ui/input";
@@ -11,7 +11,6 @@ import {
   CircleX,
   Phone,
   KeyRound,
-  ArrowLeft,
   Sparkles,
 } from "lucide-react";
 
@@ -59,9 +58,13 @@ const UserLogin: React.FC = () => {
   const dispatch = useAppDispatch();
   const { loading, error } = useAppSelector((state) => state.auth);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const { getEffectiveTheme } = useThemeStore();
   const effectiveTheme = getEffectiveTheme();
+
+  // Get the page user was trying to access before being redirected to login
+  const from = (location.state as any)?.from?.pathname || "/";
 
   // Generate floating elements for animation
   useEffect(() => {
@@ -73,6 +76,7 @@ const UserLogin: React.FC = () => {
     }));
     setFloatingElements(elements);
   }, []);
+
   // Apply theme to document
   useEffect(() => {
     const root = document.documentElement;
@@ -146,7 +150,7 @@ const UserLogin: React.FC = () => {
 
     const payload = resultAction.payload?.result;
 
-    // ✅ FIXED: If neither user nor checkinUser exists, redirect to signup
+    // If neither user nor checkinUser exists, redirect to signup
     if (!payload?.user && !payload?.checkinUser) {
       toast.info("Please complete your registration");
       navigate("/user-signup");
@@ -157,26 +161,45 @@ const UserLogin: React.FC = () => {
 
     // If full user exists (registered user)
     if (payload.user) {
-      dispatch(
+      await dispatch(
         getUserProfile({ token: payload.token, userid: payload.user._id }),
       );
-      navigator.geolocation.getCurrentPosition((pos) => {
-        dispatch(
-          getMyConnections({
-            token: payload.token,
-            userId: payload.user._id,
-            latitude: pos.coords.latitude,
-            longitude: pos.coords.longitude,
-            distance: 50,
-          }),
-        );
-      });
+      
+      // Fetch connections with geolocation
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          dispatch(
+            getMyConnections({
+              token: payload.token,
+              userId: payload.user._id,
+              latitude: pos.coords.latitude,
+              longitude: pos.coords.longitude,
+              distance: 50,
+            }),
+          );
+        },
+        () => {
+          // Fallback to default location if geolocation fails
+          dispatch(
+            getMyConnections({
+              token: payload.token,
+              userId: payload.user._id,
+              latitude: 28.4595,
+              longitude: 77.0266,
+              distance: 50,
+            }),
+          );
+        }
+      );
+
       toast("Login successful!", {
         className:
           "!bg-green-800 !text-white !font-sans !font-regular tracking-wider flex items-center gap-2",
         icon: <CircleCheckBig className="size-5" />,
       });
-      navigate("/user-feed");
+
+      // Redirect to the page user was trying to access or home page
+      navigate(from, { replace: true });
       return;
     }
 
@@ -432,13 +455,15 @@ const UserLogin: React.FC = () => {
 
                 {/* Back Link */}
                 <div className="text-center pt-2">
-                  <Link
-                    to="/"
-                    className="inline-flex items-center gap-2 text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 font-medium text-sm transition-colors group"
-                  >
-                    <ArrowLeft className="size-4 group-hover:-translate-x-1 transition-transform" />
-                    Back to Home
-                  </Link>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    Don't have an account?{" "}
+                    <Link
+                      to="/user-signup"
+                      className="text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 font-medium transition-colors"
+                    >
+                      Sign up
+                    </Link>
+                  </p>
                 </div>
               </div>
             </div>
