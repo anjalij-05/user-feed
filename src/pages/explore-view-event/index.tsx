@@ -53,7 +53,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { sanitizeHtml } from "@/lib/sanitizeHtml";
+import { sanitizeHtml, stripHtmlTags } from "@/lib/sanitizeHtml";
 
 interface CompanySponsor {
   id: number;
@@ -386,7 +386,6 @@ const ExploreViewEvent: React.FC = () => {
   const [showLiveStream, setShowLiveStream] = useState<boolean>(false);
   const [currentAgendaId, setCurrentAgendaId] = useState<number | null>(null);
   const [hasEventImages, setHasEventImages] = useState<boolean>(false);
-  const [isCheckingImages, setIsCheckingImages] = useState<boolean>(false);
 
   const [speakerRatings, setSpeakerRatings] = useState<{
     [key: string]: number;
@@ -772,12 +771,14 @@ const ExploreViewEvent: React.FC = () => {
 
   // Add this function to check if event has images
   const checkEventImages = async () => {
-    if (!currentEvent?.uuid || !currentEvent?.user_id) return;
+    if (!currentEvent?.uuid || !currentEvent?.user_id) {
+      setHasEventImages(false);
+      return;
+    }
 
     try {
-      setIsCheckingImages(true);
       const response = await axios.post(
-        'https://additional.klout.club/api/v1/faces/all-photos',
+        `${appDomain}/api/v1/faces/all-photos`,
         {
           eventUuid: currentEvent.uuid,
           userId: String(currentEvent.user_id),
@@ -789,10 +790,11 @@ const ExploreViewEvent: React.FC = () => {
         },
       );
 
-      // Check if response has photos
       if (
         response.data &&
+        response.data.status === 200 &&
         response.data.data &&
+        Array.isArray(response.data.data) &&
         response.data.data.length > 0
       ) {
         setHasEventImages(true);
@@ -802,8 +804,11 @@ const ExploreViewEvent: React.FC = () => {
     } catch (error) {
       console.error("Error checking event images:", error);
       setHasEventImages(false);
-    } finally {
-      setIsCheckingImages(false);
+
+      if (axios.isAxiosError(error)) {
+        console.log("API Error Status:", error.response?.status);
+        console.log("API Error Response:", error.response?.data);
+      }
     }
   };
 
@@ -1473,7 +1478,7 @@ const ExploreViewEvent: React.FC = () => {
 
                                   {activeAgenda.description && (
                                     <p className="text-xs md:text-sm text-white/90 leading-relaxed line-clamp-2 md:line-clamp-3">
-                                      {activeAgenda.description}
+                                      {stripHtmlTags(activeAgenda.description)}
                                     </p>
                                   )}
 
@@ -1955,9 +1960,14 @@ const ExploreViewEvent: React.FC = () => {
                                             {agenda.title}
                                           </h3>
 
-                                          <p className="text-gray-600 leading-relaxed text-sm ">
-                                            {agenda.description}
-                                          </p>
+                                          <div
+                                            className="text-gray-600 leading-relaxed text-sm prose prose-sm max-w-none"
+                                            dangerouslySetInnerHTML={{
+                                              __html: sanitizeHtml(
+                                                agenda.description || "",
+                                              ),
+                                            }}
+                                          />
 
                                           {agenda.speakers &&
                                             agenda.speakers.length > 0 && (
@@ -2081,10 +2091,15 @@ const ExploreViewEvent: React.FC = () => {
                                           <h3 className="font-bold text-xl text-gray-900 mb-3">
                                             {agenda.title}
                                           </h3>
-
-                                          <p className="text-gray-600 leading-relaxed mb-5">
-                                            {agenda.description}
-                                          </p>
+                                          {/* Description */}
+                                          <div
+                                            className="text-gray-600 leading-relaxed mb-5 prose prose-sm max-w-none"
+                                            dangerouslySetInnerHTML={{
+                                              __html: sanitizeHtml(
+                                                agenda.description || "",
+                                              ),
+                                            }}
+                                          />
 
                                           {agenda.speakers &&
                                             agenda.speakers.length > 0 && (
