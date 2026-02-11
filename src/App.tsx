@@ -29,6 +29,8 @@ import ProtectedRoute from "./components/protectedRoute";
 import PublicRoute from "@/components/publicRoute";
 import CompanyDetails from "./pages/companyDetails";
 import CompanyEmployees from "./pages/companyEmployees";
+import ChatRoom from "./pages/chats/chatRoom";
+import EditProfile from "./pages/editProfile";
 
 function App() {
   const [userPosts, setUserPosts] = useState<Post[]>([]);
@@ -89,6 +91,7 @@ function App() {
         />
         <Route path="/nearby-users" element={<Explore />} />
         <Route path="/chats" element={<ChatPage />} />
+        <Route path="/chat/:bothUserId" element={<ChatRoom />} />
         <Route path="/connects" element={<Connects />} />
         <Route path="/updates" element={<Updates />} />
         <Route path="/events" element={<ExploreAllEvents />} />
@@ -96,6 +99,7 @@ function App() {
         <Route path="/profile/:id" element={<ProfileDetails />} />
         <Route path="/my-profile" element={<MyProfile />} />
         <Route path="/profile-setting" element={<ProfileSetting />} />
+        <Route path="/edit-profile" element={<EditProfile />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/v-card" element={<VCard />} />
         <Route path="/my-attended-events" element={<MyAttendedEvents />} />
