@@ -44,12 +44,10 @@ const Updates: React.FC = () => {
     dispatch(notificationList({ token, userId: user._id }));
   }, [dispatch, token, user?._id]);
 
-  // Mark notifications as viewed when component mounts
   useEffect(() => {
     localStorage.setItem("hasViewedUpdates", "true");
   }, []);
 
-  // Accept connection
   const handleAccept = async (
     notification: any,
     parsedData: NotificationData
@@ -72,7 +70,6 @@ const Updates: React.FC = () => {
     }
   };
 
-  // Reject connection
   const handleReject = async (
     notification: any,
     parsedData: NotificationData
@@ -95,7 +92,6 @@ const Updates: React.FC = () => {
     }
   };
 
-  // Deduplicate notifications
   const uniqueList = useMemo(() => {
     const seen = new Map<string, any>();
     list.forEach((n: any) => {
@@ -105,7 +101,6 @@ const Updates: React.FC = () => {
     return Array.from(seen.values());
   }, [list]);
 
-  // Format date
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr);
     const now = new Date();
@@ -126,18 +121,17 @@ const Updates: React.FC = () => {
     });
   };
 
-  // Get notification icon and color
   const getNotificationMeta = (type?: string) => {
     switch (type) {
-      case "1": // Connection request
+      case "1":
         return {
           icon: UserPlus,
           color: "text-primary",
           bgColor: "bg-primary-50",
         };
-      case "2": // Profile visit
+      case "2":
         return { icon: Eye, color: "text-green-500", bgColor: "bg-green-50" };
-      case "3": // Connection accepted
+      case "3":
         return {
           icon: UserCheck,
           color: "text-green-500",
@@ -148,7 +142,6 @@ const Updates: React.FC = () => {
     }
   };
 
-  // Tabs filter
   const filteredList = useMemo(() => {
     if (activeTab === "requests") {
       return uniqueList.filter((n: any) => {
@@ -165,7 +158,6 @@ const Updates: React.FC = () => {
     return uniqueList;
   }, [activeTab, uniqueList]);
 
-  // Count by type for badges
   const counts = useMemo(() => {
     const requests = uniqueList.filter((n: any) => {
       const d = n.data ? JSON.parse(n.data) : {};
@@ -185,12 +177,12 @@ const Updates: React.FC = () => {
       <div className="flex items-center justify-center h-[80vh]">
         <Card className="w-full max-w-md text-center">
           <CardContent className="pt-6">
-            <Bell className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Access Your Updates</h3>
-            <p className="text-muted-foreground mb-4">
+            <Bell className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
+            <h3 className="text-base font-semibold mb-2">Access Your Updates</h3>
+            <p className="text-muted-foreground text-sm mb-4">
               Login to view your notifications and connection requests
             </p>
-            <Button onClick={() => navigate("/user-login")} className="w-full">
+            <Button onClick={() => navigate("/user-login")} className="w-full h-9">
               Login to View Updates
             </Button>
           </CardContent>
@@ -200,13 +192,13 @@ const Updates: React.FC = () => {
   }
 
   return (
-    <div className="container max-w-2xl mx-auto p-4 sm:p-6 space-y-6">
+    <div className="container max-w-2xl mx-auto p-3 sm:p-4 space-y-4">
       {/* Header */}
-      <div className="text-center space-y-2">
-        <h1 className="text-2xl sm:text-3xl font-bold bg-linear-to-r bg-foreground bg-clip-text text-transparent">
+      <div className="text-center space-y-1">
+        <h1 className="text-xl sm:text-2xl font-bold bg-linear-to-r bg-foreground bg-clip-text text-transparent">
           Updates
         </h1>
-        <p className="text-muted-foreground text-sm">
+        <p className="text-muted-foreground text-xs sm:text-sm">
           Stay updated with your network activity
         </p>
       </div>
@@ -217,39 +209,40 @@ const Updates: React.FC = () => {
         onValueChange={(value) => setActiveTab(value as any)}
         className="w-full"
       >
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="all" className="flex items-center gap-2">
-            <Bell className="h-4 w-4" />
+        <TabsList className="grid w-full grid-cols-3 h-9">
+          <TabsTrigger value="all" className="flex items-center gap-1.5 text-xs">
+            <Bell className="h-3.5 w-3.5" />
             All
             {counts.all > 0 && (
-              <Badge variant="secondary" className="h-5 min-w-5">
+              <Badge variant="secondary" className="h-4 min-w-4 text-xs px-1">
                 {counts.all}
               </Badge>
             )}
           </TabsTrigger>
-          <TabsTrigger value="requests" className="flex items-center gap-2">
-            <UserPlus className="h-4 w-4" />
+          <TabsTrigger value="requests" className="flex items-center gap-1.5 text-xs">
+            <UserPlus className="h-3.5 w-3.5" />
             Requests
             {counts.requests > 0 && (
-              <Badge variant="secondary" className="h-5 min-w-5">
+              <Badge variant="secondary" className="h-4 min-w-4 text-xs px-1">
                 {counts.requests}
               </Badge>
             )}
           </TabsTrigger>
-          <TabsTrigger value="visits" className="flex items-center gap-2">
-            <Eye className="h-4 w-4" />
+          <TabsTrigger value="visits" className="flex items-center gap-1.5 text-xs">
+            <Eye className="h-3.5 w-3.5" />
             Visits
             {counts.visits > 0 && (
-              <Badge variant="secondary" className="h-5 min-w-5">
+              <Badge variant="secondary" className="h-4 min-w-4 text-xs px-1">
                 {counts.visits}
               </Badge>
             )}
           </TabsTrigger>
         </TabsList>
+
         {/* All Tab */}
-        <TabsContent value="all" className="space-y-3 mt-6">
+        <TabsContent value="all" className="space-y-2 mt-3">
           {loading ? (
-            <div className="space-y-3">
+            <div className="space-y-2">
               {[...Array(5)].map((_, i) => (
                 <NotificationSkeleton key={i} />
               ))}
@@ -271,10 +264,11 @@ const Updates: React.FC = () => {
             ))
           )}
         </TabsContent>
+
         {/* Requests Tab */}
-        <TabsContent value="requests" className="space-y-3 mt-6">
+        <TabsContent value="requests" className="space-y-2 mt-3">
           {loading ? (
-            <div className="space-y-3">
+            <div className="space-y-2">
               {[...Array(3)].map((_, i) => (
                 <NotificationSkeleton key={i} />
               ))}
@@ -287,7 +281,7 @@ const Updates: React.FC = () => {
                 key={n._id}
                 notification={n}
                 user={user}
-                userProfiles={userProfiles} // Add this
+                userProfiles={userProfiles}
                 onAccept={handleAccept}
                 onReject={handleReject}
                 formatDate={formatDate}
@@ -296,10 +290,11 @@ const Updates: React.FC = () => {
             ))
           )}
         </TabsContent>
+
         {/* Visits Tab */}
-        <TabsContent value="visits" className="space-y-3 mt-6">
+        <TabsContent value="visits" className="space-y-2 mt-3">
           {loading ? (
-            <div className="space-y-3">
+            <div className="space-y-2">
               {[...Array(3)].map((_, i) => (
                 <NotificationSkeleton key={i} />
               ))}
@@ -349,12 +344,10 @@ const NotificationItem = ({
     parsedData.ConnectionId ||
     notification.from_user_id;
 
-  // Find the user profile from userProfiles array
   const userProfile = userProfiles?.find(
     (profile: any) => profile._id === targetId
   );
 
-  // Construct profile URL
   const profileUrl = userProfile
     ? `/profile/${userProfile.first_name}-${userProfile.last_name}-${userProfile._id}`
     : `/profile/${targetId}`;
@@ -367,19 +360,19 @@ const NotificationItem = ({
 
   return (
     <Card className="group transition-all duration-200 hover:shadow-md hover:border-border">
-      <CardContent className="p-4">
-        <div className="flex items-start gap-3">
+      <CardContent className="p-2.5 sm:p-3">
+        <div className="flex items-start gap-2">
           {/* Notification Icon */}
-          <div className={`p-2 rounded-full ${bgColor} shrink-0`}>
-            <Icon className={`h-4 w-4 ${color}`} />
+          <div className={`p-1.5 rounded-full ${bgColor} shrink-0`}>
+            <Icon className={`h-3.5 w-3.5 ${color}`} />
           </div>
 
           {/* Content */}
-          <div className="flex-1 min-w-0 space-y-2">
+          <div className="flex-1 min-w-0 space-y-1.5">
             <div className="flex items-start justify-between gap-2">
-              <div className="flex items-start gap-3 flex-1 min-w-0">
+              <div className="flex items-start gap-2 flex-1 min-w-0">
                 {profileImage && (
-                  <Avatar className="w-10 h-10 border">
+                  <Avatar className="w-9 h-9 border">
                     <AvatarImage src={profileImage} alt={parsedData.Name} />
                     <AvatarFallback className="text-xs">
                       {parsedData.Name?.charAt(0).toUpperCase()}
@@ -389,18 +382,18 @@ const NotificationItem = ({
 
                 <div className="min-w-0 flex-1">
                   <Link to={profileUrl} className="block">
-                    <h3 className="font-semibold text-foreground truncate capitalize hover:text-primary transition-colors">
+                    <h3 className="font-semibold text-sm text-foreground truncate capitalize hover:text-primary transition-colors">
                       {userProfile
                         ? `${userProfile.first_name} ${userProfile.last_name}`
                         : parsedData.Name || "Unknown User"}
                     </h3>
                   </Link>
                   {parsedData.Designation && (
-                    <p className="text-sm text-muted-foreground capitalize truncate mt-0.5">
+                    <p className="text-xs text-muted-foreground capitalize truncate">
                       {parsedData.Designation}
                     </p>
                   )}
-                  <p className="text-sm text-foreground mt-1">
+                  <p className="text-xs text-foreground mt-0.5">
                     {parsedData.Body || notification.body}
                   </p>
                 </div>
@@ -415,12 +408,12 @@ const NotificationItem = ({
 
             {/* Connection Request Actions */}
             {parsedData.Type === "1" && (
-              <div className="flex gap-2 pt-2">
+              <div className="flex gap-1.5 pt-1">
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => onReject(notification, parsedData)}
-                  className="h-8 text-xs border-destructive/20 text-destructive hover:bg-destructive/10"
+                  className="h-7 text-xs border-destructive/20 text-destructive hover:bg-destructive/10"
                 >
                   <X className="h-3 w-3 mr-1" />
                   Decline
@@ -428,7 +421,7 @@ const NotificationItem = ({
                 <Button
                   size="sm"
                   onClick={() => onAccept(notification, parsedData)}
-                  className="h-8 text-xs"
+                  className="h-7 text-xs"
                 >
                   <Check className="h-3 w-3 mr-1" />
                   Accept
@@ -445,24 +438,24 @@ const NotificationItem = ({
 // Skeleton Loader
 const NotificationSkeleton = () => (
   <Card className="animate-pulse">
-    <CardContent className="p-4">
-      <div className="flex items-start gap-3">
-        <Skeleton className="w-8 h-8 rounded-full" />
-        <div className="flex-1 space-y-2">
+    <CardContent className="p-2.5 sm:p-3">
+      <div className="flex items-start gap-2">
+        <Skeleton className="w-7 h-7 rounded-full" />
+        <div className="flex-1 space-y-1.5">
           <div className="flex justify-between items-start">
-            <div className="flex items-start gap-3 flex-1">
-              <Skeleton className="w-10 h-10 rounded-full" />
-              <div className="space-y-2 flex-1">
-                <Skeleton className="h-4 w-32" />
-                <Skeleton className="h-3 w-24" />
-                <Skeleton className="h-3 w-40" />
+            <div className="flex items-start gap-2 flex-1">
+              <Skeleton className="w-9 h-9 rounded-full" />
+              <div className="space-y-1.5 flex-1">
+                <Skeleton className="h-3.5 w-28" />
+                <Skeleton className="h-3 w-20" />
+                <Skeleton className="h-3 w-32" />
               </div>
             </div>
-            <Skeleton className="h-3 w-12" />
+            <Skeleton className="h-3 w-10" />
           </div>
-          <div className="flex gap-2 pt-2">
-            <Skeleton className="h-8 w-20 rounded" />
-            <Skeleton className="h-8 w-20 rounded" />
+          <div className="flex gap-1.5 pt-1">
+            <Skeleton className="h-7 w-18 rounded" />
+            <Skeleton className="h-7 w-18 rounded" />
           </div>
         </div>
       </div>
@@ -473,18 +466,18 @@ const NotificationSkeleton = () => (
 // Empty State Component
 const EmptyState = ({ type }: { type: string }) => (
   <Card>
-    <CardContent className="text-center py-12">
+    <CardContent className="text-center py-10">
       {type === "all" && (
-        <Bell className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+        <Bell className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
       )}
       {type === "requests" && (
-        <UserPlus className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+        <UserPlus className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
       )}
       {type === "visits" && (
-        <Eye className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+        <Eye className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
       )}
 
-      <h3 className="font-semibold text-foreground mb-2 capitalize">
+      <h3 className="font-semibold text-base text-foreground mb-1.5 capitalize">
         No {type === "all" ? "updates" : type} yet
       </h3>
       <p className="text-muted-foreground text-sm">

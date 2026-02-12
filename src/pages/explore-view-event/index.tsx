@@ -764,57 +764,70 @@ const ExploreViewEvent: React.FC = () => {
       (event) => event.eventUUID === currentEvent?.uuid,
     );
     if (attended) {
-      console.log("Event attended - found match in allAttendedEvents");
+      // console.log("Event attended - found match in allAttendedEvents");
     }
     return attended;
   };
 
-  // Add this function to check if event has images
   const checkEventImages = async () => {
-    if (!currentEvent?.uuid || !currentEvent?.user_id) {
+    // console.log("=== checkEventImages called ===");
+    // console.log("currentEvent?.uuid:", currentEvent?.uuid);
+    // console.log("currentEvent?.user_id:", currentEvent?.user_id);
+    // console.log("typeof user_id:", typeof currentEvent?.user_id);
+
+    // Fixed guard — use != null instead of falsy check (catches user_id = 0)
+    if (!currentEvent?.uuid || currentEvent?.user_id == null) {
+      // console.log("Guard blocked: missing uuid or user_id");
       setHasEventImages(false);
       return;
     }
 
     try {
+      const payload = {
+        eventUuid: currentEvent.uuid,
+        userId: String(currentEvent.user_id),
+      };
+      // console.log("Sending payload:", payload);
+
       const response = await axios.post(
-        `${appDomain}/api/v1/faces/all-photos`,
-        {
-          eventUuid: currentEvent.uuid,
-          userId: String(currentEvent.user_id),
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        },
+        "https://additional.klout.club/api/v1/faces/all-photos",
+        payload,
+        { headers: { "Content-Type": "application/json" } },
       );
 
-      if (
-        response.data &&
-        response.data.status === 200 &&
-        response.data.data &&
-        Array.isArray(response.data.data) &&
-        response.data.data.length > 0
-      ) {
-        setHasEventImages(true);
-      } else {
-        setHasEventImages(false);
-      }
-    } catch (error) {
-      console.error("Error checking event images:", error);
-      setHasEventImages(false);
+      // console.log("API response status:", response.status);
+      // console.log("API response data:", response.data);
+      // console.log("API response data.data:", response.data?.data);
+      // console.log("Is array?", Array.isArray(response.data?.data));
+      // console.log("Length:", response.data?.data?.length);
 
+      // handles both boolean true OR status 200
+      const hasPhotos =
+        !!response.data?.status &&
+        Array.isArray(response.data?.data) &&
+        response.data.data.length > 0;
+
+      // console.log("Setting hasEventImages to:", hasPhotos);
+      setHasEventImages(hasPhotos);
+    } catch (error) {
+      console.error("checkEventImages error:", error);
       if (axios.isAxiosError(error)) {
-        console.log("API Error Status:", error.response?.status);
-        console.log("API Error Response:", error.response?.data);
+        console.error("Status:", error.response?.status);
+        console.error("Response:", error.response?.data);
       }
+      setHasEventImages(false);
     }
   };
 
-  //  to check images when event is loaded
+  // Also update the useEffect
   useEffect(() => {
-    if (currentEvent?.uuid && currentEvent?.user_id) {
+    console.log(
+      "useEffect triggered — uuid:",
+      currentEvent?.uuid,
+      "user_id:",
+      currentEvent?.user_id,
+    );
+    if (currentEvent?.uuid && currentEvent?.user_id != null) {
       checkEventImages();
     }
   }, [currentEvent?.uuid, currentEvent?.user_id]);
@@ -1252,7 +1265,7 @@ const ExploreViewEvent: React.FC = () => {
               </span>
             </Link>
 
-            <h1 className="text-2xl font-semibold mt-0! flex items-center gap-2">
+            <h1 className="text-xl font-semibold mt-0! flex items-center gap-2">
               {currentEvent?.title}{" "}
               {currentEvent?.paid_event === 1 && (
                 <Badge className="rounded-full">Paid</Badge>
@@ -1261,7 +1274,7 @@ const ExploreViewEvent: React.FC = () => {
 
             {/* Row for Start Date */}
             <div className="flex gap-2">
-              <div className="rounded-md grid place-content-center size-10 bg-muted">
+              <div className="rounded-md grid place-content-center size-8 bg-muted">
                 <p className="uppercase text-secondary font-semibold text-xs text-center">
                   {startTime
                     ? new Date(startTime)
@@ -1269,7 +1282,7 @@ const ExploreViewEvent: React.FC = () => {
                         .toUpperCase()
                     : ""}
                 </p>
-                <p className="text-2xl leading-none font-semibold text-foreground">
+                <p className="text-lg leading-none font-semibold text-foreground">
                   {startTime ? new Date(startTime).getDate() : ""}
                 </p>
               </div>
@@ -1296,8 +1309,8 @@ const ExploreViewEvent: React.FC = () => {
               >
                 {currentEvent?.event_mode === 0 ? (
                   <React.Fragment>
-                    <div className="rounded-md grid place-content-center size-10 bg-muted">
-                      <MapPin size={30} className="text-foreground" />
+                    <div className="rounded-md grid place-content-center size-8 bg-muted">
+                      <MapPin size={20} className="text-foreground" />
                     </div>
 
                     <div>
@@ -1312,8 +1325,8 @@ const ExploreViewEvent: React.FC = () => {
                   </React.Fragment>
                 ) : (
                   <React.Fragment>
-                    <div className="rounded-md grid place-content-center size-10 bg-muted">
-                      <Globe size={30} className="text-foreground" />
+                    <div className="rounded-md grid place-content-center size-8 bg-muted">
+                      <Globe size={20} className="text-foreground" />
                     </div>
 
                     <div>
@@ -1330,8 +1343,8 @@ const ExploreViewEvent: React.FC = () => {
             {currentEvent?.paid_event === 1 && (
               <div className="flex gap-2">
                 <div className="flex gap-2">
-                  <div className="rounded-md grid place-content-center size-10 bg-muted">
-                    <IndianRupee size={30} className="text-foreground" />
+                  <div className="rounded-md grid place-content-center size-8 bg-muted">
+                    <IndianRupee size={20} className="text-foreground" />
                   </div>
 
                   <div>
@@ -1362,8 +1375,8 @@ const ExploreViewEvent: React.FC = () => {
                     isEventDatePassed() ? "blur-[2px]" : ""
                   }`}
                 >
-                  <div className="rounded-md grid place-content-center size-10 bg-background/50">
-                    <UserRoundCheck size={30} className="text-foreground" />
+                  <div className="rounded-md grid place-content-center size-8 bg-background/50">
+                    <UserRoundCheck size={20} className="text-foreground" />
                   </div>
 
                   <div className="">
@@ -1419,7 +1432,7 @@ const ExploreViewEvent: React.FC = () => {
                 {/* EVENT DETAILS TAB */}
                 <TabsContent value="details" className="space-y-6">
                   <div>
-                    <h3 className="font-semibold text-lg">Event Details</h3>
+                    <h3 className="font-semibold text-base">Event Details</h3>
                     <hr className="border-t-2 border-white my-2.5" />
                     <div
                       className="text-sm mt-2 text-brand-dark-gray prose prose-sm max-w-none dark:prose-invert"
@@ -1432,7 +1445,7 @@ const ExploreViewEvent: React.FC = () => {
                   {/* Live Stream Section in Details Tab */}
                   {showLiveStream && isUserCheckedIn && (
                     <div className="mt-6">
-                      <h3 className="font-semibold text-lg">Live Stream</h3>
+                      <h3 className="font-semibold text-base">Live Stream</h3>
                       <hr className="border-t-2 border-white my-2.5!" />
                       <div className="relative w-full aspect-video bg-black rounded-lg overflow-hidden border-4 border-primary shadow-lg">
                         <div className="absolute top-4 right-4 z-10 bg-white/90 backdrop-blur-sm rounded-lg p-2 shadow-md">
@@ -1535,7 +1548,7 @@ const ExploreViewEvent: React.FC = () => {
 
                   {/* Jury */}
                   <div hidden={allJury.length === 0}>
-                    <h3 className="font-semibold text-lg">Jury</h3>
+                    <h3 className="font-semibold text-base">Jury</h3>
                     <hr className="border-t-2 border-white my-2.5!" />
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-5 justify-between">
                       {allJury.map((jury, index) => (
@@ -1550,7 +1563,7 @@ const ExploreViewEvent: React.FC = () => {
                                 : UserAvatar
                             }
                             alt="Jury"
-                            className="rounded-full mx-auto size-24"
+                            className="rounded-full mx-auto size-16"
                           />
                           <p className="font-semibold text-wrap capitalize">
                             {jury.first_name + " " + jury.last_name}
@@ -1568,7 +1581,7 @@ const ExploreViewEvent: React.FC = () => {
 
                   {/* Company Sponsors */}
                   <div hidden={allCompanySponsors.length === 0}>
-                    <h3 className="font-semibold text-lg">Company Sponsors</h3>
+                    <h3 className="font-semibold text-base">Company Sponsors</h3>
                     <hr className="border-t-2 border-white my-2.5!" />
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-5 justify-between">
                       {allCompanySponsors.map((sponsor, index) => (
@@ -1621,7 +1634,7 @@ const ExploreViewEvent: React.FC = () => {
                                       </div>
                                     </DialogTitle>
                                     <DialogDescription>
-                                      <h3 className="font-semibold text-black text-base sm:text-lg">
+                                      <h3 className="font-semibold text-black text-base sm:text-base">
                                         About Company
                                       </h3>
                                       <div className="mt-2">
@@ -1919,7 +1932,7 @@ const ExploreViewEvent: React.FC = () => {
                 <TabsContent value="agenda" className="space-y-6">
                   {viewAgendaBy == 0 && (
                     <div>
-                      <h3 className="font-semibold text-lg mb-2">
+                      <h3 className="font-semibold text-base mb-2">
                         Agenda Details
                       </h3>
                       <hr className="border-t-2 border-white my-2.5" />
@@ -1996,7 +2009,7 @@ const ExploreViewEvent: React.FC = () => {
                                                         key={speaker.id}
                                                         className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors duration-200"
                                                       >
-                                                        <Avatar className="size-14 rounded-full shrink-0 border-2 border-white shadow-sm">
+                                                        <Avatar className="size-10 rounded-full shrink-0 border-2 border-white shadow-sm">
                                                           <AvatarImage
                                                             src={
                                                               speaker.image
@@ -2004,13 +2017,13 @@ const ExploreViewEvent: React.FC = () => {
                                                                 : UserAvatar
                                                             }
                                                             alt={`${speaker.first_name} ${speaker.last_name}`}
-                                                            className="size-14 rounded-full object-cover object-top"
+                                                            className="size-10 rounded-full object-cover object-top"
                                                           />
-                                                          <AvatarFallback className="size-14 rounded-full bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center">
+                                                          <AvatarFallback className="size-10 rounded-full bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center">
                                                             <img
                                                               src={UserAvatar}
                                                               alt="fallback"
-                                                              className="size-14 rounded-full"
+                                                              className="size-10 rounded-full"
                                                             />
                                                           </AvatarFallback>
                                                         </Avatar>
@@ -2087,8 +2100,8 @@ const ExploreViewEvent: React.FC = () => {
                                           </div>
                                         </div>
 
-                                        <div className="p-5">
-                                          <h3 className="font-bold text-xl text-gray-900 mb-3">
+                                        <div className="p-3">
+                                          <h3 className="font-bold text-base text-gray-900 mb-2">
                                             {agenda.title}
                                           </h3>
                                           {/* Description */}
@@ -2128,7 +2141,7 @@ const ExploreViewEvent: React.FC = () => {
                                                         key={speaker.id}
                                                         className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors duration-200"
                                                       >
-                                                        <Avatar className="size-14 rounded-full shrink-0 border-2 border-white shadow-sm">
+                                                        <Avatar className="size-10 rounded-full shrink-0 border-2 border-white shadow-sm">
                                                           <AvatarImage
                                                             src={
                                                               speaker.image
@@ -2136,13 +2149,13 @@ const ExploreViewEvent: React.FC = () => {
                                                                 : UserAvatar
                                                             }
                                                             alt={`${speaker.first_name} ${speaker.last_name}`}
-                                                            className="size-14 rounded-full object-cover object-top"
+                                                            className="size-10 rounded-full object-cover object-top"
                                                           />
-                                                          <AvatarFallback className="size-14 rounded-full bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center">
+                                                          <AvatarFallback className="size-10 rounded-full bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center">
                                                             <img
                                                               src={UserAvatar}
                                                               alt="fallback"
-                                                              className="size-14 rounded-full"
+                                                              className="size-10 rounded-full"
                                                             />
                                                           </AvatarFallback>
                                                         </Avatar>
@@ -2205,7 +2218,7 @@ const ExploreViewEvent: React.FC = () => {
                     (isEventLive() || isEventDatePassed()) &&
                     agendaData.length > 0 && (
                       <div className="mt-8">
-                        <h3 className="font-semibold text-lg">Rate Speakers</h3>
+                        <h3 className="font-semibold text-base">Rate Speakers</h3>
                         <hr className="border-t-2 border-white my-2.5!" />
                         <p className="text-sm text-muted-foreground mb-4">
                           Share your feedback on the speakers from each session
@@ -2346,7 +2359,7 @@ const ExploreViewEvent: React.FC = () => {
                                               className="bg-background rounded-lg p-4 border border-border/50"
                                             >
                                               <div className="flex gap-3 items-start mb-4">
-                                                <Avatar className="size-14 rounded-full shrink-0 border-2 border-white shadow-sm">
+                                                <Avatar className="size-10 rounded-full shrink-0 border-2 border-white shadow-sm">
                                                   <AvatarImage
                                                     src={
                                                       speaker.image
@@ -2354,13 +2367,13 @@ const ExploreViewEvent: React.FC = () => {
                                                         : UserAvatar
                                                     }
                                                     alt={`${speaker.first_name} ${speaker.last_name}`}
-                                                    className="size-14 rounded-full object-cover object-top"
+                                                    className="size-10 rounded-full object-cover object-top"
                                                   />
-                                                  <AvatarFallback className="size-14 rounded-full bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center">
+                                                  <AvatarFallback className="size-10 rounded-full bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center">
                                                     <img
                                                       src={UserAvatar}
                                                       alt="fallback"
-                                                      className="size-14 rounded-full"
+                                                      className="size-10 rounded-full"
                                                     />
                                                   </AvatarFallback>
                                                 </Avatar>
@@ -2708,7 +2721,7 @@ const ExploreViewEvent: React.FC = () => {
                 {/* SPEAKERS TAB */}
                 <TabsContent value="speakers" className="space-y-6">
                   <div hidden={allSpeakers.length === 0}>
-                    <h3 className="font-semibold text-lg">Speakers</h3>
+                    <h3 className="font-semibold text-base">Speakers</h3>
                     <hr className="border-t-2 border-white my-2.5!" />
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-5 justify-between">
                       {allSpeakers.length > 0 ? (
@@ -2717,21 +2730,21 @@ const ExploreViewEvent: React.FC = () => {
                             key={index}
                             className="max-w-60 max-h-96 overflow-hidden text-ellipsis text-center"
                           >
-                            <Avatar className="size-24 rounded-full shrink-0">
+                            <Avatar className="size-16 rounded-full shrink-0">
                               <AvatarImage
                                 src={
                                   speaker.image
                                     ? domain + "/" + speaker.image
                                     : UserAvatar
                                 }
-                                className="size-24 rounded-full mx-auto object-cover object-top"
+                                className="size-16 rounded-full mx-auto object-cover object-top"
                                 alt={`${speaker.first_name} ${speaker.last_name}`}
                               />
-                              <AvatarFallback className="size-24 mx-auto rounded-full bg-linear-to-br from-purple-100 to-pink-100 flex items-center justify-center">
+                              <AvatarFallback className="size-16 mx-auto rounded-full bg-linear-to-br from-purple-100 to-pink-100 flex items-center justify-center">
                                 <img
                                   src={UserAvatar}
                                   alt="fallback"
-                                  className="size-24 rounded-full mx-auto object-cover object-top"
+                                  className="size-16 rounded-full mx-auto object-cover object-top"
                                 />
                               </AvatarFallback>
                             </Avatar>
@@ -2756,7 +2769,7 @@ const ExploreViewEvent: React.FC = () => {
 
                   {/* Sponsors */}
                   <div hidden={true}>
-                    <h3 className="font-semibold text-lg">Sponsors</h3>
+                    <h3 className="font-semibold text-base">Sponsors</h3>
                     <hr className="border-t-2 border-white my-2.5!" />
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-5 justify-between">
                       {allSponsors?.length > 0 ? (
@@ -2772,7 +2785,7 @@ const ExploreViewEvent: React.FC = () => {
                                   : UserAvatar
                               }
                               alt="Sponsor"
-                              className="rounded-full mx-auto size-24 object-cover object-top"
+                              className="rounded-full mx-auto size-16 object-cover object-top"
                             />
                             <p className="font-semibold text-wrap capitalize">
                               {sponsor.first_name + " " + sponsor.last_name}
@@ -2806,7 +2819,7 @@ const ExploreViewEvent: React.FC = () => {
                     ) : (
                       <div className="border border-accent rounded-lg overflow-hidden shadow-sm">
                         <div className="bg-muted p-4 border-b border-accent">
-                          <h3 className="font-semibold text-lg">
+                          <h3 className="font-semibold text-base">
                             Event Images
                           </h3>
                         </div>
@@ -2849,7 +2862,7 @@ const ExploreViewEvent: React.FC = () => {
                   ) : (
                     <div className="border border-accent rounded-lg overflow-hidden shadow-sm">
                       <div className="bg-muted p-4 border-b border-accent">
-                        <h3 className="font-semibold text-lg">Event Images</h3>
+                        <h3 className="font-semibold text-base">Event Images</h3>
                       </div>
                       <div className="p-8 text-center">
                         <div className="flex flex-col items-center gap-4 max-w-md mx-auto">
@@ -2875,13 +2888,13 @@ const ExploreViewEvent: React.FC = () => {
               hidden={currentEvent?.event_mode == 1}
               className="mt-10 md:hidden md:mt-[5.8rem]"
             >
-              <h3 className="font-semibold text-lg">Location</h3>
+              <h3 className="font-semibold text-base">Location</h3>
               <hr className="border-t-2 border-white my-2.5!" />
               <p className="text-foreground">
                 <strong>{currentEvent?.event_venue_name}</strong> <br />
                 {currentEvent?.event_venue_address_2}
               </p>
-              <div className="rounded-lg w-full h-full mt-2.5 p-2 overflow-hidden md:w-[300px] md:h-[300px]">
+              <div className="rounded-lg w-full h-full mt-2.5 p-2 overflow-hidden md:w-[300px] md:h-[200px]">
                 <GoogleMap
                   latitude={center.lat}
                   longitude={center.lng}
@@ -2897,20 +2910,20 @@ const ExploreViewEvent: React.FC = () => {
             <img
               src={domain + "/" + currentEvent?.image}
               alt="Background Image"
-              className="rounded-lg w-60 mx-auto md:w-full"
+              className="rounded-lg w-48 mx-auto md:w-full"
             />
 
             <div
               hidden={currentEvent?.event_mode == 1}
               className="mt-10 hidden md:block md:mt-[5.8rem]"
             >
-              <h3 className="font-semibold text-lg">Location</h3>
+              <h3 className="font-semibold text-base">Location</h3>
               <hr className="border-t-2 border-white my-2.5!" />
               <p className="text-foreground">
                 <strong>{currentEvent?.event_venue_name}</strong> <br />
                 {currentEvent?.event_venue_address_2}
               </p>
-              <div className="rounded-lg w-full h-full mt-2.5 p-2 overflow-hidden md:w-80 md:h-80">
+              <div className="rounded-lg w-full h-full mt-2.5 p-2 overflow-hidden md:w-80 md:h-56">
                 <GoogleMap
                   latitude={center.lat}
                   longitude={center.lng}

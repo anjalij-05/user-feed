@@ -40,7 +40,7 @@ import { Button } from "@/components/ui/button";
 import EventHighlight from "./EventHighlight";
 // import { Helmet } from "react-helmet-async";
 
-const containerStyle = { width: "100%", height: "300px" };
+const containerStyle = { width: "100%", height: "200px" };
 const DEFAULT_MAX_DISTANCE = 50;
 
 export interface Profile {
@@ -1694,7 +1694,7 @@ const Explore: React.FC = () => {
             </p>
           )}
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {profiles.map((p) => {
               const profileImg =
                 getUserProfileImage(
@@ -1715,16 +1715,16 @@ const Explore: React.FC = () => {
                       }`,
                     );
                   }}
-                  className={`flex items-center justify-between border rounded-xl p-3 sm:p-4 shadow-md hover:shadow-lg transition-all bg-background/50 cursor-pointer ${
+                  className={`flex items-center justify-between border rounded-xl p-3 sm:p-4 shadow-md hover:shadow-md transition-all bg-background/50 cursor-pointer ${
                     isSelected ? "ring-2 ring-klout-primary bg-blue-50" : ""
                   }`}
                 >
-                  <div className="flex items-center gap-2 sm:gap-3 md:gap-4 min-w-0 flex-1">
+                  <div className="flex items-center gap-2 sm:gap-2 md:gap-3 min-w-0 flex-1">
                     {p.profileImage ? (
                       <img
                         src={profileImg}
                         alt={`${p.first_name} ${p.last_name}`}
-                        className="w-10 h-10 sm:w-12 sm:h-12 rounded-full border object-cover shrink-0"
+                        className="w-8 h-8 sm:w-10 sm:h-10 rounded-full border object-cover shrink-0"
                         loading="lazy"
                         onClick={(e) => {
                           e.stopPropagation();
@@ -1734,7 +1734,7 @@ const Explore: React.FC = () => {
                       />
                     ) : (
                       <div
-                        className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-klout-primary flex items-center justify-center text-white font-semibold text-base sm:text-lg border border-gray-200 shrink-0"
+                        className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-klout-primary flex items-center justify-center text-white font-semibold text-base sm:text-lg border border-gray-200 shrink-0"
                         title={`${p.first_name} ${p.last_name}`}
                       >
                         {`${p.first_name?.charAt(0) || ""}${
@@ -1745,7 +1745,7 @@ const Explore: React.FC = () => {
 
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-1.5 sm:gap-2">
-                        <p className="font-semibold text-sm sm:text-base md:text-lg capitalize truncate">
+                        <p className="font-semibold text-xs sm:text-sm md:text-base capitalize truncate">
                           {p.first_name} {p.last_name}
                         </p>
 
@@ -1762,13 +1762,13 @@ const Explore: React.FC = () => {
                         )}
                       </div>
 
-                      <p className="text-xs sm:text-sm text-accent-foreground/50 capitalize truncate">
+                      <p className="text-xs text-accent-foreground/50 capitalize truncate">
                         {p.designation || "No designation"}
                       </p>
-                      <p className="text-xs sm:text-sm text-accent-foreground/50 capitalize truncate">
+                      <p className="text-xs text-accent-foreground/50 capitalize truncate">
                         {p.company || "No company"}
                       </p>
-                      <p className="text-xs sm:text-sm text-accent-foreground/50 truncate">
+                      <p className="text-xs text-accent-foreground/50 truncate">
                         {p.city || "No city"}
                       </p>
                     </div>
@@ -1778,7 +1778,7 @@ const Explore: React.FC = () => {
                     {renderConnectionButton(p)}
                     <>
                       {p.score !== undefined && (
-                        <div className="relative w-16 h-12">
+                        <div className="relative w-14 h-10">
                           <img
                             src={TlsImage}
                             alt="TLS"

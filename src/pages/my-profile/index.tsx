@@ -502,12 +502,12 @@ const MyProfile: React.FC = () => {
           </div>
 
           {/* Profile Info Section */}
-          <div className="relative px-4 sm:px-6 pb-6">
+          <div className="relative px-3 sm:px-4 pb-4">
             {/* Profile Image and TLS Container */}
-            <div className="relative flex flex-col items-center -mt-16 sm:-mt-20">
+            <div className="relative flex flex-col items-center -mt-12 sm:-mt-14">
               {/* Profile Image with TLS Badge */}
               <div className="relative">
-                <div className="w-28 h-28 sm:w-32 sm:h-32 md:w-36 md:h-36 rounded-full border-4 border-white shadow-xl overflow-hidden bg-white">
+                <div className="w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-full border-4 border-white shadow-xl overflow-hidden bg-white">
                   <img
                     src={
                       user?.profileImage
@@ -526,16 +526,16 @@ const MyProfile: React.FC = () => {
                 {/* Edit Profile Image Button */}
                 <button
                   type="button"
-                  className="absolute -bottom-1 -right-1 cursor-pointer bg-primary p-2 rounded-full shadow-lg text-white hover:bg-primary-dark transition-colors"
+                  className="absolute -bottom-0.5 -right-0.5 cursor-pointer bg-primary p-1.5 rounded-full shadow-lg text-white hover:bg-primary-dark transition-colors"
                   onClick={() => setOpenImageEdit(true)}
                 >
-                  <Edit2 className="w-4 h-4" />
+                  <Edit2 className="w-3.5 h-3.5" />
                 </button>
 
                 {/* TLS Badge - Positioned near profile image */}
                 {score && (
                   <div
-                    className="absolute -right-19 bottom-2 w-20 h-14 cursor-pointer hover:scale-110 transition-transform"
+                    className="absolute -right-16 bottom-1 w-16 h-12 cursor-pointer hover:scale-110 transition-transform"
                     onClick={handleTlsClick}
                   >
                     <img
@@ -543,7 +543,7 @@ const MyProfile: React.FC = () => {
                       alt="TLS Score"
                       className="w-full h-full object-contain"
                     />
-                    <span className="absolute inset-y-0 right-3 top-1 flex items-center text-white font-bold text-sm">
+                    <span className="absolute inset-y-0 right-2.5 top-0.5 flex items-center text-white font-bold text-sm">
                       {score}
                     </span>
                   </div>
@@ -551,19 +551,19 @@ const MyProfile: React.FC = () => {
               </div>
 
               {/* Name & Basic Info - Centered below profile image with Edit Button */}
-              <div className="text-center mt-4 w-full relative">
+              <div className="text-center mt-3 w-full relative">
                 <button
                   onClick={() => setEditSection("personal")}
-                  className="absolute -top-2 right-0 text-gray-500 cursor-pointer hover:text-klout-primary hover:bg-primary/50 p-2 rounded-full transition-colors"
+                  className="absolute -top-1 right-0 text-gray-500 cursor-pointer hover:text-klout-primary hover:bg-primary/50 p-1.5 rounded-full transition-colors"
                   title="Edit personal information"
                 >
-                  <Edit2 className="w-4 h-4" />
+                  <Edit2 className="w-3.5 h-3.5" />
                 </button>
 
-                <h1 className="text-2xl sm:text-3xl font-bold text-foreground capitalize mb-2">
+                <h1 className="text-xl sm:text-2xl font-bold text-foreground capitalize mb-1.5">
                   {user?.first_name} {user?.last_name}
                 </h1>
-                <p className="text-foreground text-lg capitalize font-medium mb-2">
+                <p className="text-foreground text-lg capitalize font-medium mb-1.5">
                   {user?.designation}
                 </p>
                 <p>
@@ -576,7 +576,7 @@ const MyProfile: React.FC = () => {
                   </button>
                 </p>
                 <div className="flex items-center justify-center capitalize text-muted-foreground">
-                  <MapPin className="w-4 h-4 mr-1" />
+                  <MapPin className="w-3.5 h-3.5 mr-1" />
                   <span className="capitalize">{user?.city}</span>
                 </div>
               </div>

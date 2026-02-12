@@ -5,14 +5,24 @@ import { CheckCircle2, XCircle, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
-const PaymentStatus: React.FC = () => {
+const PaymentWebStatus: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { status, id } = useParams<{ status?: string; id?: string }>();
   const { user } = useAppSelector((state) => state.auth);
 
-  console.log("PaymentStatus params:", { status, id });
+  // When gateway redirects to /payment/failed/txnid=KLOUT_CLUB123,
+  // the :id param is the raw string "txnid=KLOUT_CLUB123" — parse the value out.
+  const rawId = id ?? "";
+  const parsedId = rawId.includes("=")
+    ? rawId.split("=").slice(1).join("=") // "txnid=KLOUT_CLUB123" → "KLOUT_CLUB123"
+    : rawId ||
+      searchParams.get("txnid") ||
+      searchParams.get("mihpayid") ||
+      searchParams.get("id") ||
+      "";
 
+  console.log("PaymentStatus params:", { status, id, parsedId });
   const [countdown, setCountdown] = useState(5);
   const [isVerifying, setIsVerifying] = useState(true);
 
@@ -115,11 +125,13 @@ const PaymentStatus: React.FC = () => {
                   3 Months Premium
                 </span>
               </div>
-              {id && (
+              {parsedId && (
                 <div className="flex justify-between">
                   <span className="text-gray-600">Transaction ID:</span>
                   <span className="font-semibold text-gray-800 text-xs break-all">
-                    {id.length > 20 ? `${id.slice(0, 20)}...` : id}
+                    {parsedId.length > 20
+                      ? `${parsedId.slice(0, 20)}...`
+                      : parsedId}
                   </span>
                 </div>
               )}
@@ -176,10 +188,12 @@ const PaymentStatus: React.FC = () => {
         </div>
 
         <div className="bg-red-50 border border-red-200 rounded-xl p-4 sm:p-4 mb-4">
-          {id && (
+          {parsedId && (
             <div className="mb-3 pb-3 border-b border-red-200">
               <p className="text-xs text-gray-600">Transaction ID:</p>
-              <p className="text-sm text-gray-800 font-mono break-all">{id}</p>
+              <p className="text-sm text-gray-800 font-mono break-all">
+                {parsedId}
+              </p>
             </div>
           )}
           {errorMessage && (
@@ -236,4 +250,4 @@ const PaymentStatus: React.FC = () => {
   );
 };
 
-export default PaymentStatus;
+export default PaymentWebStatus;

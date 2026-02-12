@@ -342,10 +342,10 @@ const ChatPage: React.FC = () => {
   }
 
   return (
-    <div className="flex flex-col items-center w-full max-w-2xl mx-auto p-4 sm:p-6 space-y-6">
+    <div className="flex flex-col items-center w-full max-w-2xl mx-auto p-3 sm:p-4 space-y-4">
       {/* Header */}
       <div className="w-full text-center space-y-2">
-        <h1 className="text-2xl sm:text-3xl font-bold bg-linear-to-r bg-foreground bg-clip-text text-transparent">
+        <h1 className="text-xl sm:text-2xl font-bold bg-linear-to-r bg-foreground bg-clip-text text-transparent">
           Messages
         </h1>
         <p className="text-muted-foreground text-sm">
@@ -360,16 +360,16 @@ const ChatPage: React.FC = () => {
           placeholder="Search conversations..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="h-11 pl-10 pr-4 rounded-2xl bg-background border-input"
+          className="h-9 pl-10 pr-4 rounded-2xl bg-background border-input"
         />
       </div>
 
       {/* New Connections Section */}
       <Card className="w-full">
-        <CardContent className="p-4 sm:p-6">
-          <div className="flex justify-between items-center mb-4">
+        <CardContent className="p-3 sm:p-4">
+          <div className="flex justify-between items-center mb-3">
             <div>
-              <h2 className="text-lg font-semibold">New Connections</h2>
+              <h2 className="text-base font-semibold">New Connections</h2>
               <p className="text-sm text-muted-foreground">
                 {filteredConnections.length} people to start chatting with
               </p>
@@ -386,7 +386,7 @@ const ChatPage: React.FC = () => {
             <div className="flex gap-4 overflow-hidden">
               {[...Array(6)].map((_, i) => (
                 <div key={i} className="flex flex-col items-center space-y-2">
-                  <Skeleton className="w-16 h-16 rounded-full" />
+                  <Skeleton className="w-12 h-12 rounded-full" />
                   <Skeleton className="w-12 h-3 rounded" />
                 </div>
               ))}
@@ -429,14 +429,13 @@ const ChatPage: React.FC = () => {
                         className="flex flex-col items-center cursor-pointer group text-center space-y-2"
                       >
                         <div className="relative">
-                          <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-border shadow-sm group-hover:scale-105 transition-all duration-200 group-hover:border-primary">
+                          <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-border shadow-sm group-hover:scale-105 transition-all duration-200 group-hover:border-primary">
                             <img
                               src={profileImg}
                               alt={displayName}
                               className="w-full h-full object-cover"
                             />
                           </div>
-                          <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 rounded-full border-2 border-background" />
                         </div>
                         <p className="text-xs font-medium capitalize text-foreground leading-tight line-clamp-2 group-hover:text-primary transition-colors">
                           {displayName}
@@ -453,10 +452,10 @@ const ChatPage: React.FC = () => {
 
       {/* Messages Section */}
       <Card className="w-full">
-        <CardContent className="p-4 sm:p-6">
-          <div className="flex justify-between items-center mb-4">
+        <CardContent className="p-3 sm:p-4">
+          <div className="flex justify-between items-center mb-3">
             <div>
-              <h2 className="text-lg font-semibold">Your Conversations</h2>
+              <h2 className="text-base font-semibold">Your Conversations</h2>
               <p className="text-sm text-muted-foreground">
                 {filteredUsers.length} active chats
               </p>
@@ -477,12 +476,12 @@ const ChatPage: React.FC = () => {
             )}
           </div>
 
-          <div className="space-y-3">
+          <div className="space-y-2">
             {loading && (
-              <div className="space-y-3">
+              <div className="space-y-2">
                 {[...Array(5)].map((_, i) => (
-                  <div key={i} className="flex items-center gap-3 p-3">
-                    <Skeleton className="w-12 h-12 rounded-full" />
+                  <div key={i} className="flex items-center gap-2 p-2">
+                    <Skeleton className="w-10 h-10 rounded-full" />
                     <div className="flex-1 space-y-2">
                       <Skeleton className="h-4 w-32" />
                       <Skeleton className="h-3 w-48" />
@@ -517,12 +516,12 @@ const ChatPage: React.FC = () => {
                 <div
                   key={chatUser._id}
                   onClick={() => !isDeleting && handleChatClick(chatUser)}
-                  className={`flex items-center gap-3 p-3 rounded-xl border border-border bg-card hover:bg-accent/50 cursor-pointer transition-all duration-200 group ${
+                  className={`flex items-center gap-2 p-2 rounded-xl border border-border bg-card hover:bg-accent/50 cursor-pointer transition-all duration-200 group ${
                     hasUnread ? "ring-1 ring-primary/20" : ""
                   } ${isDeleting ? "opacity-50 pointer-events-none" : ""}`}
                 >
                   <div className="relative shrink-0">
-                    <Avatar className="w-12 h-12 border-2 border-background">
+                    <Avatar className="w-10 h-10 border-2 border-background">
                       <AvatarImage
                         src={profileImg}
                         alt={displayName}

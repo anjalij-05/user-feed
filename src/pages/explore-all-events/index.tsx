@@ -63,13 +63,18 @@ const ExploreAllEvents: React.FC = () => {
             // Event is past only when the END datetime has passed (including time)
             if (!event.event_end_date) return false;
 
-            const endTimeParts = `${event.end_time}:${event.end_minute_time} ${event.end_time_type}`.match(/(\d+):(\d+) (AM|PM)/i);
+            const endTimeParts =
+              `${event.end_time}:${event.end_minute_time} ${event.end_time_type}`.match(
+                /(\d+):(\d+) (AM|PM)/i,
+              );
             if (!endTimeParts) return false;
 
             const eventEndDate = new Date(event.event_end_date);
             let endHours = parseInt(endTimeParts[1]);
-            if (endTimeParts[3].toUpperCase() === 'PM' && endHours < 12) endHours += 12;
-            if (endTimeParts[3].toUpperCase() === 'AM' && endHours === 12) endHours = 0;
+            if (endTimeParts[3].toUpperCase() === "PM" && endHours < 12)
+              endHours += 12;
+            if (endTimeParts[3].toUpperCase() === "AM" && endHours === 12)
+              endHours = 0;
             eventEndDate.setHours(endHours, parseInt(endTimeParts[2]), 0, 0);
 
             return eventEndDate < now; // Compare with current time, not midnight
@@ -96,8 +101,8 @@ const ExploreAllEvents: React.FC = () => {
           new Set(
             filteredEvents.map((event: any) => {
               return event?.city?.toLowerCase();
-            })
-          )
+            }),
+          ),
         );
 
         setCities(uniqueCities);
@@ -141,7 +146,7 @@ const ExploreAllEvents: React.FC = () => {
     if (selectedCity !== "all") {
       filtered = filtered.filter(
         (event) =>
-          event?.city?.toLowerCase() === selectedCity.replace(/-/g, " ")
+          event?.city?.toLowerCase() === selectedCity.replace(/-/g, " "),
       );
     }
 
@@ -158,19 +163,19 @@ const ExploreAllEvents: React.FC = () => {
       selectedType === "all"
         ? combinedAllEvents
         : selectedType === "upcoming"
-        ? allEvents
-        : selectedType === "past"
-        ? pastEvents
-        : liveEvents;
+          ? allEvents
+          : selectedType === "past"
+            ? pastEvents
+            : liveEvents;
     const filteredEvents = filterEvents(eventsToFilter);
     const currentPage =
       selectedType === "all"
         ? allCurrentPage
         : selectedType === "upcoming"
-        ? upcomingCurrentPage
-        : selectedType === "past"
-        ? pastCurrentPage
-        : liveCurrentPage;
+          ? upcomingCurrentPage
+          : selectedType === "past"
+            ? pastCurrentPage
+            : liveCurrentPage;
     const indexOfLastEvent = currentPage * eventsPerPage;
     const indexOfFirstEvent = indexOfLastEvent - eventsPerPage;
     return filteredEvents.slice(indexOfFirstEvent, indexOfLastEvent);
@@ -181,11 +186,11 @@ const ExploreAllEvents: React.FC = () => {
       selectedType === "all"
         ? combinedAllEvents
         : selectedType === "upcoming"
-        ? allEvents
-        : selectedType === "past"
-        ? pastEvents
-        : liveEvents
-    ).length / eventsPerPage
+          ? allEvents
+          : selectedType === "past"
+            ? pastEvents
+            : liveEvents,
+    ).length / eventsPerPage,
   );
 
   const handlePageChange = (pageNum: number) => {
@@ -205,10 +210,10 @@ const ExploreAllEvents: React.FC = () => {
     return selectedType === "all"
       ? allCurrentPage
       : selectedType === "upcoming"
-      ? upcomingCurrentPage
-      : selectedType === "past"
-      ? pastCurrentPage
-      : liveCurrentPage;
+        ? upcomingCurrentPage
+        : selectedType === "past"
+          ? pastCurrentPage
+          : liveCurrentPage;
   };
 
   if (isLoading) {
@@ -340,24 +345,24 @@ const ExploreAllEvents: React.FC = () => {
             </div>
 
             {/* Events Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
               {getCurrentEvents().map((event, index) => (
                 <Link
                   to={`/events/${event.slug}`}
                   key={index}
                   className="group"
                 >
-                  <div className="flex gap-3 sm:gap-4 p-3 sm:p-4 rounded-lg border border-muted hover transition-all duration-200 group-hover:shadow-md">
+                  <div className="flex gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg border border-muted hover transition-all duration-200 group-hover:shadow-md">
                     <img
                       src={domain + "/" + event.image}
                       alt="event"
-                      className="w-20 h-20 sm:w-24 sm:h-24 rounded-md object-cover shrink-0"
+                      className="w-16 h-16 sm:w-20 sm:h-20 rounded-md object-cover shrink-0"
                     />
-                    <div className="flex-1 min-w-0 space-y-1 sm:space-y-2">
+                    <div className="flex-1 min-w-0 space-y-1.5">
                       <p className="text-xs sm:text-sm text-gray-500 leading-none truncate">
                         by {event?.company_name}
                       </p>
-                      <h1 className="text-base sm:text-lg font-semibold leading-tight flex items-center gap-2 truncate">
+                      <h1 className="text-sm sm:text-base font-semibold leading-tight flex items-center gap-2 truncate">
                         <span className="truncate">{event.title}</span>{" "}
                         {isEventLive(event) && (
                           <Badge
@@ -374,8 +379,8 @@ const ExploreAllEvents: React.FC = () => {
                         )}
                       </h1>
                       <div className="flex gap-2 items-center">
-                        <Calendar className="w-3 h-3 sm:w-4 sm:h-4 shrink-0 text-accent-foreground" />
-                        <p className="text-xs sm:text-sm font-light text-accent-foreground leading-none truncate">
+                        <Calendar className="w-3 h-3 shrink-0 text-accent-foreground" />
+                        <p className="text-xs font-light text-accent-foreground leading-none truncate">
                           {formatDateTime(event.event_start_date)} |{" "}
                           {event.start_time}:{event.start_minute_time}{" "}
                           {event.start_time_type} - {event.end_time}:
@@ -386,8 +391,8 @@ const ExploreAllEvents: React.FC = () => {
                         hidden={event.event_mode == 1}
                         className="flex gap-2 items-center"
                       >
-                        <MapPin className="w-3 h-3 sm:w-4 sm:h-4 text-accent-foreground shrink-0" />
-                        <p className="text-xs sm:text-sm font-light text-accent-foreground leading-none truncate">
+                        <MapPin className="w-3 h-3 text-accent-foreground shrink-0" />
+                        <p className="text-xs font-light text-accent-foreground leading-none truncate">
                           {event.event_venue_name}
                         </p>
                       </div>
@@ -395,7 +400,7 @@ const ExploreAllEvents: React.FC = () => {
                         hidden={event.event_mode == 0}
                         className="flex gap-2 items-center"
                       >
-                        <Globe className="w-3 h-3 sm:w-4 sm:h-4 text-accent-foreground shrink-0" />
+                        <Globe className="w-3 h-3 text-accent-foreground shrink-0" />
                         <p className="text-xs sm:text-sm font-light text-accent-foreground leading-none truncate">
                           Online
                         </p>

@@ -32,6 +32,7 @@ import CompanyEmployees from "./pages/companyEmployees";
 import ChatRoom from "./pages/chats/chatRoom";
 import EditProfile from "./pages/editProfile";
 import PaymentFormPage from "./pages/payment/payuForm";
+import PaymentWebStatus from "./pages/payment/paymentStatus";
 
 function App() {
   const [userPosts, setUserPosts] = useState<Post[]>([]);
@@ -91,6 +92,7 @@ function App() {
           element={<UserPostProfileWrapper />}
         />
         <Route path="/payment/form" element={<PaymentFormPage />} />
+        <Route path="payment/:status/:id" element={<PaymentWebStatus />} />
         <Route path="/nearby-users" element={<Explore />} />
         <Route path="/chats" element={<ChatPage />} />
         <Route path="/chat/:bothUserId" element={<ChatRoom />} />
