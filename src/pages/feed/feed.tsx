@@ -7,7 +7,6 @@ import {
   Flag,
   Search,
   Check,
-  Smile,
   TrendingUp,
   Sparkles,
   UserPlus,

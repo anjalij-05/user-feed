@@ -58,13 +58,13 @@ const UserLogin: React.FC = () => {
   const dispatch = useAppDispatch();
   const { loading, error } = useAppSelector((state) => state.auth);
   const navigate = useNavigate();
-  const location = useLocation();
+  // const location = useLocation();
 
   const { getEffectiveTheme } = useThemeStore();
   const effectiveTheme = getEffectiveTheme();
 
   // Get the page user was trying to access before being redirected to login
-  const from = (location.state as any)?.from?.pathname || "/";
+  // const from = (location.state as any)?.from?.pathname || "/";
 
   // Generate floating elements for animation
   useEffect(() => {
