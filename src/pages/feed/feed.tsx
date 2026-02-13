@@ -3,7 +3,6 @@ import {
   Heart,
   MessageCircle,
   Send,
-  // Bookmark,
   MoreHorizontal,
   Flag,
   Search,
@@ -14,6 +13,7 @@ import {
   UserPlus,
   Trash2,
   Edit,
+  UserCheck,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -35,6 +35,9 @@ import {
 import { Link } from "react-router-dom";
 import type { Post, Comment } from "@/types/post";
 import { defaultPosts } from "@/components/defaultPosts";
+import { useAppSelector } from "@/redux/hooks";
+import { getUserProfileImage } from "@/lib/utils";
+import DummyImage from "@/assets/dummy_image.webp";
 
 interface FeedCardProps {
   post: Post;
@@ -62,9 +65,11 @@ export const FeedCard = ({ post }: FeedCardProps) => {
   const [showRipple, setShowRipple] = useState<string | null>(null);
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
   const [touchStartY, setTouchStartY] = useState<number | null>(null);
+  const { user: appUser } = useAppSelector((state) => state.auth);
 
   // Check if this is the current user's post
-  const isOwnPost = post.name === "Azwedo Drdr";
+  const isOwnPost =
+    post.name === appUser?.first_name + " " + appUser?.last_name;
 
   const connectedPeople = [
     {
@@ -141,9 +146,12 @@ export const FeedCard = ({ post }: FeedCardProps) => {
       const comment: Comment = {
         id: commentsList.length + 1,
         userId: 999,
-        userName: "you",
-        userAvatar:
-          "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop",
+        userName:
+          appUser?.first_name + " " + appUser?.last_name || "Anonymous User",
+        userAvatar: getUserProfileImage(
+          appUser?.imageBaseUrl as string,
+          appUser?.profileImage as string,
+        ),
         content: newComment,
         timestamp: "now",
         likes: 0,
@@ -344,7 +352,12 @@ export const FeedCard = ({ post }: FeedCardProps) => {
             <div className="flex flex-col">
               <Link to={`/user-post-profile/${post.id}`}>
                 <h3 className="font-bold text-sm hover:text-primary cursor-pointer transition-colors">
-                  {post.name.toLowerCase().replace(/\s+/g, "_")}
+                  {(post === appUser?.id
+                    ? `${appUser?.first_name ?? ""} ${appUser?.last_name ?? ""}`
+                    : post.name
+                  )
+                    .toLowerCase()
+                    .replace(/\s+/g, "_")}{" "}
                 </h3>
               </Link>
               <p className="text-xs text-slate-500">{post.timestamp}</p>
@@ -651,12 +664,27 @@ export const FeedCard = ({ post }: FeedCardProps) => {
             onSubmit={handleCommentSubmit}
             className="flex items-center gap-3"
           >
-            <button
-              type="button"
-              className="text-slate-500 hover:text-slate-700 transition-colors"
-            >
-              <Smile className="w-6 h-6" />
-            </button>
+            <Avatar className="w-8 h-8 shrink-0 ring-2 ring-white shadow-sm">
+              <AvatarImage
+                src={
+                  appUser?.profileImage
+                    ? getUserProfileImage(
+                        appUser.imageBaseUrl,
+                        appUser.profileImage,
+                      )
+                    : DummyImage
+                }
+                alt={
+                  appUser ? `${appUser.first_name} ${appUser.last_name}` : "You"
+                }
+                className="object-cover"
+              />
+              <AvatarFallback className="bg-gradient-to-br from-blue-400 to-purple-500 text-white text-xs font-semibold">
+                {appUser
+                  ? `${appUser.first_name?.[0] ?? ""}${appUser.last_name?.[0] ?? ""}`
+                  : "U"}
+              </AvatarFallback>
+            </Avatar>
             <Input
               type="text"
               placeholder="Add a comment..."
@@ -903,11 +931,13 @@ const Feed = ({ userPosts }: FeedProps) => {
 
                       <button
                         onClick={() => handleFollow(user.id)}
-                        className="mt-2 text-xs font-bold text-primary"
+                        className="mt-2 text-xs font-bold cursor-pointer text-primary"
                       >
-                        {followedUsers.includes(user.id)
-                          ? "Following"
-                          : "Follow"}
+                        {followedUsers.includes(user.id) ? (
+                          <UserCheck className="w-4 h-4" />
+                        ) : (
+                          <UserPlus className="w-4 h-4" />
+                        )}
                       </button>
                     </div>
                   ))}
@@ -930,31 +960,6 @@ const Feed = ({ userPosts }: FeedProps) => {
           {/* DESKTOP ONLY: Suggested Users Sidebar */}
           <aside className="hidden xl:block w-[320px] shrink-0 sticky top-6 self-start">
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-5">
-              <div className="flex items-center justify-between pb-5 border-b border-slate-100">
-                <div className="flex items-center gap-3">
-                  <Avatar className="w-12 h-12 cursor-pointer ring-2 ring-white shadow-md hover:ring-primary transition-all">
-                    <AvatarImage
-                      src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop"
-                      className="object-cover"
-                    />
-                    <AvatarFallback className="bg-gradient-to-br from-indigo-500 to-primary-600 text-white font-bold">
-                      AZ
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex flex-col">
-                    <Link to={`/user-feed/create-user-profile`}>
-                      <p className="font-bold text-sm cursor-pointer hover:text-primary transition-colors">
-                        azwedo_drdr
-                      </p>
-                    </Link>
-                    <p className="text-xs text-slate-500">@azwedo</p>
-                  </div>
-                </div>
-                <button className="text-xs font-bold text-primary hover:text-primary-700 transition-colors">
-                  Switch
-                </button>
-              </div>
-
               <div className="flex items-center justify-between py-5">
                 <div className="flex items-center gap-2">
                   <TrendingUp className="w-4 h-4 text-primary" />
@@ -998,13 +1003,17 @@ const Feed = ({ userPosts }: FeedProps) => {
                     </div>
                     <button
                       onClick={() => handleFollow(user.id)}
-                      className={`text-xs font-bold transition-all rounded-lg px-3 py-1.5 ${
+                      className={`text-xs font-bold cursor-pointer transition-all rounded-lg px-3 py-1.5 ${
                         followedUsers.includes(user.id)
                           ? "text-slate-600 hover:text-slate-900"
                           : "text-primary hover:text-primary-700 hover:bg-primary-50"
                       }`}
                     >
-                      {followedUsers.includes(user.id) ? "Following" : "Follow"}
+                      {followedUsers.includes(user.id) ? (
+                        <UserCheck className="w-4 h-4" />
+                      ) : (
+                        <UserPlus className="w-4 h-4" />
+                      )}
                     </button>
                   </div>
                 ))}

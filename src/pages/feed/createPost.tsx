@@ -12,6 +12,10 @@ import { Button } from "@/components/ui/button";
 // import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useNavigate } from "react-router-dom";
+import { useAppSelector } from "@/redux/hooks";
+import { getUserProfileImage } from "@/lib/utils";
+import DummyImage from "@/assets/dummy_image.webp"
+import type { Post } from "@/types/post";
 
 interface CreatePostProps {
   onPostCreated: (post: {
@@ -49,6 +53,7 @@ const CreatePost = ({ onPostCreated }: CreatePostProps) => {
   const [pendingMediaType, setPendingMediaType] = useState<
     "image" | "video" | null
   >(null);
+  const {user : appUser} = useAppSelector((state) => state.auth);
 
   const handleImagesUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
@@ -98,20 +103,21 @@ const CreatePost = ({ onPostCreated }: CreatePostProps) => {
     setIsUploading(true);
     await new Promise((resolve) => setTimeout(resolve, 1500));
 
-    const newPost = {
-      id: Date.now(),
-      name: "Azwedo Drdr",
-      role: "Content Creator",
-      timestamp: "Just now",
-      avatar:
-        "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop",
-      images: imagePreviews,
-      mediaType: mediaType as "image" | "video",
-      content: postDescription,
-      likes: 0,
-      comments: 0,
-      shares: 0,
-    };
+ const newPost: Post = {
+  id: Date.now(),
+  name: `${appUser?.first_name ?? ""} ${appUser?.last_name ?? ""}`.trim(),
+  avatar: appUser?.profileImage
+    ? getUserProfileImage(appUser.imageBaseUrl, appUser.profileImage)
+    : DummyImage,
+  content: postDescription,
+  image: imagePreviews[0] || undefined,
+  mediaType: mediaType || "image",
+  timestamp: "Just now",
+  role: appUser?.designation || "User",
+  comments: 0,
+  likes: 0,
+  shares: 0,
+};
 
     onPostCreated(newPost);
     setIsUploading(false);

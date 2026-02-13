@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { getUserProfile, sendOtp, verifyOtp } from "@/app-api/auth";
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "sonner";
 import { getMyConnections } from "@/app-api/connections";
 import { Input } from "@/components/ui/input";
@@ -199,7 +199,7 @@ const UserLogin: React.FC = () => {
       });
 
       // Redirect to the page user was trying to access or home page
-      navigate(from, { replace: true });
+      navigate("/");
       return;
     }
 
@@ -231,7 +231,7 @@ const UserLogin: React.FC = () => {
       <Helmet>
         <title>Login | Klout Club</title>
       </Helmet>
-      <div className="relative flex justify-center items-start min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-purple-900/20 dark:to-gray-900 overflow-hidden transition-colors duration-300 pt-8 pb-8">
+      <div className="relative flex justify-center items-stretch min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-purple-900/20 dark:to-gray-900 overflow-hidden transition-colors duration-300">
         {/* Animated Background Elements */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           {floatingElements.map((elem) => (
@@ -248,7 +248,7 @@ const UserLogin: React.FC = () => {
         </div>
 
         {/* Main Container */}
-        <div className="relative z-10 w-full max-w-6xl mx-auto px-4 flex flex-col lg:flex-row items-start gap-8 lg:gap-12">
+        <div className="relative z-10 w-full max-w-6xl mx-auto px-4 py-8 flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
           {/* Left Side - Illustration/Content */}
           <div className="flex-1 text-center lg:text-left space-y-6 animate-slide-in-left">
             <div className="inline-flex items-center gap-2 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm px-4 py-2 rounded-full shadow-md">
@@ -285,9 +285,9 @@ const UserLogin: React.FC = () => {
             </div>
           </div>
 
-          {/* Right Side - Login Form */}
-          <div className="w-full lg:w-auto lg:min-w-[420px] animate-slide-in-right">
-            <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl p-8 sm:p-10 rounded-3xl shadow-2xl border border-white/20 dark:border-gray-700/50">
+          {/* Right Side - Login Form, vertically centered within the right column */}
+          <div className="w-full lg:w-auto lg:min-w-[420px] flex items-center justify-center animate-slide-in-right">
+            <div className="w-full bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl p-8 sm:p-10 rounded-3xl shadow-2xl border border-white/20 dark:border-gray-700/50">
               {/* Form Header */}
               <div className="text-center mb-6">
                 <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 dark:from-blue-400 dark:to-purple-500 mb-4 shadow-lg">
@@ -438,7 +438,7 @@ const UserLogin: React.FC = () => {
                       sendOtpForm.handleSubmit(handleSendOtp)();
                     }
                   }}
-                  className="w-full h-12 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 dark:from-blue-500 dark:via-purple-500 dark:to-pink-500 hover:from-blue-700 hover:via-purple-700 hover:to-pink-700 dark:hover:from-blue-600 dark:hover:via-purple-600 dark:hover:to-pink-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                  className="w-full h-12 bg-gradient-to-r cursor-pointer from-blue-600 via-purple-600 to-pink-600 dark:from-blue-500 dark:via-purple-500 dark:to-pink-500 hover:from-blue-700 hover:via-purple-700 hover:to-pink-700 dark:hover:from-blue-600 dark:hover:via-purple-600 dark:hover:to-pink-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                   disabled={loading}
                 >
                   {loading ? (
@@ -452,19 +452,6 @@ const UserLogin: React.FC = () => {
                     "Send OTP"
                   )}
                 </Button>
-
-                {/* Back Link */}
-                <div className="text-center pt-2">
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Don't have an account?{" "}
-                    <Link
-                      to="/user-signup"
-                      className="text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 font-medium transition-colors"
-                    >
-                      Sign up
-                    </Link>
-                  </p>
-                </div>
               </div>
             </div>
           </div>
