@@ -24,11 +24,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-} from "@/components/ui/carousel";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -332,7 +327,10 @@ const ChatPage: React.FC = () => {
             <p className="text-muted-foreground mb-4">
               Login to view and continue your conversations
             </p>
-            <Button onClick={() => navigate("/user-login")} className="w-full cursor-pointer">
+            <Button
+              onClick={() => navigate("/user-login")}
+              className="w-full cursor-pointer"
+            >
               Login to View Chats
             </Button>
           </CardContent>
@@ -401,14 +399,8 @@ const ChatPage: React.FC = () => {
               </p>
             </div>
           ) : (
-            <Carousel
-              opts={{
-                align: "start",
-                loop: false,
-              }}
-              className="w-full"
-            >
-              <CarouselContent className="flex gap-4 overflow-x-scroll">
+            <div className="w-full overflow-x-auto scrollbar-hide -mx-1 px-1">
+              <div className="flex gap-4 pb-1" style={{ width: "max-content" }}>
                 {filteredConnections.map((profile) => {
                   const profileImg =
                     getUserProfileImage(
@@ -420,32 +412,28 @@ const ChatPage: React.FC = () => {
                   }`.trim();
 
                   return (
-                    <CarouselItem
+                    <div
                       key={profile._id}
-                      className="basis-1/3 sm:basis-1/4 md:basis-1/6 flex justify-center"
+                      onClick={() => handleNewConnectionClick(profile)}
+                      className="flex flex-col items-center cursor-pointer group text-center space-y-2 w-14"
                     >
-                      <div
-                        onClick={() => handleNewConnectionClick(profile)}
-                        className="flex flex-col items-center cursor-pointer group text-center space-y-2"
-                      >
-                        <div className="relative">
-                          <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-border shadow-sm group-hover:scale-105 transition-all duration-200 group-hover:border-primary">
-                            <img
-                              src={profileImg}
-                              alt={displayName}
-                              className="w-full h-full object-cover"
-                            />
-                          </div>
+                      <div className="relative">
+                        <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-border shadow-sm group-hover:scale-105 transition-all duration-200 group-hover:border-primary">
+                          <img
+                            src={profileImg}
+                            alt={displayName}
+                            className="w-full h-full object-cover"
+                          />
                         </div>
-                        <p className="text-xs font-medium capitalize text-foreground leading-tight line-clamp-2 group-hover:text-primary transition-colors">
-                          {displayName}
-                        </p>
                       </div>
-                    </CarouselItem>
+                      <p className="text-xs font-medium capitalize text-foreground leading-tight line-clamp-2 group-hover:text-primary transition-colors w-14">
+                        {displayName}
+                      </p>
+                    </div>
                   );
                 })}
-              </CarouselContent>
-            </Carousel>
+              </div>
+            </div>
           )}
         </CardContent>
       </Card>

@@ -6,7 +6,6 @@ import {
   fetchPublicProfileById,
 } from "@/app-api/nearbyProfiles";
 import DummyImage from "@/assets/dummy_image.webp";
-// import DummyCompanyImage from "@/assets/dummy-cmpny.webp";
 import { getUserProfileImage } from "@/lib/utils";
 import { Helmet } from "react-helmet-async";
 import {
@@ -69,11 +68,12 @@ import PremiumDialog from "@/components/premiumDialog";
 import axios from "axios";
 import type { Event } from "@/types";
 import { Textarea } from "@/components/ui/textarea";
+import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 
 const FALLBACK_LAT = 28.6139;
 const FALLBACK_LNG = 77.209;
 
-// Attended Event Card Component (Updated with proper integration)
+// Attended Event Card Component
 const AttendedEventCard = ({
   event,
   onImageError,
@@ -81,10 +81,8 @@ const AttendedEventCard = ({
   event: AttendedEvent;
   onImageError?: (eventId: string) => void;
 }) => {
-  // Call hooks at the top level (before any returns)
   const navigate = useNavigate();
 
-  // Safety check - should never reach here if parent filters correctly
   if (!event.eventImageUrl || event.eventImageUrl.trim() === "") {
     return null;
   }
@@ -94,11 +92,9 @@ const AttendedEventCard = ({
   const handleClick = async () => {
     try {
       const response = await axios.get(`${domain}/api/all_events`);
-
       const filteredEvent = response.data.data.filter(
         (e: Event) => e.uuid === event.eventUUID,
       )[0];
-
       if (filteredEvent) {
         navigate(`/events/${filteredEvent.slug}`);
       }
@@ -108,7 +104,6 @@ const AttendedEventCard = ({
   };
 
   const handleImageError = () => {
-    // Call parent function to remove this event from display
     if (onImageError) {
       onImageError(event.eventUUID || event._id || "");
     }
@@ -177,16 +172,13 @@ const parseUserImages = (
   }
 };
 
-// Attractive Loading Component
+// Loading Skeleton
 const ProfileLoadingSkeleton = () => {
   return (
     <div className="max-w-3xl mx-auto overflow-hidden bg-muted rounded-2xl shadow my-3 sm:my-6 animate-pulse">
-      {/* Cover Image Skeleton */}
       <div className="relative w-full h-48 sm:h-64 md:h-72 lg:h-80 bg-linear-to-r from-gray-200 via-gray-300 to-gray-200 bg-size-[200%_100%] animate-shimmer">
         <div className="absolute inset-0 bg-linear-to-b from-transparent via-transparent to-gray-900/20" />
       </div>
-
-      {/* Profile Image Skeleton */}
       <div className="relative px-3 sm:px-4 md:px-6 pb-4 sm:pb-6">
         <div className="relative flex flex-col items-center -mt-12 sm:-mt-16 md:-mt-20">
           <div className="relative">
@@ -194,26 +186,17 @@ const ProfileLoadingSkeleton = () => {
           </div>
         </div>
       </div>
-
-      {/* Location Skeleton */}
       <div className="flex justify-center items-center mt-2 gap-1 px-3">
         <div className="w-4 h-4 rounded bg-gray-300" />
         <div className="w-24 h-4 rounded bg-gray-300" />
       </div>
-
-      {/* Profile Info Skeleton */}
       <div className="mt-3 sm:mt-4 px-3 sm:px-4 md:px-6 pb-4 sm:pb-6 text-center space-y-3">
-        {/* Name */}
         <div className="flex justify-center">
           <div className="w-48 h-8 rounded bg-gray-300" />
         </div>
-
-        {/* Designation */}
         <div className="flex justify-center">
           <div className="w-36 h-5 rounded bg-gray-300" />
         </div>
-
-        {/* Basic Info */}
         <div className="space-y-2 mt-4">
           <div className="flex justify-center">
             <div className="w-56 h-5 rounded bg-gray-300" />
@@ -225,21 +208,15 @@ const ProfileLoadingSkeleton = () => {
             <div className="w-52 h-5 rounded bg-gray-300" />
           </div>
         </div>
-
-        {/* Buttons Skeleton */}
         <div className="mt-6 flex justify-center gap-3">
           <div className="w-28 h-10 rounded-2xl bg-gray-300" />
           <div className="w-28 h-10 rounded-2xl bg-gray-300" />
         </div>
-
-        {/* Social Icons Skeleton */}
         <div className="mt-6 flex justify-center gap-4">
           <div className="w-10 h-10 rounded-full bg-gray-300" />
           <div className="w-10 h-10 rounded-full bg-gray-300" />
         </div>
       </div>
-
-      {/* Loading Text */}
       <div className="text-center pb-6">
         <p className="text-gray-500 text-sm animate-pulse">
           Loading profile...
@@ -258,7 +235,6 @@ const ProfileDetails: React.FC = () => {
     (s) => s.nearByProfiles,
   );
 
-  // Get connection data from Redux
   const { bookmarked, connectionIdData, connectionsList, connectionRequests } =
     useAppSelector((s) => s.connection);
 
@@ -309,6 +285,7 @@ const ProfileDetails: React.FC = () => {
 
   const [showBookmarkDialog, setShowBookmarkDialog] = useState(false);
   const [bookmarkNote, setBookmarkNote] = useState("");
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const {
     companyMembers,
@@ -318,7 +295,6 @@ const ProfileDetails: React.FC = () => {
 
   const isLoggedInUserPremium = user?.role?.toLowerCase() === "premium";
 
-  // Check connection status from Redux state
   const { connected, isFriend, shouldFetchConnection } = useMemo(() => {
     if (!token || !user?._id || !id) {
       return {
@@ -328,17 +304,14 @@ const ProfileDetails: React.FC = () => {
       };
     }
 
-    // Check if user is already connected (accepted connection)
     const isConnected = connectionIdData.some(
       (conn: any) => conn.userId === id || conn._id === id,
     );
 
     if (isConnected) {
-      // User is connected, no need to fetch
       return { connected: false, isFriend: true, shouldFetchConnection: false };
     }
 
-    // Check if there's a pending request
     const hasPendingRequest = connectionRequests.some(
       (req: any) =>
         req.request_user_id === user._id &&
@@ -346,8 +319,6 @@ const ProfileDetails: React.FC = () => {
         req.status === 1,
     );
 
-    // If we have connection data in Redux but user is not connected, don't fetch
-    // Only fetch if we don't have any connection data yet
     const shouldFetch =
       connectionIdData.length === 0 && connectionRequests.length === 0;
 
@@ -360,15 +331,8 @@ const ProfileDetails: React.FC = () => {
 
   const coverImages = useMemo(() => {
     const parsedImages = parseUserImages(profile?.images);
-
-    if (parsedImages.length > 0) {
-      return parsedImages;
-    }
-
-    if (profile?.profileImage) {
-      return [profile.profileImage];
-    }
-
+    if (parsedImages.length > 0) return parsedImages;
+    if (profile?.profileImage) return [profile.profileImage];
     return [];
   }, [profile?.images, profile?.profileImage]);
 
@@ -381,12 +345,8 @@ const ProfileDetails: React.FC = () => {
   };
 
   const handleTouchEnd = () => {
-    if (touchStart - touchEnd > 75) {
-      nextImage();
-    }
-    if (touchStart - touchEnd < -75) {
-      prevImage();
-    }
+    if (touchStart - touchEnd > 75) nextImage();
+    if (touchStart - touchEnd < -75) prevImage();
   };
 
   const nextImage = () => {
@@ -416,19 +376,15 @@ const ProfileDetails: React.FC = () => {
       return hasImageUrl && imageNotFailed;
     });
 
-    // Remove duplicates based on eventUUID or _id
     const uniqueEvents = filtered.reduce((acc: any[], current) => {
       const eventId = current.eventUUID || current._id;
       const isDuplicate = acc.some(
         (event) => (event.eventUUID || event._id) === eventId,
       );
-      if (!isDuplicate) {
-        acc.push(current);
-      }
+      if (!isDuplicate) acc.push(current);
       return acc;
     }, []);
 
-    // Sort by createdAt - newest first
     return uniqueEvents.sort((a, b) => {
       if (a.createdAt && b.createdAt) {
         return (
@@ -445,9 +401,7 @@ const ProfileDetails: React.FC = () => {
     setCurrentImageIndex(0);
   }, [coverImages]);
 
-  const handleTlsClick = () => {
-    setShowTlsDialog(true);
-  };
+  const handleTlsClick = () => setShowTlsDialog(true);
 
   const handleProfileImageClick = () => {
     const profileImg = profile?.profileImage;
@@ -480,11 +434,7 @@ const ProfileDetails: React.FC = () => {
     if (!token || !user?._id || !id || user._id === id) return;
     try {
       await dispatch(
-        viewProfileNotify({
-          token,
-          loggedInUserId: user._id,
-          toUserId: id,
-        }),
+        viewProfileNotify({ token, loggedInUserId: user._id, toUserId: id }),
       ).unwrap();
     } catch (err) {
       console.error("Failed to send profile view notification", err);
@@ -495,8 +445,6 @@ const ProfileDetails: React.FC = () => {
     if (!token || !user?._id) return;
     try {
       const pos = await getPosition();
-
-      // Fetch both connection status and connection list
       await Promise.all([
         dispatch(checkConnectionStatus({ token, userId: user._id })).unwrap(),
         dispatch(
@@ -514,7 +462,6 @@ const ProfileDetails: React.FC = () => {
     }
   }, [token, user?._id, dispatch]);
 
-  // fetch profile details
   useEffect(() => {
     if (!id) return;
 
@@ -524,7 +471,6 @@ const ProfileDetails: React.FC = () => {
         let details = null;
 
         if (token && user?._id) {
-          // Logged-in: fetch full profile via API with location
           const pos = await getPosition();
           const data = await fetchProfileDetails(
             token,
@@ -536,19 +482,14 @@ const ProfileDetails: React.FC = () => {
           );
           details = data?.result?.details || null;
         } else {
-          // Non-logged-in: first try to find in Redux store
           details =
             nearbyProfiles.find((p) => p._id === id) ||
             publicProfiles.find((p) => p._id === id) ||
             null;
 
-          // If not found in store (e.g., after refresh), fetch directly by ID
           if (!details) {
             try {
-              // Fetch single public profile by ID (doesn't require location)
               const response = await fetchPublicProfileById(id);
-
-              // Handle different possible response structures
               details =
                 response?.result?.profile ||
                 response?.profile ||
@@ -572,13 +513,11 @@ const ProfileDetails: React.FC = () => {
 
         setProfile(details);
 
-        // Fetch TLS score for both logged-in and non-logged-in users
         const mobileNumber = details?.mobileNumber || details?.mobile_number;
         if (mobileNumber) {
           dispatch(fetchTlsScore({ mobileNumber }));
         }
 
-        // Fetch attended events and send profile view only for logged-in users
         if (token && user?._id) {
           if (mobileNumber) {
             setEventsLoading(true);
@@ -611,7 +550,6 @@ const ProfileDetails: React.FC = () => {
     publicProfiles,
   ]);
 
-  // Only fetch connection data if user is not connected and we don't have data in Redux
   useEffect(() => {
     if (token && user?._id && shouldFetchConnection) {
       refreshConnectionData();
@@ -631,14 +569,10 @@ const ProfileDetails: React.FC = () => {
       toast.info("No company information available");
       return;
     }
-
     const encodedName = encodeURIComponent(companyName.trim());
-
-    // Only fetch companies if user is logged in
     if (token && user?._id) {
       await dispatch(fetchCompanies(companyName.trim())).unwrap();
     }
-
     navigate(`/company/${encodedName}`);
   };
 
@@ -734,16 +668,13 @@ const ProfileDetails: React.FC = () => {
 
   const handleBookmarkClick = () => {
     if (!token || !user?._id || !id) return;
-
     if (isBookmarked) {
-      // If already bookmarked, remove bookmark directly
       handleRemoveBookmark();
     } else {
-      // If not bookmarked, show dialog to add note
       setShowBookmarkDialog(true);
     }
   };
-  // Updated handleSaveBookmark function
+
   const handleSaveBookmark = async () => {
     if (!token || !user?._id || !id) return;
     setLoadingAction(true);
@@ -754,13 +685,12 @@ const ProfileDetails: React.FC = () => {
           loggedInUserId: user._id,
           targetUserId: id,
           status: "1",
-          note: bookmarkNote.trim() || undefined, // Send note if provided
+          note: bookmarkNote.trim() || undefined,
         }),
       ).unwrap();
 
       if (res?.status) {
         toast.success(res?.message || "Bookmarked successfully");
-        // Refresh bookmarked list after successful bookmark
         await dispatch(
           fetchBookmarkedList({
             token,
@@ -782,7 +712,6 @@ const ProfileDetails: React.FC = () => {
     }
   };
 
-  // Updated handleRemoveBookmark function
   const handleRemoveBookmark = async () => {
     if (!token || !user?._id || !id) return;
     setLoadingAction(true);
@@ -798,7 +727,6 @@ const ProfileDetails: React.FC = () => {
 
       if (res?.status) {
         toast.success(res?.message || "Bookmark removed successfully");
-        // Refresh bookmarked list after removal
         await dispatch(
           fetchBookmarkedList({
             token,
@@ -821,7 +749,6 @@ const ProfileDetails: React.FC = () => {
 
   const handleAcceptRequest = async () => {
     if (!pendingRequest || !token || !user?._id) return;
-
     const requestId = JSON.parse(pendingRequest.data)?.RequestId;
     if (!requestId) return toast.error("Invalid request");
 
@@ -835,7 +762,6 @@ const ProfileDetails: React.FC = () => {
           status: "1",
         }),
       ).unwrap();
-
       dispatch(removeNotification(pendingRequest._id));
       toast.success("Request accepted!");
       await refreshConnectionData();
@@ -846,7 +772,6 @@ const ProfileDetails: React.FC = () => {
 
   const handleRejectRequest = async () => {
     if (!pendingRequest || !token || !user?._id) return;
-
     const requestId = JSON.parse(pendingRequest.data)?.RequestId;
     if (!requestId) return toast.error("Invalid request");
 
@@ -860,7 +785,6 @@ const ProfileDetails: React.FC = () => {
           status: "2",
         }),
       ).unwrap();
-
       dispatch(removeNotification(pendingRequest._id));
       toast.success("Request rejected!");
       await refreshConnectionData();
@@ -873,13 +797,8 @@ const ProfileDetails: React.FC = () => {
     if (!token || !user?._id || !id) return;
     try {
       await dispatch(
-        blockUser({
-          token,
-          userId: user._id,
-          blockUserId: id,
-        }),
+        blockUser({ token, userId: user._id, blockUserId: id }),
       ).unwrap();
-
       toast.success("User blocked successfully");
       setShowReportBlock(false);
       setReportBlockAction(null);
@@ -892,13 +811,8 @@ const ProfileDetails: React.FC = () => {
     if (!token || !user?._id || !id) return;
     try {
       await dispatch(
-        unblockUser({
-          token,
-          userId: user._id,
-          unblockUserId: id,
-        }),
+        unblockUser({ token, userId: user._id, unblockUserId: id }),
       ).unwrap();
-
       toast.success("User unblocked successfully");
     } catch (err: any) {
       toast.error("Error unblocking user", { description: err });
@@ -923,7 +837,6 @@ const ProfileDetails: React.FC = () => {
         method: "POST",
         body: formData,
       });
-
       const data = await response.json();
 
       if (data.status || response.ok) {
@@ -959,7 +872,6 @@ const ProfileDetails: React.FC = () => {
         method: "POST",
         body: formData,
       });
-
       const data = await response.json();
 
       if (data.status || response.ok) {
@@ -982,7 +894,6 @@ const ProfileDetails: React.FC = () => {
       toast.error("Company name is required");
       return;
     }
-
     setCompanyLoading(true);
     try {
       await dispatch(fetchCompanyMemberTls({ company: companyName })).unwrap();
@@ -992,24 +903,19 @@ const ProfileDetails: React.FC = () => {
       toast.error("Error fetching company members", {
         description: err?.message || "Please try again",
       });
-      console.error("Company members fetch error:", err);
     } finally {
       setCompanyLoading(false);
     }
   };
 
   const renderActionButtons = () => {
-    // Don't show action buttons for non-logged-in users
     if (!token || !user?._id) {
       return (
         <Button onClick={() => navigate("/user-login")}>Login to View</Button>
       );
     }
 
-    // Don't show connection buttons if viewing own profile
-    if (user._id === id) {
-      return null;
-    }
+    if (user._id === id) return null;
 
     if (pendingRequest) {
       return (
@@ -1054,7 +960,6 @@ const ProfileDetails: React.FC = () => {
       );
     }
 
-    // Premium user can chat with anyone
     if (isLoggedInUserPremium) {
       if (connected) {
         return (
@@ -1074,7 +979,6 @@ const ProfileDetails: React.FC = () => {
             >
               <UserX className="w-5 h-5" />
             </Button>
-
             <Link to={`/chat/${user?._id}_${id}`}>
               <Button
                 className="p-3 bg-klout-primary hover:bg-klout-primary-dark hover:scale-110 text-white cursor-pointer rounded-full"
@@ -1149,7 +1053,6 @@ const ProfileDetails: React.FC = () => {
     return name[0] + "****@" + domain;
   };
 
-  // Get display values with fallbacks for both camelCase and snake_case
   const firstName = profile?.firstName || profile?.first_name || "";
   const lastName = profile?.lastName || profile?.last_name || "";
   const designation = profile?.designation || "";
@@ -1163,7 +1066,6 @@ const ProfileDetails: React.FC = () => {
     profile?.linkedinProfileUrl || profile?.linkedin_profile_url || "";
   const xUrl = profile?.xProfileUrl || profile?.x_profile_url || "";
 
-  // Helper function to capitalize each word
   const capitalizeWords = (str: string) => {
     return str
       .split(" ")
@@ -1171,8 +1073,6 @@ const ProfileDetails: React.FC = () => {
       .join(" ");
   };
 
-  // Generate dynamic page title using useMemo to recalculate when profile changes
-  // MUST be before any early returns to follow Rules of Hooks
   const pageTitle = useMemo(() => {
     if (profile) {
       const fullName = `${firstName} ${lastName}`.trim();
@@ -1190,15 +1090,11 @@ const ProfileDetails: React.FC = () => {
     return "Profile | Klout Club";
   }, [firstName, lastName, company, profile]);
 
-  // Update document title when pageTitle changes
   useEffect(() => {
     document.title = pageTitle;
   }, [pageTitle]);
 
-  // Show attractive loading skeleton
-  if (loading) {
-    return <ProfileLoadingSkeleton />;
-  }
+  if (loading) return <ProfileLoadingSkeleton />;
 
   if (!profile) {
     return (
@@ -1223,10 +1119,17 @@ const ProfileDetails: React.FC = () => {
       <Helmet>
         <title>{pageTitle}</title>
       </Helmet>
-      <div className="max-w-3xl mx-auto overflow-hidden bg-muted rounded-2xl shadow my-3 sm:my-6">
-        {/* Cover Image Carousel */}
+      {/*
+        KEY FIX: The outer card wrapper must NOT have overflow-hidden,
+        because backdrop-filter on child elements creates a new stacking
+        context that traps portals (DropdownMenuContent) even when they
+        render in document.body. We use rounded corners only on the card
+        edges via a separate visual wrapper instead.
+      */}
+      <div className="max-w-3xl mx-auto bg-muted rounded-2xl shadow my-3 sm:my-6 relative">
+        {/* Cover Image — uses its own overflow-hidden to clip the image to the card corners */}
         <div
-          className="relative w-full h-48 sm:h-64 md:h-72 lg:h-80 overflow-hidden bg-gray-200"
+          className="relative w-full h-48 sm:h-64 md:h-72 lg:h-80 overflow-hidden rounded-t-2xl bg-gray-200"
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
@@ -1254,74 +1157,19 @@ const ProfileDetails: React.FC = () => {
 
           <div className="absolute inset-0 bg-linear-to-b from-primary/10 via-transparent to-primary/40 pointer-events-none" />
 
-          {/* Only show bookmark and menu for logged-in users */}
-          {token && user?._id && user._id !== id && (
-            <>
-              <div className="absolute top-2 sm:top-4 left-2 sm:left-4 z-10">
-                <Button
-                  onClick={handleBookmarkClick}
-                  disabled={loadingAction}
-                  className="p-1.5 sm:p-2 cursor-pointer bg-white/90 backdrop-blur-sm hover:bg-white"
-                >
-                  <Bookmark
-                    className={`w-4 h-4 sm:w-5 sm:h-5 ${
-                      isBookmarked
-                        ? "text-klout-primary fill-klout-primary"
-                        : "text-gray-700"
-                    }`}
-                  />
-                </Button>
-              </div>
-
-              <div className="absolute top-2 sm:top-4 right-2 sm:right-4 z-10">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button className="p-1.5 sm:p-2 cursor-pointer bg-white/90 backdrop-blur-sm hover:bg-white">
-                      <EllipsisVertical className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-48 sm:w-56">
-                    {!isBlocked ? (
-                      <DropdownMenuItem
-                        onClick={() => setShowReportBlock(true)}
-                      >
-                        Report / Block
-                      </DropdownMenuItem>
-                    ) : (
-                      <DropdownMenuItem
-                        onClick={handleUnblockUser}
-                        disabled={blockLoading}
-                      >
-                        {blockLoading ? "Unblocking..." : "Unblock User"}
-                      </DropdownMenuItem>
-                    )}
-                    <DropdownMenuItem onClick={() => setShowContactInfo(true)}>
-                      Contact Info
-                    </DropdownMenuItem>
-                    {isFriend && (
-                      <DropdownMenuItem onClick={() => setShowConfirm(true)}>
-                        Remove Connection
-                      </DropdownMenuItem>
-                    )}
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-            </>
-          )}
-
-          {/* Navigation Arrows */}
+          {/* Navigation Arrows — these stay inside since they don't need portals */}
           {coverImages.length > 1 && (
             <>
               <button
                 onClick={prevImage}
-                className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 bg-white/80 backdrop-blur-sm p-1.5 sm:p-2 rounded-full shadow-lg hover:bg-white transition-all z-10 hidden sm:block"
+                className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 bg-white/80 p-1.5 sm:p-2 rounded-full shadow-lg hover:bg-white transition-all z-10 hidden sm:block"
                 aria-label="Previous image"
               >
                 <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700" />
               </button>
               <button
                 onClick={nextImage}
-                className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 bg-white/80 backdrop-blur-sm p-1.5 sm:p-2 rounded-full shadow-lg hover:bg-white transition-all z-10 hidden sm:block"
+                className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 bg-white/80 p-1.5 sm:p-2 rounded-full shadow-lg hover:bg-white transition-all z-10 hidden sm:block"
                 aria-label="Next image"
               >
                 <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700" />
@@ -1348,7 +1196,103 @@ const ProfileDetails: React.FC = () => {
           )}
         </div>
 
-        {/* Profile Image with TLS Badge */}
+        {/*
+          CRITICAL FIX: Bookmark + Dropdown are rendered OUTSIDE the
+          overflow-hidden cover div and OUTSIDE any backdrop-filter context.
+          They sit on the outer card (position:relative) so they visually
+          overlap the cover image, but no clipping or stacking context
+          interferes with the DropdownMenuContent portal.
+        */}
+        {token && user?._id && user._id !== id && (
+          <>
+            {/* Bookmark button — overlays top-left of cover */}
+            <div className="absolute top-2 sm:top-4 left-2 sm:left-4 z-20">
+              <Button
+                onClick={handleBookmarkClick}
+                disabled={loadingAction}
+                variant="outline"
+                size="icon"
+                className="p-1.5 sm:p-2 cursor-pointer bg-white/90 hover:bg-white border-0 shadow-sm"
+              >
+                <Bookmark
+                  className={`w-4 h-4 sm:w-5 sm:h-5 ${
+                    isBookmarked
+                      ? "text-klout-primary fill-klout-primary"
+                      : "text-gray-700"
+                  }`}
+                />
+              </Button>
+            </div>
+
+            {/* Custom dropdown — plain HTML, no Radix portal, no stacking context issues */}
+            <div className="absolute top-2 sm:top-4 right-2 sm:right-4 z-[999]">
+              <div className="relative">
+                <button
+                  onClick={() => setMenuOpen((v) => !v)}
+                  className="flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-md bg-white/90 hover:bg-white shadow-sm cursor-pointer"
+                  type="button"
+                >
+                  <EllipsisVertical className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700" />
+                </button>
+
+                {menuOpen && (
+                  <>
+                    <div
+                      className="fixed inset-0 z-[998]"
+                      onClick={() => setMenuOpen(false)}
+                    />
+                    <div className="absolute right-0 top-full mt-1 w-48 sm:w-56 bg-white rounded-md shadow-lg border border-gray-200 py-1 z-[999]">
+                      {!isBlocked ? (
+                        <button
+                          className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
+                          onClick={() => {
+                            setShowReportBlock(true);
+                            setMenuOpen(false);
+                          }}
+                        >
+                          Report / Block
+                        </button>
+                      ) : (
+                        <button
+                          className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer disabled:opacity-50"
+                          onClick={() => {
+                            handleUnblockUser();
+                            setMenuOpen(false);
+                          }}
+                          disabled={blockLoading}
+                        >
+                          {blockLoading ? "Unblocking..." : "Unblock User"}
+                        </button>
+                      )}
+                      <button
+                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
+                        onClick={() => {
+                          setShowContactInfo(true);
+                          setMenuOpen(false);
+                        }}
+                      >
+                        Contact Info
+                      </button>
+                      {isFriend && (
+                        <button
+                          className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
+                          onClick={() => {
+                            setShowConfirm(true);
+                            setMenuOpen(false);
+                          }}
+                        >
+                          Remove Connection
+                        </button>
+                      )}
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* Profile Image + TLS Badge */}
         <div className="relative px-3 sm:px-4 md:px-6 pb-4 sm:pb-6">
           <div className="relative flex flex-col items-center -mt-12 sm:-mt-16 md:-mt-20">
             <div className="relative">
@@ -1381,6 +1325,7 @@ const ProfileDetails: React.FC = () => {
                   </div>
                 )}
               </div>
+
               {/* TLS Score Badge */}
               {score && (
                 <div
@@ -1404,19 +1349,18 @@ const ProfileDetails: React.FC = () => {
           </div>
         </div>
 
-        {/* Location - Show for both logged-in and non-logged-in users */}
+        {/* Location */}
         <p className="flex justify-center items-center text-foreground mt-2 gap-1 text-sm sm:text-base px-3">
-          <MapPin className="w-3.5 h-3.5 sm:w-4 sm:h-4" />{" "}
+          <MapPin className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           {city || "No location"}
         </p>
 
-        {/* Profile Info Section - Show for both logged-in and non-logged-in users */}
+        {/* Profile Info */}
         <div className="mt-3 sm:mt-4 px-3 sm:px-4 md:px-6 pb-4 sm:pb-6 text-center">
           <div className="gap-1 sm:gap-2 flex justify-center items-center space-x-1">
             <h1 className="text-xl sm:text-2xl md:text-3xl font-bold capitalize items-center flex text-gray-900 dark:text-gray-100">
               {firstName} {lastName}
             </h1>
-
             {role?.toLowerCase() === "premium" && (
               <img
                 src={PremiumLogo}
@@ -1429,12 +1373,10 @@ const ProfileDetails: React.FC = () => {
             )}
           </div>
 
-          {/* Designation - Show for both logged-in and non-logged-in users */}
           <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 capitalize">
             {designation || "N/A"}
           </p>
 
-          {/* Basic Info - Show for both logged-in and non-logged-in users */}
           <div className="mt-2 space-y-1 text-sm sm:text-base text-gray-700 dark:text-gray-300 capitalize">
             {jobFunction && (
               <p>
@@ -1444,7 +1386,6 @@ const ProfileDetails: React.FC = () => {
                 {jobFunction}
               </p>
             )}
-
             <p>
               <span className="font-semibold text-gray-800 dark:text-gray-200">
                 Experience:
@@ -1473,7 +1414,7 @@ const ProfileDetails: React.FC = () => {
             {renderActionButtons()}
           </div>
 
-          {/* Social Media Links - Show for both logged-in and non-logged-in users */}
+          {/* Social Links */}
           {(linkedinUrl || xUrl) && (
             <div className="mt-4 sm:mt-6 flex justify-center items-center gap-3 sm:gap-4">
               {linkedinUrl && (
@@ -1496,7 +1437,6 @@ const ProfileDetails: React.FC = () => {
                   />
                 </a>
               )}
-
               {xUrl && (
                 <a
                   className="inline-flex items-center gap-2 hover:scale-110 transition-transform"
@@ -1518,23 +1458,19 @@ const ProfileDetails: React.FC = () => {
             </div>
           )}
 
-          {/* About Me - Show for logged-in users */}
-          {token && user?._id && (
-            <>
-              {aboutMe && (
-                <div className="mt-4 sm:mt-6 text-left md:text-center">
-                  <h3 className="text-base sm:text-lg font-semibold text-foreground mb-2">
-                    Overview
-                  </h3>
-                  <p className="text-sm sm:text-base text-foreground leading-relaxed">
-                    {aboutMe}
-                  </p>
-                </div>
-              )}
-            </>
+          {/* About Me */}
+          {token && user?._id && aboutMe && (
+            <div className="mt-4 sm:mt-6 text-left md:text-center">
+              <h3 className="text-base sm:text-lg font-semibold text-foreground mb-2">
+                Overview
+              </h3>
+              <p className="text-sm sm:text-base text-foreground leading-relaxed">
+                {aboutMe}
+              </p>
+            </div>
           )}
 
-          {/* Attended Events Section - only for logged-in users */}
+          {/* Attended Events */}
           {token && user?._id && (
             <>
               {eventsLoading ? (
@@ -1549,9 +1485,6 @@ const ProfileDetails: React.FC = () => {
                   <div className="flex items-center justify-between mb-3 sm:mb-4">
                     <h3 className="text-base sm:text-lg font-semibold text-gray-800 flex items-center gap-2">
                       Attended Events
-                      {/* <span className="text-sm font-normal text-gray-500">
-                      ({eventsWithImages.length})
-                    </span> */}
                     </h3>
                     {eventsWithImages.length > 4 && (
                       <Button
@@ -1573,7 +1506,6 @@ const ProfileDetails: React.FC = () => {
                       </Button>
                     )}
                   </div>
-                  {/* Grid: 2 columns on mobile, 2 columns on desktop */}
                   <div className="grid grid-cols-2 gap-3 sm:gap-4">
                     {(showAllEvents
                       ? eventsWithImages
@@ -1591,7 +1523,7 @@ const ProfileDetails: React.FC = () => {
             </>
           )}
 
-          {/* All Dialogs */}
+          {/* Dialogs */}
           <ImageDialog
             isOpen={showImageDialog}
             imageUrl={selectedImageUrl}
@@ -1600,6 +1532,7 @@ const ProfileDetails: React.FC = () => {
 
           {token && user?._id && (
             <>
+              {/* Remove Connection Dialog */}
               <Dialog open={showConfirm} onOpenChange={setShowConfirm}>
                 <DialogContent className="max-w-sm sm:max-w-md mx-4">
                   <DialogHeader>
@@ -1803,6 +1736,8 @@ const ProfileDetails: React.FC = () => {
                   )}
                 </DialogContent>
               </Dialog>
+
+              {/* Contact Info Dialog */}
               <Dialog open={showContactInfo} onOpenChange={setShowContactInfo}>
                 <DialogContent className="max-w-sm sm:max-w-md mx-4">
                   <DialogHeader>
@@ -1812,24 +1747,20 @@ const ProfileDetails: React.FC = () => {
                   </DialogHeader>
 
                   <div className="space-y-4 py-4">
-                    {/* CASE 1: Both Hidden → No one can see */}
                     {!profile?.showEmail && !profile?.showMobile ? (
                       <p className="text-center text-red-600 font-medium py-6">
                         User has hidden their contact details.
                       </p>
                     ) : !isLoggedInUserPremium ? (
-                      /* CASE 2: Some allowed but viewer NOT premium */
                       <p className="text-center text-primary font-medium py-6">
                         Only premium users can view contact info.
                       </p>
                     ) : (
-                      /* CASE 3: Premium User + Check each field individually */
                       <div className="pb-4 border-b">
                         <h3 className="text-base font-semibold mb-4 text-gray-800">
                           Overview
                         </h3>
 
-                        {/* ---------- MOBILE NUMBER (Shown only if key = true) ---------- */}
                         {profile?.showMobile && (
                           <div className="flex items-center justify-between py-3">
                             <div className="flex items-center gap-3 flex-1">
@@ -1848,17 +1779,12 @@ const ProfileDetails: React.FC = () => {
                                   />
                                 </svg>
                               </div>
-
                               <span className="text-sm text-gray-700">
                                 {showPhone
                                   ? profile?.mobileNumber
-                                  : `••••••${String(
-                                      profile?.mobileNumber,
-                                    ).slice(-4)}`}
+                                  : `••••••${String(profile?.mobileNumber).slice(-4)}`}
                               </span>
                             </div>
-
-                            {/* Toggle Mobile */}
                             <button
                               className="p-2 hover:bg-gray-100 rounded-full"
                               onClick={() => setShowPhone(!showPhone)}
@@ -1902,7 +1828,6 @@ const ProfileDetails: React.FC = () => {
                           </div>
                         )}
 
-                        {/* ---------- EMAIL (Shown only if key = true) ---------- */}
                         {profile?.showEmail && (
                           <div className="flex items-center justify-between py-3">
                             <div className="flex items-center gap-3 flex-1">
@@ -1921,15 +1846,12 @@ const ProfileDetails: React.FC = () => {
                                   />
                                 </svg>
                               </div>
-
                               <span className="text-sm text-gray-700">
                                 {showEmailState
                                   ? profile?.emailId
                                   : maskEmail(profile?.emailId)}
                               </span>
                             </div>
-
-                            {/* Toggle Email */}
                             <button
                               className="p-2 hover:bg-gray-100 rounded-full"
                               onClick={() => setShowEmailState(!showEmailState)}
@@ -1995,7 +1917,6 @@ const ProfileDetails: React.FC = () => {
                       </span>
                     </DialogDescription>
                   </DialogHeader>
-
                   <div className="py-4">
                     <label
                       htmlFor="bookmark-note"
@@ -2089,7 +2010,6 @@ const ProfileDetails: React.FC = () => {
                             score && score > 0
                               ? Math.round((value / score) * 100)
                               : 0;
-
                           const circumference = 251.2;
                           const offset = circumference * (1 - percentage / 100);
                           return (
@@ -2176,7 +2096,6 @@ const ProfileDetails: React.FC = () => {
                             {companyLoading ? "Loading..." : company || "N/A"}
                           </Button>
                         </div>
-
                         <Button
                           className="w-full bg-orange-500 hover:bg-orange-600 text-white cursor-pointer text-sm"
                           onClick={() =>
@@ -2289,21 +2208,29 @@ const ProfileDetails: React.FC = () => {
                           <div className="flex items-start justify-between gap-3 sm:gap-4">
                             <div className="flex items-start gap-3 sm:gap-4 flex-1">
                               <div className="shrink-0">
-                                <img
-                                  src={
-                                    member.profileImage
-                                      ? getUserProfileImage(
-                                          user?.imageBaseUrl || "",
-                                          member.profileImage,
-                                        )
-                                      : DummyImage
-                                  }
-                                  alt={`${member.first_name} ${member.last_name}`}
-                                  className="w-12 h-12 sm:w-16 sm:h-16 rounded-full object-cover border-3 border-klout-primary/20 shadow-md"
-                                  onError={(e) => {
-                                    e.currentTarget.src = DummyImage;
-                                  }}
-                                />
+                                <Avatar className="w-12 h-12 sm:w-16 sm:h-16 rounded-full object-cover border-3 border-klout-primary/20 shadow-md">
+                                  <AvatarImage
+                                    src={
+                                      member.profileImage
+                                        ? getUserProfileImage(
+                                            user?.imageBaseUrl || "",
+                                            member.profileImage,
+                                          )
+                                        : DummyImage
+                                    }
+                                    alt={`${member.first_name} ${member.last_name}`}
+                                    className="w-12 h-12 sm:w-16 sm:h-16 rounded-full object-cover border-3 border-klout-primary/20 shadow-md"
+                                    onError={(e: any) => {
+                                      e.currentTarget.src = DummyImage;
+                                    }}
+                                  />
+                                  <AvatarFallback className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 text-sm sm:text-base">
+                                    <img
+                                      src={DummyImage}
+                                      className="w-12 h-12 sm:w-16 sm:h-16 rounded-full object-cover border-3 border-klout-primary/20 shadow-md"
+                                    />
+                                  </AvatarFallback>
+                                </Avatar>
                               </div>
                               <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
