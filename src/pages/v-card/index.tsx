@@ -80,7 +80,7 @@ const VCard: React.FC = () => {
 
               {/* Name with gradient */}
               <h1 className="text-2xl md:text-2xl lg:text-3xl font-bold text-center mb-2 capitalize bg-gradient-to-r from-purple-700 via-violet-600 to-fuchsia-700 bg-clip-text text-transparent leading-tight animate-gradient"
-                style={{ fontFamily: "'Cinzel', serif" }}
+                // style={{ fontFamily: "'Cinzel', serif" }}
               >
                 {user?.first_name || "Guest"} {user?.last_name || ""}
               </h1>

@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { getUserProfile, sendOtp, verifyOtp } from "@/app-api/auth";
 import React, { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { getMyConnections } from "@/app-api/connections";
 import { Input } from "@/components/ui/input";
