@@ -1,20 +1,12 @@
 import { useState, useRef } from "react";
-import {
-  ArrowLeft,
-  Upload,
-  X,
-  Loader2,
-  Image,
-  Video,
-  Sparkles,
-} from "lucide-react";
+import { ArrowLeft, X, Loader2, Image, Video, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 // import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useNavigate } from "react-router-dom";
 import { useAppSelector } from "@/redux/hooks";
 import { getUserProfileImage } from "@/lib/utils";
-import DummyImage from "@/assets/dummy_image.webp"
+import DummyImage from "@/assets/dummy_image.webp";
 import type { Post } from "@/types/post";
 
 interface CreatePostProps {
@@ -53,7 +45,7 @@ const CreatePost = ({ onPostCreated }: CreatePostProps) => {
   const [pendingMediaType, setPendingMediaType] = useState<
     "image" | "video" | null
   >(null);
-  const {user : appUser} = useAppSelector((state) => state.auth);
+  const { user: appUser } = useAppSelector((state) => state.auth);
 
   const handleImagesUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
@@ -103,21 +95,21 @@ const CreatePost = ({ onPostCreated }: CreatePostProps) => {
     setIsUploading(true);
     await new Promise((resolve) => setTimeout(resolve, 1500));
 
- const newPost: Post = {
-  id: Date.now(),
-  name: `${appUser?.first_name ?? ""} ${appUser?.last_name ?? ""}`.trim(),
-  avatar: appUser?.profileImage
-    ? getUserProfileImage(appUser.imageBaseUrl, appUser.profileImage)
-    : DummyImage,
-  content: postDescription,
-  image: imagePreviews[0] || undefined,
-  mediaType: mediaType || "image",
-  timestamp: "Just now",
-  role: appUser?.designation || "User",
-  comments: 0,
-  likes: 0,
-  shares: 0,
-};
+    const newPost: Post = {
+      id: Date.now(),
+      name: `${appUser?.first_name ?? ""} ${appUser?.last_name ?? ""}`.trim(),
+      avatar: appUser?.profileImage
+        ? getUserProfileImage(appUser.imageBaseUrl, appUser.profileImage)
+        : DummyImage,
+      content: postDescription,
+      image: imagePreviews[0] || undefined,
+      mediaType: mediaType || "image",
+      timestamp: "Just now",
+      role: appUser?.designation || "User",
+      comments: 0,
+      likes: 0,
+      shares: 0,
+    };
 
     onPostCreated(newPost);
     setIsUploading(false);
@@ -131,8 +123,7 @@ const CreatePost = ({ onPostCreated }: CreatePostProps) => {
   };
 
   const canPost =
-    postDescription.trim() &&
-    (imagePreviews.length > 0 || videoPreview);
+    postDescription.trim() && (imagePreviews.length > 0 || videoPreview);
 
   const hasMedia = imagePreviews.length > 0 || videoPreview;
 
@@ -144,7 +135,7 @@ const CreatePost = ({ onPostCreated }: CreatePostProps) => {
             <Button
               variant="ghost"
               size="sm"
-              className="hover:bg-slate-100 -ml-2"
+              className="hover:bg-slate-100 -ml-2 cursor-pointer"
               onClick={() => navigate("/")}
             >
               <ArrowLeft className="w-5 h-5 mr-2" />
@@ -182,20 +173,6 @@ const CreatePost = ({ onPostCreated }: CreatePostProps) => {
               <label className="text-sm font-semibold mb-4 block text-slate-700">
                 Media <span className="text-red-500">*</span>
               </label>
-
-              <div className="flex gap-2 mb-4">
-                <button
-                  onClick={() => setActiveTab("upload")}
-                  className={`flex-1 py-2 px-4 rounded-lg cursor-pointer font-medium text-sm transition-all ${
-                    activeTab === "upload"
-                      ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-md"
-                      : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-                  }`}
-                >
-                  <Upload className="w-4 h-4 inline mr-2" />
-                  Upload
-                </button>
-              </div>
 
               {activeTab === "upload" && (
                 <>

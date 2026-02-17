@@ -1421,19 +1421,17 @@ const ExploreViewEvent: React.FC = () => {
                 <TabsList
                   className={`w-full grid ${hasEventImages ? "grid-cols-4" : "grid-cols-3"} mb-6`}
                 >
-                  <TabsTrigger value="details">Event Details</TabsTrigger>
-                  <TabsTrigger value="agenda">Agenda</TabsTrigger>
-                  <TabsTrigger value="speakers">Speakers</TabsTrigger>
+                  <TabsTrigger value="details" className="cursor-pointer">Event Details</TabsTrigger>
+                  <TabsTrigger value="agenda" className="cursor-pointer">Agenda</TabsTrigger>
+                  <TabsTrigger value="speakers" className="cursor-pointer">Speakers</TabsTrigger>
                   {hasEventImages && (
-                    <TabsTrigger value="images">Images</TabsTrigger>
+                    <TabsTrigger value="images" className="cursor-pointer">Images</TabsTrigger>
                   )}
                 </TabsList>
 
                 {/* EVENT DETAILS TAB */}
                 <TabsContent value="details" className="space-y-6">
                   <div>
-                    <h3 className="font-semibold text-base">Event Details</h3>
-                    <hr className="border-t-2 border-white my-2.5" />
                     <div
                       className="text-sm mt-2 text-brand-dark-gray prose prose-sm max-w-none dark:prose-invert"
                       dangerouslySetInnerHTML={{
@@ -1932,11 +1930,6 @@ const ExploreViewEvent: React.FC = () => {
                 <TabsContent value="agenda" className="space-y-6">
                   {viewAgendaBy == 0 && (
                     <div>
-                      <h3 className="font-semibold text-base mb-2">
-                        Agenda Details
-                      </h3>
-                      <hr className="border-t-2 border-white my-2.5" />
-
                       <div>
                         {agendaData.length > 0 ? (
                           (() => {
@@ -2721,8 +2714,6 @@ const ExploreViewEvent: React.FC = () => {
                 {/* SPEAKERS TAB */}
                 <TabsContent value="speakers" className="space-y-6">
                   <div hidden={allSpeakers.length === 0}>
-                    <h3 className="font-semibold text-base">Speakers</h3>
-                    <hr className="border-t-2 border-white my-2.5!" />
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-5 justify-between">
                       {allSpeakers.length > 0 ? (
                         allSpeakers.map((speaker, index) => (

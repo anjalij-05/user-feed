@@ -47,11 +47,10 @@ const CompareTls: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [connectionsLoading, setConnectionsLoading] = useState(false);
   const [selectedUser2Id, setSelectedUser2Id] = useState<string | null>(
-    initialUser2Id
+    initialUser2Id,
   );
   const [isMobile, setIsMobile] = useState(window.innerWidth < 640);
-  console.log("user2Profile:",user2Profile);
-  
+  console.log("user2Profile:", user2Profile);
 
   // Fetch connections list
   useEffect(() => {
@@ -61,7 +60,7 @@ const CompareTls: React.FC = () => {
       setConnectionsLoading(true);
       try {
         await dispatch(
-          checkConnectionStatus({ token, userId: user._id })
+          checkConnectionStatus({ token, userId: user._id }),
         ).unwrap();
       } catch (err) {
         console.error("Failed to fetch connections:", err);
@@ -94,7 +93,7 @@ const CompareTls: React.FC = () => {
           user1Id,
           0,
           0,
-          0
+          0,
         );
         const details1 = profile1Res?.result?.details;
 
@@ -105,7 +104,7 @@ const CompareTls: React.FC = () => {
 
         // Fetch TLS score for user1
         const res1 = await dispatch(
-          fetchTlsScore({ mobileNumber: details1.mobileNumber })
+          fetchTlsScore({ mobileNumber: details1.mobileNumber }),
         ).unwrap();
 
         setUser1TlsScore(res1.score || 0);
@@ -133,7 +132,7 @@ const CompareTls: React.FC = () => {
           selectedUser2Id,
           0,
           0,
-          0
+          0,
         );
         const details2 = profile2Res?.result?.details;
 
@@ -144,7 +143,7 @@ const CompareTls: React.FC = () => {
 
         // Fetch TLS score for user2
         const res2 = await dispatch(
-          fetchTlsScore({ mobileNumber: details2.mobileNumber })
+          fetchTlsScore({ mobileNumber: details2.mobileNumber }),
         ).unwrap();
 
         setUser2TlsScore(res2.score || 0);
@@ -182,18 +181,18 @@ const CompareTls: React.FC = () => {
     );
 
   return (
-    <div className="max-w-5xl mx-auto p-4 bg-muted rounded-2xl mt-10">
+    <div className="max-w-2xl mx-auto p-3 bg-muted rounded-2xl mt-4">
       {/* Profile Cards with VS */}
-      <div className="flex justify-center items-center gap-4 mb-6 pt-4">
+      <div className="flex justify-center items-center gap-3 mb-4 pt-2">
         {/* User 1 Card */}
         <div className="flex flex-col items-center">
-          <div className="w-32 h-32 rounded-3xl overflow-hidden border-4 border-primary shadow-lg">
+          <div className="w-20 h-20 rounded-2xl overflow-hidden border-3 border-primary shadow-md">
             <img
               src={
                 user1Profile.profileImage
                   ? getUserProfileImage(
                       user?.imageBaseUrl || "",
-                      user1Profile.profileImage
+                      user1Profile.profileImage,
                     )
                   : DummyImage
               }
@@ -201,31 +200,35 @@ const CompareTls: React.FC = () => {
               className="w-full h-full object-cover"
             />
           </div>
-          <h3 className="mt-3 font-semibold text-base text-foreground capitalize">
+          <h3 className="mt-2 font-semibold text-sm text-foreground capitalize">
             {user1Profile.firstName} {user1Profile.lastName}
           </h3>
         </div>
 
         {/* VS Text */}
-        <div className="text-3xl font-bold text-gray-400 px-4">VS</div>
+        <div className="text-2xl font-bold text-gray-400 px-2">VS</div>
 
         {/* User 2 Card */}
         <div className="flex flex-col items-center">
           {loading ? (
-            <div className="w-32 h-32 rounded-3xl border-4 border-primary shadow-lg flex items-center justify-center bg-muted-foreground">
-              <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+            <div className="w-20 h-20 rounded-2xl border-3 border-primary shadow-md flex items-center justify-center bg-muted-foreground">
+              <div className="w-6 h-6 border-3 border-primary border-t-transparent rounded-full animate-spin" />
             </div>
           ) : user2Profile ? (
             <div
-              className="w-32 h-32 rounded-3xl cursor-pointer overflow-hidden border-4 border-primary shadow-lg"
-              onClick={() => navigate(`/profile/${user2Profile.firstName.toLowerCase()}-${user2Profile.lastName.toLowerCase()}-${user2Profile._id}`)}
+              className="w-20 h-20 rounded-2xl cursor-pointer overflow-hidden border-3 border-primary shadow-md"
+              onClick={() =>
+                navigate(
+                  `/profile/${user2Profile.firstName.toLowerCase()}-${user2Profile.lastName.toLowerCase()}-${user2Profile._id}`,
+                )
+              }
             >
               <img
                 src={
                   user2Profile.profileImage
                     ? getUserProfileImage(
                         user?.imageBaseUrl || "",
-                        user2Profile.profileImage
+                        user2Profile.profileImage,
                       )
                     : DummyImage
                 }
@@ -253,8 +256,8 @@ const CompareTls: React.FC = () => {
       {/* Line Chart */}
       {user2Profile && compareData.length > 0 && !loading && (
         <>
-          <div className="bg-background mb-6 p-2 rounded-2xl">
-            <div className="w-full h-80">
+          <div className="bg-background mb-4 p-2 rounded-xl">
+            <div className="w-full h-56">
               <ResponsiveContainer>
                 <LineChart
                   data={compareData}
@@ -306,36 +309,36 @@ const CompareTls: React.FC = () => {
           </div>
 
           {/* TLS Score Badges */}
-          <div className="flex justify-center gap-8 mb-6">
-            <div className="bg-primary/20 rounded-2xl px-8 py-3 flex items-center gap-2">
-              <span className="text-primary font-bold text-xl">TL</span>
-              <span className="text-primary font-bold text-2xl">
+          <div className="flex justify-center gap-6 mb-4">
+            <div className="bg-primary/20 rounded-xl px-5 py-2 flex items-center gap-1.5">
+              <span className="text-primary font-bold text-sm">TL</span>
+              <span className="text-primary font-bold text-lg">
                 {user1TlsScore}
               </span>
             </div>
-            <div className="bg-primary/20 rounded-2xl px-8 py-3 flex items-center gap-2">
-              <span className="text-primary font-bold text-xl">TL</span>
-              <span className="text-primary font-bold text-2xl">
+            <div className="bg-primary/20 rounded-xl px-5 py-2 flex items-center gap-1.5">
+              <span className="text-primary font-bold text-sm">TL</span>
+              <span className="text-primary font-bold text-lg">
                 {user2TlsScore}
               </span>
             </div>
           </div>
 
           {/* Factor Details Table */}
-          <div className="bg-background mb-8 p-2 rounded-2xl">
+          <div className="bg-background mb-4 p-2 rounded-xl">
             <div className="divide-y divide-muted">
               {compareData.map((f) => (
                 <div
                   key={f.name}
-                  className="flex items-center justify-between py-4 px-2"
+                  className="flex items-center justify-between py-2.5 px-2"
                 >
-                  <div className="w-16 text-center font-bold text-lg text-foreground">
+                  <div className="w-12 text-center font-bold text-sm text-foreground">
                     {f.You ?? 0}
                   </div>
-                  <div className="flex-1 text-center text-sm text-muted-foreground">
+                  <div className="flex-1 text-center text-xs text-muted-foreground">
                     {f.name}
                   </div>
-                  <div className="w-16 text-center font-bold text-lg text-foreground">
+                  <div className="w-12 text-center font-bold text-sm text-foreground">
                     {f.Other ?? 0}
                   </div>
                 </div>
@@ -353,8 +356,8 @@ const CompareTls: React.FC = () => {
       )}
 
       {/* Connections List */}
-      <div className="mt-8 pb-8">
-        <h2 className="text-xl font-bold text-foreground mb-4">
+      <div className="mt-4 pb-4">
+        <h2 className="text-base font-bold text-foreground mb-3">
           {user2Profile
             ? "Compare with Other Connections"
             : "Select a Connection to Compare"}
@@ -365,24 +368,24 @@ const CompareTls: React.FC = () => {
             <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
           </div>
         ) : userProfiles.length > 0 ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5">
             {userProfiles.map((connection) => (
               <div
                 key={connection._id}
                 onClick={() => handleCompareWithConnection(connection._id)}
-                className={`flex flex-col items-center p-4 bg-background border-2 rounded-xl shadow-sm hover:shadow-md transition-all cursor-pointer ${
+                className={`flex flex-col items-center p-2.5 bg-background border-2 rounded-xl shadow-sm hover:shadow-md transition-all cursor-pointer ${
                   selectedUser2Id === connection._id
                     ? "border-primary bg-primary/5 ring-2 ring-primary/30"
                     : "border-muted hover:border-primary/30"
                 }`}
               >
-                <div className="w-20 h-20 rounded-2xl overflow-hidden border-2 border-primary">
+                <div className="w-14 h-14 rounded-xl overflow-hidden border-2 border-primary">
                   <img
                     src={
                       connection.profileImage
                         ? getUserProfileImage(
                             user?.imageBaseUrl || "",
-                            connection.profileImage
+                            connection.profileImage,
                           )
                         : DummyImage
                     }
@@ -390,19 +393,19 @@ const CompareTls: React.FC = () => {
                     className="w-full h-full object-cover"
                   />
                 </div>
-                <h4 className="mt-2 text-sm font-semibold text-foreground text-center line-clamp-2 capitalize">
+                <h4 className="mt-1.5 text-xs font-semibold text-foreground text-center line-clamp-2 capitalize">
                   {connection.first_name} {connection.last_name}
                 </h4>
-                <h4 className="mt-2 text-sm font-semibold text-foreground/80 text-center line-clamp-2 capitalize">
+                <h4 className="mt-1 text-xs font-semibold text-foreground/80 text-center line-clamp-2 capitalize">
                   {connection.designation}
                 </h4>
                 <div className="relative inline-block">
                   <img
                     src={TlsImage}
                     alt="TLS"
-                    className="w-22 h-22 object-contain"
+                    className="w-16 h-10 object-contain"
                   />
-                  <span className="absolute inset-y-0 right-4 top-1 flex items-center text-white font-semibold text-sm">
+                  <span className="absolute inset-y-0 right-3 top-1 flex items-center text-white font-semibold text-xs">
                     {connection.score}
                   </span>
                 </div>
@@ -410,7 +413,7 @@ const CompareTls: React.FC = () => {
             ))}
           </div>
         ) : (
-          <p className="text-center text-muted-foreground py-8">
+          <p className="text-center text-muted-foreground py-4 text-sm">
             No connections found. Connect with others to compare TLS scores.
           </p>
         )}

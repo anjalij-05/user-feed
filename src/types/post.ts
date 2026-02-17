@@ -23,3 +23,13 @@ export interface Comment {
   timestamp: string;
   likes: number;
 }
+
+export interface Connection {
+  _id: string;
+  first_name?: string;
+  last_name?: string;
+  profileImage?: string;
+  imageBaseUrl?: string;
+  designation?: string;
+  company?: string;
+}

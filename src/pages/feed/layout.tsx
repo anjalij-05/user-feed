@@ -9,9 +9,14 @@ import type { Post } from "@/types/post";
 interface UserFeedLayoutProps {
   userPosts: Post[];
   onPostCreated: (post: Post) => void;
+  onPostUpdated: (post: Post) => void;
 }
 
-const UserFeedLayout = ({ userPosts, onPostCreated }: UserFeedLayoutProps) => {
+const UserFeedLayout = ({
+  userPosts,
+  onPostCreated,
+  onPostUpdated,
+}: UserFeedLayoutProps) => {
   const { user } = useAppSelector((state) => state.auth);
 
   const userAvatar = user?.profileImage
@@ -41,7 +46,7 @@ const UserFeedLayout = ({ userPosts, onPostCreated }: UserFeedLayoutProps) => {
 
       {/* Main Content */}
       <main className="lg:ml-[244px] pt-16 lg:pt-0 min-h-screen">
-        <Outlet context={{ userPosts, onPostCreated }} />
+        <Outlet context={{ userPosts, onPostCreated, onPostUpdated }} />
       </main>
     </div>
   );

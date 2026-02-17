@@ -34,7 +34,7 @@ const CompanyEmployees: React.FC = () => {
     const fetchEmployees = async () => {
       try {
         await dispatch(
-          fetchCompanyMemberTls({ company: decodedName })
+          fetchCompanyMemberTls({ company: decodedName }),
         ).unwrap();
       } catch (err: any) {
         toast.error("Error fetching employees", {
@@ -48,7 +48,9 @@ const CompanyEmployees: React.FC = () => {
   }, [dispatch, decodedName, navigate]);
 
   const handleEmployeeClick = (profile: Profile) => {
-    navigate(`/profile/${profile.first_name.toLowerCase()}-${profile.last_name.toLowerCase()}-${profile._id}`);
+    navigate(
+      `/profile/${profile.first_name.toLowerCase()}-${profile.last_name.toLowerCase()}-${profile._id}`,
+    );
   };
 
   const handleGoBack = () => {
@@ -69,25 +71,25 @@ const CompanyEmployees: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background py-4 sm:py-6 px-3 sm:px-4">
-      <div className="max-w-5xl mx-auto">
+    <div className="bg-background py-3 px-3">
+      <div className="max-w-2xl mx-auto">
         {/* Header */}
-        <div className="bg-card rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 mb-4 sm:mb-6 border border-border">
-          <div className="flex items-center gap-2 sm:gap-4 mb-3 sm:mb-4">
+        <div className="bg-card rounded-xl shadow-md p-3 mb-3 border border-border">
+          <div className="flex items-center gap-2 mb-1.5">
             <Button
               onClick={handleGoBack}
               variant="ghost"
               size="sm"
-              className="hover:bg-accent p-2"
+              className="hover:bg-accent p-2 cursor-pointer"
             >
               <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
             </Button>
             <div className="flex-1 min-w-0">
-              <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground capitalize truncate">
+              <h1 className="text-base sm:text-lg font-bold text-foreground capitalize truncate">
                 Employees at {decodedName}
               </h1>
               {companyMembers && companyMembers.length > 0 && (
-                <p className="text-sm sm:text-base text-muted-foreground mt-1">
+                <p className="text-xs text-muted-foreground mt-0.5">
                   {companyMembers.length}{" "}
                   {companyMembers.length === 1 ? "employee" : "employees"} found
                 </p>
@@ -97,7 +99,7 @@ const CompanyEmployees: React.FC = () => {
         </div>
 
         {/* Content */}
-        <div className="bg-card rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 border border-border">
+        <div className="bg-card rounded-xl shadow-md p-3 border border-border">
           {companyError ? (
             <div className="text-center py-8 sm:py-12 bg-destructive/10 rounded-lg border border-destructive/20 px-4">
               <p className="text-destructive font-semibold text-base sm:text-lg mb-2">
@@ -115,27 +117,27 @@ const CompanyEmployees: React.FC = () => {
               </Button>
             </div>
           ) : companyMembers && companyMembers.length > 0 ? (
-            <div className="space-y-3 sm:space-y-4">
+            <div className="space-y-2">
               {companyMembers.map((member: any) => (
                 <div
                   key={member._id}
-                  className="border border-border rounded-lg sm:rounded-xl p-3 sm:p-5 cursor-pointer hover:shadow-lg transition-all duration-200 hover:border-klout-primary/50 bg-card"
+                  className="border border-border rounded-lg p-2.5 sm:p-5 cursor-pointer hover:shadow-lg transition-all duration-200 hover:border-klout-primary/50 bg-card"
                   onClick={() => handleEmployeeClick(member)}
                 >
-                  <div className="flex items-start justify-between gap-3 sm:gap-4">
-                    <div className="flex items-start gap-3 sm:gap-4 flex-1 min-w-0">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-start gap-2.5 flex-1 min-w-0">
                       <div className="shrink-0">
                         <img
                           src={
                             member.profileImage
                               ? getUserProfileImage(
                                   user?.imageBaseUrl || "",
-                                  member.profileImage
+                                  member.profileImage,
                                 )
                               : DummyImage
                           }
                           alt={`${member.first_name} ${member.last_name}`}
-                          className="w-12 h-12 sm:w-16 sm:h-16 rounded-full object-cover border-2 sm:border-3 border-klout-primary/20 shadow-md"
+                          className="w-9 h-9 sm:w-11 sm:h-11 rounded-full object-cover border-2 border-klout-primary/20 shadow-md"
                           onError={(e) => {
                             e.currentTarget.src = DummyImage;
                           }}
@@ -143,7 +145,7 @@ const CompanyEmployees: React.FC = () => {
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1 sm:mb-2 flex-wrap">
-                          <h3 className="text-base sm:text-lg font-semibold capitalize text-foreground hover:text-klout-primary truncate">
+                          <h3 className="text-sm font-semibold capitalize text-foreground hover:text-klout-primary truncate">
                             {member.first_name} {member.last_name}
                           </h3>
                           {member.role?.toLowerCase() === "premium" && (
@@ -152,7 +154,7 @@ const CompanyEmployees: React.FC = () => {
                             </span>
                           )}
                         </div>
-                        <p className="text-xs sm:text-sm font-semibold capitalize text-muted-foreground mb-1 line-clamp-1">
+                        <p className="text-xs font-medium capitalize text-muted-foreground line-clamp-1">
                           {member.designation ||
                             member.jobFunction ||
                             "Professional"}
@@ -163,13 +165,13 @@ const CompanyEmployees: React.FC = () => {
                     {/* TLS Score */}
                     <div className="flex flex-col items-center gap-2 shrink-0">
                       {member.score !== undefined && (
-                        <div className="relative w-16 h-10 sm:w-16 sm:h-12">
+                        <div className="relative w-13 h-9">
                           <img
                             src={TlsImage}
                             alt="TLS"
                             className="w-full h-full object-contain"
                           />
-                          <span className="absolute inset-y-0 right-1.5 sm:right-2 top-0.5 sm:top-1 flex items-center text-white font-semibold text-xs sm:text-sm">
+                          <span className="absolute inset-y-0 right-2 sm:right-1.5 top-0.5 sm:top-1 flex items-center text-white font-semibold text-xs sm:text-sm">
                             {member.score}
                           </span>
                         </div>
@@ -180,9 +182,9 @@ const CompanyEmployees: React.FC = () => {
               ))}
             </div>
           ) : (
-            <div className="text-center py-12 sm:py-16 px-4">
-              <Users className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-3 sm:mb-4 text-muted-foreground" />
-              <p className="text-foreground mb-2 text-base sm:text-lg font-semibold">
+            <div className="text-center py-8 px-4">
+              <Users className="w-10 h-10 mx-auto mb-2 text-muted-foreground" />
+              <p className="text-foreground mb-1.5 text-sm font-semibold">
                 No employees found
               </p>
               <p className="text-xs sm:text-sm text-muted-foreground mb-4">
@@ -190,7 +192,7 @@ const CompanyEmployees: React.FC = () => {
               </p>
               <Button
                 onClick={handleGoBack}
-                className="bg-klout-primary hover:bg-klout-secondary text-white text-sm sm:text-base"
+                className="bg-klout-primary cursor-pointer hover:bg-klout-secondary text-white text-sm sm:text-base"
                 size="sm"
               >
                 Go Back

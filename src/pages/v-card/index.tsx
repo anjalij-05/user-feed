@@ -67,7 +67,6 @@ const VCard: React.FC = () => {
 
               {/* Profile image with animated purple border */}
               <div className="relative mb-5 group">
-                <div className="absolute -inset-1 bg-gradient-to-br from-purple-400 via-violet-500 to-fuchsia-600 rounded-full blur-md group-hover:blur-lg transition-all duration-300 animate-spin-slow"></div>
                 <div className="relative">
                   <div className="absolute -inset-0.5 bg-gradient-to-br from-purple-500 via-violet-600 to-fuchsia-600 rounded-full"></div>
                   <img

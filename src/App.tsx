@@ -33,6 +33,7 @@ import ChatRoom from "./pages/chats/chatRoom";
 import EditProfile from "./pages/editProfile";
 import PaymentFormPage from "./pages/payment/payuForm";
 import PaymentWebStatus from "./pages/payment/paymentStatus";
+import EditPostWrapper from "./pages/feed/editPostWrapper";
 
 function App() {
   const [userPosts, setUserPosts] = useState<Post[]>([]);
@@ -46,7 +47,13 @@ function App() {
     });
   };
 
-  console.log("Current userPosts in App:", userPosts);
+  // console.log("Current userPosts in App:", userPosts);
+
+  const handlePostUpdated = (updatedPost: Post) => {
+    setUserPosts((prev) =>
+      prev.map((p) => (p.id === updatedPost.id ? updatedPost : p)),
+    );
+  };
 
   return (
     <Routes>
@@ -76,12 +83,14 @@ function App() {
             <UserFeedLayout
               userPosts={userPosts}
               onPostCreated={handlePostCreated}
+              onPostUpdated={handlePostUpdated}
             />
           </ProtectedRoute>
         }
       >
         <Route index element={<FeedWrapper />} />
         <Route path="user-feed/create-post" element={<CreatePostWrapper />} />
+        <Route path="user-feed/edit-post/:id" element={<EditPostWrapper />} />
         <Route
           path="user-feed/create-user-profile"
           element={<UserProfile posts={userPosts} />}

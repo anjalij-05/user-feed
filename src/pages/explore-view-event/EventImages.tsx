@@ -334,9 +334,6 @@ const EventImages: React.FC<EventImagesProps> = ({
 
   return (
     <div className="mt-6">
-      <h3 className="font-semibold text-lg">Event Details</h3>
-      <hr className="border-t-2 border-white my-2.5" />
-
       <Tabs
         defaultValue="eventImages"
         className="w-full"
@@ -347,9 +344,9 @@ const EventImages: React.FC<EventImagesProps> = ({
         }}
       >
         <TabsList className="h-10 mx-auto my-5">
-          <TabsTrigger value="eventImages">Event Image</TabsTrigger>
-          <TabsTrigger value="myImages">My Images</TabsTrigger>
-          <TabsTrigger value="delegateImages">Delegate Images</TabsTrigger>
+          <TabsTrigger value="eventImages" className="cursor-pointer">Event Image</TabsTrigger>
+          <TabsTrigger value="myImages" className="cursor-pointer">My Images</TabsTrigger>
+          <TabsTrigger value="delegateImages" className="cursor-pointer">Delegate Images</TabsTrigger>
         </TabsList>
 
         <TabsContent value="eventImages">

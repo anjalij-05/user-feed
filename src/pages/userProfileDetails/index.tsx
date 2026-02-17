@@ -282,7 +282,7 @@ const ProfileDetails: React.FC = () => {
     setShowTlsDialog(false);
   };
   const handleClosePremium = () => setIsPremiumOpen(false);
-
+  const [activeTab, setActiveTab] = useState<"events" | "posts">("events");
   const [showBookmarkDialog, setShowBookmarkDialog] = useState(false);
   const [bookmarkNote, setBookmarkNote] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
@@ -1471,58 +1471,95 @@ const ProfileDetails: React.FC = () => {
           )}
 
           {/* Attended Events */}
+          {/* Tabs: Attended Events | Posts */}
           {token && user?._id && (
             <>
-              {eventsLoading ? (
-                <div className="mt-6 sm:mt-8 text-center py-4 sm:py-6">
-                  <div className="w-6 h-6 sm:w-8 sm:h-8 border-4 border-klout-primary border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
-                  <p className="text-gray-500 text-xs sm:text-sm">
-                    Loading events...
-                  </p>
-                </div>
-              ) : eventsWithImages.length > 0 ? (
-                <div className="mt-6 sm:mt-8 text-left">
-                  <div className="flex items-center justify-between mb-3 sm:mb-4">
-                    <h3 className="text-base sm:text-lg font-semibold text-gray-800 flex items-center gap-2">
-                      Attended Events
-                    </h3>
-                    {eventsWithImages.length > 4 && (
-                      <Button
-                        onClick={() => setShowAllEvents(!showAllEvents)}
-                        variant="ghost"
-                        className="text-klout-primary hover:text-klout-primary-dark hover:bg-klout-primary/10 text-xs sm:text-sm font-medium flex items-center gap-1"
-                      >
-                        {showAllEvents ? (
-                          <>
-                            Show Less
-                            <ChevronUp className="w-4 h-4" />
-                          </>
-                        ) : (
-                          <>
-                            View All
-                            <ChevronDown className="w-4 h-4" />
-                          </>
+              {/* Tab Headers */}
+              <div className="mt-6 sm:mt-8 flex border-b border-gray-200">
+                <button
+                  onClick={() => setActiveTab("events")}
+                  className={`flex-1 py-2 cursor-pointer text-sm sm:text-base font-medium transition-colors ${
+                    activeTab === "events"
+                      ? "border-b-2 border-klout-primary text-klout-primary"
+                      : "text-gray-500 hover:text-gray-700"
+                  }`}
+                >
+                  Attended Events
+                </button>
+                <button
+                  onClick={() => setActiveTab("posts")}
+                  className={`flex-1 py-2 cursor-pointer text-sm sm:text-base font-medium transition-colors ${
+                    activeTab === "posts"
+                      ? "border-b-2 border-klout-primary text-klout-primary"
+                      : "text-gray-500 hover:text-gray-700"
+                  }`}
+                >
+                  Posts
+                </button>
+              </div>
+
+              {/* Tab Content */}
+              {activeTab === "events" && (
+                <>
+                  {eventsLoading ? (
+                    <div className="mt-6 sm:mt-8 text-center py-4 sm:py-6">
+                      <div className="w-6 h-6 sm:w-8 sm:h-8 border-4 border-klout-primary border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
+                      <p className="text-gray-500 text-xs sm:text-sm">
+                        Loading events...
+                      </p>
+                    </div>
+                  ) : eventsWithImages.length > 0 ? (
+                    <div className="mt-4 text-left">
+                      <div className="flex items-center justify-between mb-3 sm:mb-4">
+                        <h3 className="text-base sm:text-lg font-semibold text-gray-800 flex items-center gap-2">
+                          Attended Events
+                        </h3>
+                        {eventsWithImages.length > 4 && (
+                          <Button
+                            onClick={() => setShowAllEvents(!showAllEvents)}
+                            variant="ghost"
+                            className="text-klout-primary cursor-pointer hover:text-klout-primary-dark hover:bg-klout-primary/10 text-xs sm:text-sm font-medium flex items-center gap-1"
+                          >
+                            {showAllEvents ? (
+                              <>
+                                Show Less <ChevronUp className="w-4 h-4" />
+                              </>
+                            ) : (
+                              <>
+                                View All <ChevronDown className="w-4 h-4" />
+                              </>
+                            )}
+                          </Button>
                         )}
-                      </Button>
-                    )}
-                  </div>
-                  <div className="grid grid-cols-2 gap-3 sm:gap-4">
-                    {(showAllEvents
-                      ? eventsWithImages
-                      : eventsWithImages.slice(0, 4)
-                    ).map((event) => (
-                      <AttendedEventCard
-                        key={event.eventUUID || event._id}
-                        event={event}
-                        onImageError={handleEventImageError}
-                      />
-                    ))}
-                  </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-3 sm:gap-4">
+                        {(showAllEvents
+                          ? eventsWithImages
+                          : eventsWithImages.slice(0, 4)
+                        ).map((event) => (
+                          <AttendedEventCard
+                            key={event.eventUUID || event._id}
+                            event={event}
+                            onImageError={handleEventImageError}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="mt-6 py-8 text-center text-gray-500 text-sm">
+                      No attended events to show.
+                    </div>
+                  )}
+                </>
+              )}
+
+              {activeTab === "posts" && (
+                <div className="mt-4 py-8 text-center text-gray-500 text-sm">
+                  No posts yet.
                 </div>
-              ) : null}
+              )}
             </>
           )}
-
           {/* Dialogs */}
           <ImageDialog
             isOpen={showImageDialog}

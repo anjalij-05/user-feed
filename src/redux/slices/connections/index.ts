@@ -97,11 +97,11 @@ const connectionsSlice = createSlice({
         // Save connected user profiles
         state.userProfiles = action.payload?.result?.userProfiles || [];
         state.connectionIdData = action.payload?.result?.connectionIdData || [];
-        console.log("user profiles", action.payload.result.userProfiles);
-        console.log(
-          "connection ID data",
-          action.payload.result.connectionIdData
-        );
+        // console.log("user profiles", action.payload.result.userProfiles);
+        // console.log(
+        //   "connection ID data",
+        //   action.payload.result.connectionIdData
+        // );
 
         // Optionally, set isFriend if any type===1 exists
         const hasFriend =
