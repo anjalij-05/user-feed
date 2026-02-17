@@ -38,7 +38,6 @@ const CreatePost = ({ onPostCreated }: CreatePostProps) => {
   const [mediaType, setMediaType] = useState<"image" | "video" | null>(null);
   const [postDescription, setPostDescription] = useState("");
   const [isUploading, setIsUploading] = useState(false);
-  const [activeTab, setActiveTab] = useState<"upload" | "background">("upload");
   const imageInputRef = useRef<HTMLInputElement>(null);
   const videoInputRef = useRef<HTMLInputElement>(null);
   const [showPermission, setShowPermission] = useState(false);
@@ -174,121 +173,119 @@ const CreatePost = ({ onPostCreated }: CreatePostProps) => {
                 Media <span className="text-red-500">*</span>
               </label>
 
-              {activeTab === "upload" && (
-                <>
-                  <input
-                    ref={imageInputRef}
-                    type="file"
-                    accept="image/*"
-                    multiple
-                    onChange={handleImagesUpload}
-                    className="hidden"
-                  />
+              <>
+                <input
+                  ref={imageInputRef}
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={handleImagesUpload}
+                  className="hidden"
+                />
 
-                  <input
-                    ref={videoInputRef}
-                    type="file"
-                    accept="video/*"
-                    onChange={handleVideoUpload}
-                    className="hidden"
-                  />
+                <input
+                  ref={videoInputRef}
+                  type="file"
+                  accept="video/*"
+                  onChange={handleVideoUpload}
+                  className="hidden"
+                />
 
-                  {/* UPLOAD PREVIEW SECTION */}
-                  {imagePreviews.length > 0 || videoPreview ? (
-                    <div className="space-y-3">
-                      {/* Image previews */}
-                      {imagePreviews.length > 0 && (
-                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                          {imagePreviews.map((src, index) => (
-                            <div
-                              key={index}
-                              className="relative rounded-xl overflow-hidden group border"
-                            >
-                              <img
-                                src={src}
-                                className="w-full h-40 object-cover"
-                                alt={`preview-${index}`}
-                              />
-                              <button
-                                onClick={() => removeImage(index)}
-                                className="absolute top-2 right-2 bg-black/60 hover:bg-black/80 text-white p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition"
-                              >
-                                <X size={16} />
-                              </button>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-
-                      {/* Video preview */}
-                      {videoPreview && mediaType === "video" && (
-                        <div className="relative rounded-xl overflow-hidden">
-                          <video
-                            src={videoPreview}
-                            controls
-                            className="w-full max-h-[400px] bg-black"
-                          />
-                          <Button
-                            variant="destructive"
-                            size="sm"
-                            onClick={clearMedia}
-                            className="absolute top-3 right-3"
+                {/* UPLOAD PREVIEW SECTION */}
+                {imagePreviews.length > 0 || videoPreview ? (
+                  <div className="space-y-3">
+                    {/* Image previews */}
+                    {imagePreviews.length > 0 && (
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                        {imagePreviews.map((src, index) => (
+                          <div
+                            key={index}
+                            className="relative rounded-xl overflow-hidden group border"
                           >
-                            <X className="w-4 h-4" />
-                          </Button>
-                        </div>
-                      )}
-                    </div>
-                  ) : (
-                    // Upload buttons
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <button
-                        onClick={() => {
-                          setPendingMediaType("image");
-                          setShowPermission(true);
-                        }}
-                        className="group relative border-2 border-dashed border-slate-300 rounded-xl p-8 hover:border-blue-500 hover:bg-blue-50/50 transition-all"
-                      >
-                        <div className="flex flex-col items-center cursor-pointer gap-3 text-center">
-                          <div className="p-4 rounded-full bg-blue-100 group-hover:bg-blue-200 transition-colors">
-                            <Image className="w-8 h-8 text-blue-600" />
+                            <img
+                              src={src}
+                              className="w-full h-40 object-cover"
+                              alt={`preview-${index}`}
+                            />
+                            <button
+                              onClick={() => removeImage(index)}
+                              className="absolute top-2 right-2 bg-black/60 hover:bg-black/80 text-white p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition"
+                            >
+                              <X size={16} />
+                            </button>
                           </div>
-                          <div>
-                            <p className="text-sm font-semibold text-slate-700">
-                              Upload Images
-                            </p>
-                            <p className="text-xs text-slate-500 mt-1">
-                              JPG, PNG, GIF up to 10MB each
-                            </p>
-                          </div>
-                        </div>
-                      </button>
+                        ))}
+                      </div>
+                    )}
 
-                      <button
-                        onClick={() => {
-                          setPendingMediaType("video");
-                          setShowPermission(true);
-                        }}
-                        className="group relative border-2 border-dashed border-slate-300 rounded-xl p-8 hover:border-purple-500 hover:bg-purple-50/50 transition-all"
-                      >
-                        <div className="flex flex-col items-center cursor-pointer gap-3 text-center">
-                          <div className="p-4 rounded-full bg-purple-100 group-hover:bg-purple-200 transition-colors">
-                            <Video className="w-8 h-8 text-purple-600" />
-                          </div>
-                          <div>
-                            <p className="text-sm font-semibold text-slate-700">
-                              Upload Video
-                            </p>
-                            <p className="text-xs text-slate-500 mt-1">
-                              MP4, MOV, AVI up to 100MB
-                            </p>
-                          </div>
+                    {/* Video preview */}
+                    {videoPreview && mediaType === "video" && (
+                      <div className="relative rounded-xl overflow-hidden">
+                        <video
+                          src={videoPreview}
+                          controls
+                          className="w-full max-h-[400px] bg-black"
+                        />
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={clearMedia}
+                          className="absolute top-3 right-3"
+                        >
+                          <X className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  // Upload buttons
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <button
+                      onClick={() => {
+                        setPendingMediaType("image");
+                        setShowPermission(true);
+                      }}
+                      className="group relative border-2 border-dashed border-slate-300 rounded-xl p-8 hover:border-blue-500 hover:bg-blue-50/50 transition-all"
+                    >
+                      <div className="flex flex-col items-center cursor-pointer gap-3 text-center">
+                        <div className="p-4 rounded-full bg-blue-100 group-hover:bg-blue-200 transition-colors">
+                          <Image className="w-8 h-8 text-blue-600" />
                         </div>
-                      </button>
-                    </div>
-                  )}
-                </>
-              )}
+                        <div>
+                          <p className="text-sm font-semibold text-slate-700">
+                            Upload Images
+                          </p>
+                          <p className="text-xs text-slate-500 mt-1">
+                            JPG, PNG, GIF up to 10MB each
+                          </p>
+                        </div>
+                      </div>
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        setPendingMediaType("video");
+                        setShowPermission(true);
+                      }}
+                      className="group relative border-2 border-dashed border-slate-300 rounded-xl p-8 hover:border-purple-500 hover:bg-purple-50/50 transition-all"
+                    >
+                      <div className="flex flex-col items-center cursor-pointer gap-3 text-center">
+                        <div className="p-4 rounded-full bg-purple-100 group-hover:bg-purple-200 transition-colors">
+                          <Video className="w-8 h-8 text-purple-600" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-semibold text-slate-700">
+                            Upload Video
+                          </p>
+                          <p className="text-xs text-slate-500 mt-1">
+                            MP4, MOV, AVI up to 100MB
+                          </p>
+                        </div>
+                      </div>
+                    </button>
+                  </div>
+                )}
+              </>
             </div>
           </div>
 
