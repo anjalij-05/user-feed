@@ -5,9 +5,15 @@ import type { Post } from "@/types/post";
 
 interface PostDetailViewProps {
   userPosts: Post[];
+  onPostUpdated: (post: Post) => void;
+  onPostDeleted: (postId: number) => void;
 }
 
-const PostDetailView = ({ userPosts }: PostDetailViewProps) => {
+const PostDetailView = ({
+  userPosts,
+  onPostUpdated,
+  onPostDeleted,
+}: PostDetailViewProps) => {
   const { postId } = useParams<{ postId: string }>();
   const navigate = useNavigate();
 
@@ -21,7 +27,7 @@ const PostDetailView = ({ userPosts }: PostDetailViewProps) => {
           <p className="text-xl text-slate-600 mb-4">No posts available</p>
           <button
             onClick={() => navigate(-1)}
-            className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition"
+            className="px-6 py-2 bg-primary cursor-pointer text-white rounded-lg hover:bg-primary/90 transition"
           >
             Go Back
           </button>
@@ -87,7 +93,12 @@ const PostDetailView = ({ userPosts }: PostDetailViewProps) => {
       <div className="max-w-[620px] mx-auto px-3 sm:px-6 pt-6 pb-10">
         <div className="space-y-0">
           {userSpecificPosts.map((post) => (
-            <FeedCard key={post.id} post={post} />
+            <FeedCard
+              key={post.id}
+              post={post}
+              onPostUpdated={onPostUpdated}
+              onPostDeleted={onPostDeleted}
+            />
           ))}
         </div>
 

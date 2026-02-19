@@ -741,10 +741,17 @@ interface CommentWithReplies extends Comment {
 interface FeedCardProps {
   post: Post;
   onDelete?: (postId: number) => void;
+  onPostUpdated?: (post: Post) => void;
+  onPostDeleted?: (postId: number) => void;
 }
 
 // ─── FeedCard ─────────────────────────────────────────────────────────────────
-export const FeedCard = ({ post, onDelete }: FeedCardProps) => {
+export const FeedCard = ({
+  post,
+  onDelete,
+  // onPostUpdated,
+  onPostDeleted,
+}: FeedCardProps) => {
   const [isLiked, setIsLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(post.likes);
   const [showComments, setShowComments] = useState(true);
@@ -1015,7 +1022,9 @@ export const FeedCard = ({ post, onDelete }: FeedCardProps) => {
   };
 
   const handleDeletePost = () => {
-    if (onDelete) onDelete(post.id);
+    if (onPostDeleted)
+      onPostDeleted(post.id); // use onPostDeleted if provided
+    else if (onDelete) onDelete(post.id); // fallback to onDelete
   };
 
   return (
@@ -1091,7 +1100,7 @@ export const FeedCard = ({ post, onDelete }: FeedCardProps) => {
                   <DropdownMenuItem
                     className="cursor-pointer text-primary focus:text-primary"
                     onClick={() =>
-                      navigate(`user-feed/edit-post/${post.id}`, {
+                      navigate(`/user-feed/edit-post/${post.id}`, {
                         state: { post },
                       })
                     }

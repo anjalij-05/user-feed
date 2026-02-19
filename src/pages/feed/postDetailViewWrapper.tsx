@@ -5,10 +5,13 @@ import type { Post } from "@/types/post";
 interface OutletContext {
   userPosts: Post[];
   onPostCreated: (post: Post) => void;
+  onPostUpdated: (post: Post) => void;
+  onPostDeleted: (postId: number) => void; 
 }
 
 const PostDetailViewWrapper = () => {
-  const { userPosts } = useOutletContext<OutletContext>();
+  const { userPosts, onPostUpdated, onPostDeleted } =
+    useOutletContext<OutletContext>();
 
   console.log("PostDetailViewWrapper - userPosts:", userPosts);
 
@@ -74,7 +77,13 @@ const PostDetailViewWrapper = () => {
   console.log("PostDetailViewWrapper - allPosts combined:", allPosts);
   console.log("PostDetailViewWrapper - total posts:", allPosts.length);
 
-  return <PostDetailView userPosts={allPosts} />;
+  return (
+    <PostDetailView
+      userPosts={allPosts}
+      onPostUpdated={onPostUpdated}
+      onPostDeleted={onPostDeleted}
+    />
+  );
 };
 
 export default PostDetailViewWrapper;
