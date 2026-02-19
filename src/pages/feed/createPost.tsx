@@ -101,7 +101,13 @@ const CreatePost = ({ onPostCreated }: CreatePostProps) => {
         ? getUserProfileImage(appUser.imageBaseUrl, appUser.profileImage)
         : DummyImage,
       content: postDescription,
-      image: imagePreviews[0] || undefined,
+      // Handle both image and video
+      image:
+        mediaType === "video" ? videoPreview : imagePreviews[0] || undefined,
+      images:
+        mediaType === "image" && imagePreviews.length > 1
+          ? imagePreviews.slice(1)
+          : undefined,
       mediaType: mediaType || "image",
       timestamp: "Just now",
       role: appUser?.designation || "User",

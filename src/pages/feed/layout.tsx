@@ -5,19 +5,23 @@ import { useAppSelector } from "@/redux/hooks";
 import { getUserProfileImage } from "@/lib/utils";
 import DummyImage from "@/assets/dummy_image.webp";
 import type { Post } from "@/types/post";
+import { useState } from "react";
 
 interface UserFeedLayoutProps {
   userPosts: Post[];
   onPostCreated: (post: Post) => void;
   onPostUpdated: (post: Post) => void;
+  onPostDeleted: (postId: number) => void;
 }
 
 const UserFeedLayout = ({
   userPosts,
   onPostCreated,
   onPostUpdated,
+  onPostDeleted,
 }: UserFeedLayoutProps) => {
   const { user } = useAppSelector((state) => state.auth);
+
 
   const userAvatar = user?.profileImage
     ? getUserProfileImage(user?.imageBaseUrl, user?.profileImage)
@@ -46,7 +50,7 @@ const UserFeedLayout = ({
 
       {/* Main Content */}
       <main className="lg:ml-[244px] pt-16 lg:pt-0 min-h-screen">
-        <Outlet context={{ userPosts, onPostCreated, onPostUpdated }} />
+        <Outlet context={{ userPosts, onPostCreated, onPostUpdated, onPostDeleted }} />
       </main>
     </div>
   );

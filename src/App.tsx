@@ -55,6 +55,10 @@ function App() {
     );
   };
 
+  const handlePostDeleted = (postId: number) => {
+    setUserPosts((prev) => prev.filter((p) => p.id !== postId));
+  };
+
   return (
     <Routes>
       {/* Public Routes - Redirect to home if already logged in */}
@@ -84,6 +88,7 @@ function App() {
               userPosts={userPosts}
               onPostCreated={handlePostCreated}
               onPostUpdated={handlePostUpdated}
+              onPostDeleted={handlePostDeleted}
             />
           </ProtectedRoute>
         }

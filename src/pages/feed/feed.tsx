@@ -740,10 +740,11 @@ interface CommentWithReplies extends Comment {
 
 interface FeedCardProps {
   post: Post;
+  onDelete?: (postId: number) => void;
 }
 
 // ─── FeedCard ─────────────────────────────────────────────────────────────────
-export const FeedCard = ({ post }: FeedCardProps) => {
+export const FeedCard = ({ post, onDelete }: FeedCardProps) => {
   const [isLiked, setIsLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(post.likes);
   const [showComments, setShowComments] = useState(true);
@@ -1013,6 +1014,10 @@ export const FeedCard = ({ post }: FeedCardProps) => {
     setTouchStartY(null);
   };
 
+  const handleDeletePost = () => {
+    if (onDelete) onDelete(post.id);
+  };
+
   return (
     <>
       <style>{`
@@ -1093,7 +1098,10 @@ export const FeedCard = ({ post }: FeedCardProps) => {
                   >
                     <Edit className="w-4 h-4 mr-2" /> Edit Post
                   </DropdownMenuItem>
-                  <DropdownMenuItem className="cursor-pointer text-red-600 focus:text-red-600">
+                  <DropdownMenuItem
+                    className="cursor-pointer text-red-600 focus:text-red-600"
+                    onClick={() => handleDeletePost()}
+                  >
                     <Trash2 className="w-4 h-4 mr-2" /> Delete Post
                   </DropdownMenuItem>
                 </>
@@ -1664,10 +1672,15 @@ export const FeedCard = ({ post }: FeedCardProps) => {
 // ─── Feed ─────────────────────────────────────────────────────────────────────
 interface FeedProps {
   userPosts: Post[];
+  onPostDeleted?: (postId: number) => void;
 }
 
-const Feed = ({ userPosts }: FeedProps) => {
-  const allPosts = [...userPosts, ...defaultPosts];
+const Feed = ({ userPosts, onPostDeleted }: FeedProps) => {
+  const posts = [...userPosts, ...defaultPosts];
+
+  const handleDeletePost = (postId: number) => {
+    if (onPostDeleted) onPostDeleted(postId);
+  };
 
   const suggestedUsers = [
     {
@@ -1709,8 +1722,14 @@ const Feed = ({ userPosts }: FeedProps) => {
         <div className="flex gap-8 justify-center">
           <main className="w-full max-w-[620px]">
             <div className="space-y-0">
-              {allPosts.length > 0 ? (
-                allPosts.map((post) => <FeedCard key={post.id} post={post} />)
+              {posts.length > 0 ? (
+                posts.map((post) => (
+                  <FeedCard
+                    key={post.id}
+                    post={post}
+                    onDelete={handleDeletePost}
+                  />
+                ))
               ) : (
                 <div className="text-center py-12">
                   <Search className="w-16 h-16 text-slate-300 mx-auto mb-4" />
@@ -1723,7 +1742,7 @@ const Feed = ({ userPosts }: FeedProps) => {
                 </div>
               )}
             </div>
-            {allPosts.length > 0 && (
+            {posts.length > 0 && (
               <div className="xl:hidden mt-6 mb-20">
                 <h3 className="px-3 pb-3 font-bold text-sm text-slate-700">
                   Suggested for you
@@ -1763,7 +1782,7 @@ const Feed = ({ userPosts }: FeedProps) => {
                 </div>
               </div>
             )}
-            {allPosts.length > 0 && (
+            {posts.length > 0 && (
               <div className="mt-12 mb-10 text-center">
                 <div className="inline-flex items-center gap-2 bg-white rounded-full px-6 py-3 shadow-sm border border-slate-200">
                   <Sparkles className="w-5 h-5 text-primary" />
