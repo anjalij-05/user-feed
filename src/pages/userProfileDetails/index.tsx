@@ -411,24 +411,73 @@ const ProfileDetails: React.FC = () => {
     setSelectedImageUrl(imageUrl);
     setShowImageDialog(true);
   };
+// Module-level cache — persists across re-renders and component remounts
+let cachedPosition: GeolocationPosition | null = null;
+let positionPromise: Promise<GeolocationPosition> | null = null;
 
-  const getPosition = async () =>
-    new Promise<GeolocationPosition>((resolve) => {
-      navigator.geolocation.getCurrentPosition(resolve, () => {
-        resolve({
-          coords: {
-            latitude: FALLBACK_LAT,
-            longitude: FALLBACK_LNG,
-            accuracy: 0,
-            altitude: null,
-            altitudeAccuracy: null,
-            heading: null,
-            speed: null,
-          },
-          timestamp: Date.now(),
-        } as GeolocationPosition);
-      });
-    });
+const FALLBACK_LAT = 28.6139;
+const FALLBACK_LNG = 77.209;
+const POSITION_MAX_AGE = 5 * 60 * 1000; // 5 minutes
+
+const getFallbackPosition = (): GeolocationPosition => ({
+  coords: {
+    latitude: FALLBACK_LAT,
+    longitude: FALLBACK_LNG,
+    accuracy: 0,
+    altitude: null,
+    altitudeAccuracy: null,
+    heading: null,
+    speed: null,
+  },
+  timestamp: Date.now(),
+} as GeolocationPosition);
+
+const getPosition = (): Promise<GeolocationPosition> => {
+  // Return cached position if still fresh
+  if (cachedPosition) {
+    const age = Date.now() - cachedPosition.timestamp;
+    if (age < POSITION_MAX_AGE) {
+      return Promise.resolve(cachedPosition);
+    } else {
+      cachedPosition = null; // expired, refetch
+    }
+  }
+
+  // If a fetch is already in-flight, reuse it (avoids duplicate GPS requests)
+  if (positionPromise) {
+    return positionPromise;
+  }
+
+  // No cache, no in-flight request — start a new one
+  positionPromise = new Promise<GeolocationPosition>((resolve) => {
+    if (!navigator.geolocation) {
+      positionPromise = null;
+      resolve(getFallbackPosition());
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        cachedPosition = pos;
+        positionPromise = null;
+        resolve(pos);
+      },
+      () => {
+        // On error/denial, use fallback but don't cache it
+        // so next attempt will retry GPS
+        positionPromise = null;
+        resolve(getFallbackPosition());
+      },
+      {
+        timeout: 5000,          // don't wait more than 5s
+        maximumAge: POSITION_MAX_AGE,
+        enableHighAccuracy: false, // faster, less battery drain
+      }
+    );
+  });
+
+  return positionPromise;
+};
 
   const sendProfileView = useCallback(async () => {
     if (!token || !user?._id || !id || user._id === id) return;
@@ -1471,7 +1520,6 @@ const ProfileDetails: React.FC = () => {
           )}
 
           {/* Attended Events */}
-          {/* Tabs: Attended Events | Posts */}
           {token && user?._id && (
             <>
               {/* Tab Headers */}

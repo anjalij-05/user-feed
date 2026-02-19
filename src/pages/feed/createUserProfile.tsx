@@ -331,7 +331,7 @@ export default function UserProfile({ posts }: UserProfileProps) {
               </div>
               <div
                 className="text-center cursor-pointer"
-                onClick={() => setShowTlsDialog(true)} 
+                onClick={() => setShowTlsDialog(true)}
               >
                 <div className="font-semibold text-lg">
                   {tlsLoading ? (
@@ -438,7 +438,7 @@ export default function UserProfile({ posts }: UserProfileProps) {
                 <Link
                   key={post.id}
                   to={`/post/${post.id}`}
-                  className="relative group cursor-pointer h-[250px] md:h-[200px] w-full"
+                  className="relative group cursor-pointer h-[120px] md:h-[200px] w-full"
                 >
                   {post.mediaType === "video" ? (
                     <video
@@ -483,7 +483,7 @@ export default function UserProfile({ posts }: UserProfileProps) {
                 <Link
                   key={post.id}
                   to={`/post/${post.id}`}
-                  className="relative group cursor-pointer h-[250px] md:h-[200px] w-full"
+                  className="relative group cursor-pointer h-[120px] md:h-[200px] w-full"
                 >
                   <video
                     src={post.media}

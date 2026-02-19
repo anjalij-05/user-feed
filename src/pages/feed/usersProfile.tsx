@@ -86,7 +86,7 @@ export default function UserPostProfile({ allPosts }: UserPostProfileProps) {
         </div>
         <div className="flex gap-4">
           <Link to="/settings">
-          <Settings className="w-6 h-6 cursor-pointer hover:text-gray-600 transition-colors" />
+            <Settings className="w-6 h-6 cursor-pointer hover:text-gray-600 transition-colors" />
           </Link>
         </div>
       </div>
@@ -194,7 +194,7 @@ export default function UserPostProfile({ allPosts }: UserPostProfileProps) {
                   <Link
                     key={post.id}
                     to={`/post/${post.id}`}
-                    className="relative group cursor-pointer h-[250px] md:h-[200px] w-full"
+                    className="relative group cursor-pointer h-[120px] md:h-[200px] w-full"
                   >
                     {post.mediaType === "video" ? (
                       <video
@@ -244,7 +244,7 @@ export default function UserPostProfile({ allPosts }: UserPostProfileProps) {
                     <Link
                       key={post.id}
                       to={`/post/${post.id}`}
-                      className="relative group cursor-pointer h-[250px] md:h-[200px] w-full"
+                      className="relative group cursor-pointer h-[120px] md:h-[200px] w-full"
                     >
                       <video
                         src={postImage}
