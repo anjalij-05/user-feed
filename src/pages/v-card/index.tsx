@@ -13,10 +13,14 @@ const VCard: React.FC = () => {
     : DummyImage;
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 sm:p-6 md:p-8 bg-gray-100">
+    <div
+      className="flex items-center justify-center p-4 sm:p-6 md:p-8 bg-gray-100 overflow-hidden"
+      style={{ height: "calc(100vh - 112px)" }}
+    >
+      {" "}
       {/* Business Card */}
       <div
-        className="relative w-full max-w-[500px]"
+        className="relative w-full max-w-[500px] max-h-full"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >

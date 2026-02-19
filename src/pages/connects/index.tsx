@@ -24,13 +24,13 @@ import {
 
 const Connects: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"connected" | "bookmarked">(
-    "connected"
+    "connected",
   );
   const [search, setSearch] = useState("");
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { userProfiles, bookmarked, loading } = useAppSelector(
-    (state) => state.connection
+    (state) => state.connection,
   );
   const { token, user } = useAppSelector((state) => state.auth);
   const [editingUserId, setEditingUserId] = useState<string | null>(null);
@@ -43,7 +43,7 @@ const Connects: React.FC = () => {
         checkConnectionStatus({
           token,
           userId: user._id,
-        })
+        }),
       );
       dispatch(
         fetchBookmarkedList({
@@ -52,7 +52,7 @@ const Connects: React.FC = () => {
           latitude: 19.1723617,
           longitude: 72.8605305,
           distance: 50,
-        })
+        }),
       );
     }
   }, [dispatch, token, user?._id]);
@@ -87,7 +87,7 @@ const Connects: React.FC = () => {
     const profileImage =
       getUserProfileImage(
         user?.imageBaseUrl as string,
-        profile?.profileImage
+        profile?.profileImage,
       ) || DummyImage;
 
     const designation = profile.designation || profile.role || "";
@@ -115,7 +115,7 @@ const Connects: React.FC = () => {
           targetUserId: profile._id,
           status: "1",
           note: trimmed,
-        })
+        }),
       );
 
       setEditingUserId(null);
@@ -123,9 +123,8 @@ const Connects: React.FC = () => {
 
     return (
       <Card className="group relative overflow-hidden w-full transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5">
-        <div className="absolute z-10! inset-0 bg-linear-to-br from-primary/0 via-primary/0 to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
-        <CardContent className="p-2.5 sm:p-3 z-50!">
+        <div className="absolute inset-0 bg-linear-to-br from-primary/0 via-primary/0 to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        <CardContent className="p-2.5 sm:p-3">
           <div className="flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-3">
             <div className="flex items-start gap-2 flex-1 min-w-0 cursor-pointer">
               <Avatar className="w-10 h-10 sm:w-11 sm:h-11 shrink-0 border-2 border-background group-hover:border-primary/20 transition-colors">
@@ -142,7 +141,7 @@ const Connects: React.FC = () => {
                     navigate(
                       `/profile/${profile.first_name.toLowerCase()}-${profile.last_name.toLowerCase()}-${
                         profile._id
-                      }`
+                      }`,
                     )
                   }
                 >
@@ -303,7 +302,7 @@ const Connects: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-background via-background to-primary/5">
+    <div className="bg-linear-to-br from-background via-background to-primary/5">
       <div className="container max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8 space-y-4 sm:space-y-5">
         {/* Header */}
         <div className="text-center space-y-1">

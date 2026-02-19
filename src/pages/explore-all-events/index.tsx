@@ -260,7 +260,7 @@ const ExploreAllEvents: React.FC = () => {
                   <SelectTrigger className="w-full h-10 cursor-pointer">
                     <SelectValue placeholder="Event Sort By" />
                   </SelectTrigger>
-                  <SelectContent className="bg-background/50">
+                  <SelectContent className="bg-background">
                     <SelectGroup>
                       <SelectItem value="all" className="cursor-pointer">
                         All Events
@@ -296,7 +296,7 @@ const ExploreAllEvents: React.FC = () => {
                   <SelectTrigger className="w-full h-10 cursor-pointer">
                     <SelectValue placeholder="Select Event Mode" />
                   </SelectTrigger>
-                  <SelectContent className="bg-background/50">
+                  <SelectContent className="bg-background">
                     <SelectGroup>
                       <SelectItem value="all" className="cursor-pointer">
                         All
@@ -321,7 +321,7 @@ const ExploreAllEvents: React.FC = () => {
                   <SelectTrigger className="w-full h-10 cursor-pointer">
                     <SelectValue placeholder="All Cities" />
                   </SelectTrigger>
-                  <SelectContent className="bg-background/50">
+                  <SelectContent className="bg-background">
                     <SelectGroup>
                       <SelectItem
                         value="all"

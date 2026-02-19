@@ -5,6 +5,7 @@ import { useAppSelector } from "@/redux/hooks";
 import { getUserProfileImage } from "@/lib/utils";
 import DummyImage from "@/assets/dummy_image.webp";
 import type { Post } from "@/types/post";
+import Logo from "@/assets/logo.webp";
 
 interface UserFeedLayoutProps {
   userPosts: Post[];
@@ -21,7 +22,6 @@ const UserFeedLayout = ({
 }: UserFeedLayoutProps) => {
   const { user } = useAppSelector((state) => state.auth);
 
-
   const userAvatar = user?.profileImage
     ? getUserProfileImage(user?.imageBaseUrl, user?.profileImage)
     : DummyImage;
@@ -31,7 +31,10 @@ const UserFeedLayout = ({
       {/* Mobile Top Navbar */}
       <header className="lg:hidden fixed top-0 left-0 right-0 bg-background border-b border-border/40 z-30 px-4 py-3">
         <div className="flex items-center justify-between">
-          <Navbar />
+          {/* Don't render full Navbar here, just logo + avatar */}
+          <Link to="/">
+            <img src={Logo} alt="logo" className="w-24 h-auto" />
+          </Link>
           <Link to="/user-feed/create-user-profile">
             <Avatar className="w-8 h-8">
               <AvatarImage src={userAvatar} className="object-cover" />
@@ -44,12 +47,14 @@ const UserFeedLayout = ({
         </div>
       </header>
 
-      {/* Desktop Sidebar & Mobile Bottom Nav (now in Navbar component) */}
+      {/* Desktop Sidebar & Mobile Bottom Nav */}
       <Navbar />
 
       {/* Main Content */}
-      <main className="lg:ml-[244px] pt-16 lg:pt-0 min-h-screen">
-        <Outlet context={{ userPosts, onPostCreated, onPostUpdated, onPostDeleted }} />
+      <main className="lg:ml-[244px] pt-10 lg:pt-0 pb-16 lg:pb-0 min-h-screen">
+        <Outlet
+          context={{ userPosts, onPostCreated, onPostUpdated, onPostDeleted }}
+        />
       </main>
     </div>
   );

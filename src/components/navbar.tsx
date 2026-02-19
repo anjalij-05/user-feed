@@ -35,7 +35,8 @@ export default function Navbar() {
   return (
     <>
       {/* Desktop Sidebar */}
-      <aside className="hidden lg:block fixed left-0 top-0 h-screen w-[244px] border-r border-border/40 px-3 py-8 bg-background z-20">
+      <aside className="hidden lg:block fixed left-0 top-0 h-screen w-[244px] border-r border-border/40 px-3 py-8 bg-background z-20 shadow-sm">
+        {" "}
         <Link to="/" className="inline-block">
           <img
             width={152}
@@ -45,7 +46,6 @@ export default function Navbar() {
             className="w-32 h-auto"
           />
         </Link>
-
         <nav className="space-y-1 mt-10">
           {navItems.map((item) => (
             <Link
@@ -78,7 +78,13 @@ export default function Navbar() {
                 )}
                 className="object-cover"
               />
-              <AvatarFallback><img src={DummyImage} alt="default avatar" className="w-7 h-7" /></AvatarFallback>
+              <AvatarFallback>
+                <img
+                  src={DummyImage}
+                  alt="default avatar"
+                  className="w-7 h-7"
+                />
+              </AvatarFallback>
             </Avatar>
             <span> My Profile</span>
           </Link>
@@ -99,31 +105,31 @@ export default function Navbar() {
       </div>
 
       {/* Mobile Bottom Navigation */}
-     <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-background border-t border-border/40 z-30 px-1 py-1">
-  <div className="flex items-center justify-between max-w-full mx-auto">
-    {navItems.map((item) => (
-      <Link
-        key={item.to}
-        to={item.to}
-        className={`flex flex-col items-center justify-center gap-0.5 px-1 py-1 flex-1 transition-colors ${
-          isActive(item.to)
-            ? "text-primary"
-            : "text-muted-foreground hover:text-foreground"
-        }`}
-      >
-        <item.icon
-          className={`w-5 h-5 ${
-            isActive(item.to) ? "text-primary" : "text-muted-foreground"
-          }`}
-        />
-        <span className="text-[10px] leading-none font-medium">
-          {item.label}
-        </span>
-      </Link>
-    ))}
-  </div>
-</nav>
-
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-background border-t border-border/40 z-30 px-1 py-1 backdrop-blur-sm shadow-[0_-1px_6px_rgba(0,0,0,0.1)]">
+        {" "}
+        <div className="flex items-center justify-between max-w-full mx-auto">
+          {navItems.map((item) => (
+            <Link
+              key={item.to}
+              to={item.to}
+              className={`flex flex-col items-center justify-center gap-0.5 px-1 py-1 flex-1 transition-colors ${
+                isActive(item.to)
+                  ? "text-primary"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <item.icon
+                className={`w-5 h-5 ${
+                  isActive(item.to) ? "text-primary" : "text-muted-foreground"
+                }`}
+              />
+              <span className="text-[10px] leading-none font-medium">
+                {item.label}
+              </span>
+            </Link>
+          ))}
+        </div>
+      </nav>
     </>
   );
 }
