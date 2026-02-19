@@ -70,8 +70,8 @@ import type { Event } from "@/types";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 
-const FALLBACK_LAT = 28.6139;
-const FALLBACK_LNG = 77.209;
+// const FALLBACK_LAT = 28.6139;
+// const FALLBACK_LNG = 77.209;
 
 // Attended Event Card Component
 const AttendedEventCard = ({
