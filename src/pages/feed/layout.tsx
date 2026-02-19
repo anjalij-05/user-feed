@@ -5,7 +5,6 @@ import { useAppSelector } from "@/redux/hooks";
 import { getUserProfileImage } from "@/lib/utils";
 import DummyImage from "@/assets/dummy_image.webp";
 import type { Post } from "@/types/post";
-import { useState } from "react";
 
 interface UserFeedLayoutProps {
   userPosts: Post[];
