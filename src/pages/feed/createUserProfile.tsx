@@ -8,108 +8,8 @@ import { fetchTlsScore } from "@/app-api/tls";
 import { checkConnectionStatus, getMyConnections } from "@/app-api/connections";
 import ImageDialog from "@/components/imageDialogBox";
 import type { Post } from "@/types/post";
-import type { Connection } from "@/types/post";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import TlsImage from "@/assets/tlsImage.webp";
-
-interface ConnectionsDialogProps {
-  isOpen: boolean;
-  onClose: () => void;
-  connections: Connection[];
-}
-
-export function ConnectionsDialog({
-  isOpen,
-  onClose,
-  connections,
-}: ConnectionsDialogProps) {
-  const navigate = useNavigate();
-  const { user: appUser } = useAppSelector((state) => state.auth);
-
-  if (!isOpen) return null;
-
-  const handleProfileClick = (connection: Connection) => {
-    onClose();
-    navigate(`/profile/${connection._id}`);
-  };
-
-  return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
-      onClick={onClose}
-    >
-      <div
-        className="bg-white rounded-2xl w-full max-w-sm mx-4 max-h-[70vh] flex flex-col shadow-xl"
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b">
-          <h2 className="font-semibold text-base">Connections</h2>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-black transition text-xl leading-none"
-          >
-            ✕
-          </button>
-        </div>
-
-        {/* List */}
-        <div className="overflow-y-auto flex-1 divide-y">
-          {connections.length === 0 ? (
-            <div className="p-8 text-center text-gray-400 text-sm">
-              No connections yet
-            </div>
-          ) : (
-            connections.map((connection) => (
-              <div
-                key={connection._id}
-                onClick={() => handleProfileClick(connection)}
-                className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 cursor-pointer transition"
-              >
-                <img
-                  src={
-                    connection.profileImage
-                      ? getUserProfileImage(
-                          appUser?.imageBaseUrl as string,
-                          connection.profileImage,
-                        )
-                      : DummyImage
-                  }
-                  alt={connection.first_name}
-                  className="w-10 h-10 rounded-full object-cover"
-                />
-                <div className="flex-1 min-w-0">
-                  <p className="font-medium text-sm capitalize truncate">
-                    {connection.first_name} {connection.last_name}
-                  </p>
-                  {connection.designation && (
-                    <p className="text-xs text-gray-500 capitalize truncate">
-                      {connection.designation}
-                      {connection.company ? ` · ${connection.company}` : ""}
-                    </p>
-                  )}
-                </div>
-                <svg
-                  className="w-4 h-4 text-gray-400 shrink-0"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 5l7 7-7 7"
-                  />
-                </svg>
-              </div>
-            ))
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
 
 interface UserProfileProps {
   posts: Post[];
@@ -121,7 +21,6 @@ export default function UserProfile({ posts }: UserProfileProps) {
   const dispatch = useAppDispatch();
   const [dialogOpen, setDialogOpen] = useState(false);
   // const [showFullOverview, setShowFullOverview] = useState(false);
-  const [connectionsDialogOpen, setConnectionsDialogOpen] = useState(false);
   const [showTlsDialog, setShowTlsDialog] = useState(false);
   // Get user data from Redux store
   const { user, token } = useAppSelector((state) => state.auth);
@@ -130,11 +29,9 @@ export default function UserProfile({ posts }: UserProfileProps) {
     factorGroup,
     loading: tlsLoading,
   } = useAppSelector((state) => state.tls);
-  const {
-    connectionsList,
-    userProfiles,
-    loading: connectionsLoading,
-  } = useAppSelector((state) => state.connection);
+  const { connectionsList, loading: connectionsLoading } = useAppSelector(
+    (state) => state.connection,
+  );
 
   // console.log("User:", user);
   // console.log("Token:", token);
@@ -317,7 +214,7 @@ export default function UserProfile({ posts }: UserProfileProps) {
               </div>
               <div
                 className="text-center cursor-pointer"
-                onClick={() => setConnectionsDialogOpen(true)}
+                onClick={() => navigate("/connects")}
               >
                 {" "}
                 <div className="font-semibold text-lg">
@@ -630,12 +527,6 @@ export default function UserProfile({ posts }: UserProfileProps) {
           </div>
         </DialogContent>
       </Dialog>
-
-      <ConnectionsDialog
-        isOpen={connectionsDialogOpen}
-        onClose={() => setConnectionsDialogOpen(false)}
-        connections={userProfiles}
-      />
 
       <ImageDialog
         isOpen={dialogOpen}

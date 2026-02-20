@@ -84,6 +84,11 @@ const Connects: React.FC = () => {
       profile.last_name || ""
     }`.trim();
 
+    const goToProfile = () =>
+      navigate(
+        `/profile/${profile.first_name?.toLowerCase() ?? ""}-${profile.last_name?.toLowerCase() ?? ""}-${profile._id}`,
+      );
+
     const profileImage =
       getUserProfileImage(
         user?.imageBaseUrl as string,
@@ -124,28 +129,26 @@ const Connects: React.FC = () => {
     return (
       <Card className="group relative overflow-hidden w-full transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5">
         <div className="absolute inset-0 bg-linear-to-br from-primary/0 via-primary/0 to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-        <CardContent className="p-2.5 sm:p-3">
+        <CardContent className="p-2.5 sm:p-3 z-50!">
           <div className="flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-3">
             <div className="flex items-start gap-2 flex-1 min-w-0 cursor-pointer">
-              <Avatar className="w-10 h-10 sm:w-11 sm:h-11 shrink-0 border-2 border-background group-hover:border-primary/20 transition-colors">
+              {" "}
+              <Avatar
+                className="w-10 h-10 sm:w-11 sm:h-11 shrink-0 border-2 border-background group-hover:border-primary/20 transition-colors cursor-pointer"
+                onClick={goToProfile}
+              >
                 <AvatarImage src={profileImage} alt={displayName} />
                 <AvatarFallback className="bg-primary/10 text-primary font-semibold text-xs sm:text-sm">
                   {displayName.charAt(0).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
-
               <div className="flex-1 min-w-0 space-y-1">
-                <div
-                  className="space-y-0.5"
-                  onClick={() =>
-                    navigate(
-                      `/profile/${profile.first_name.toLowerCase()}-${profile.last_name.toLowerCase()}-${
-                        profile._id
-                      }`,
-                    )
-                  }
-                >
-                  <h3 className="font-bold text-sm sm:text-base text-foreground truncate capitalize group-hover:text-primary transition-colors duration-200">
+                <div className="space-y-0.5">
+                  {/* Name - clickable */}
+                  <h3
+                    className="font-bold text-sm sm:text-base text-foreground truncate capitalize group-hover:text-primary transition-colors duration-200 cursor-pointer"
+                    onClick={goToProfile}
+                  >
                     {displayName}
                   </h3>
 
@@ -178,7 +181,8 @@ const Connects: React.FC = () => {
                 {showNote && (
                   <div
                     className="mt-2 z-50 p-2 rounded-md border bg-amber-50 dark:bg-amber-950/20"
-                    onClick={() => {
+                    onClick={(e) => {
+                      e.stopPropagation(); // ← already fires setEditingUserId, but add this
                       setEditingUserId(profile._id);
                     }}
                   >
